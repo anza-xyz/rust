@@ -23,10 +23,10 @@ name = "rustc"
 path = "src/bin/rustc.rs"
 test = false
 
-[[bin]]
-name = "rustdoc"
-path = "src/bin/rustdoc.rs"
-test = false
+#[[bin]]
+#name = "rustdoc"
+#path = "bin/rustdoc.rs"
+#test = false
 
 [dependencies]
 # Most of the time updating these dependencies requires modifications to the
