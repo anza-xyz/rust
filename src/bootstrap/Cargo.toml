@@ -19,10 +19,10 @@ name = "rustc"
 path = "bin/rustc.rs"
 test = false
 
-[[bin]]
-name = "rustdoc"
-path = "bin/rustdoc.rs"
-test = false
+#[[bin]]
+#name = "rustdoc"
+#path = "bin/rustdoc.rs"
+#test = false
 
 [[bin]]
 name = "sccache-plus-cl"
