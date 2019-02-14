@@ -1,3 +1,10 @@
+# Fork of the Rust Programming Language that supports Berkley Packet Filter (BPF) targets
+
+
+This fork of Rust contains changes that enables rustc to build BPF modules.  It depends on a customized [fork](https://github.com/anza-xyz/llvm-project) of Rust's LLVM fork
+
+---
+
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rust-lang/www.rust-lang.org/master/static/images/rust-social-wide-dark.svg">
