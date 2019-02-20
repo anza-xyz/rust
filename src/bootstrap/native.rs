@@ -364,6 +364,7 @@ impl Step for Llvm {
 
         cfg.out_dir(&out_dir)
             .profile(profile)
+            .define("LLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN", "ON")
             .define("LLVM_ENABLE_ASSERTIONS", assertions)
             .define("LLVM_ENABLE_PLUGINS", plugins)
             .define("LLVM_TARGETS_TO_BUILD", llvm_targets)
