@@ -19,7 +19,7 @@
 #enabled = true
 
 # Indicates whether the LLVM build is a Release or Debug build
-#optimize = true
+optimize = true
 
 # Indicates whether LLVM should be built with ThinLTO. Note that this will
 # only succeed if you use clang, lld, llvm-ar, and llvm-ranlib in your C/C++
@@ -28,10 +28,10 @@
 #thin-lto = false
 
 # Indicates whether an LLVM Release build should include debug info
-release-debuginfo = true
+release-debuginfo = false
 
 # Indicates whether the LLVM assertions are enabled or not
-assertions = true
+assertions = false
 
 # Indicates whether ccache is used when building LLVM
 #ccache = false
@@ -285,7 +285,7 @@ optimize = true
 #       "maximally debuggable" environment (notably libstd) takes
 #       hours to build.
 #
-debug = true
+debug = false
 
 # Number of codegen units to use for each compiler invocation. A value of 0
 # means "the number of cores on this machine", and 1+ is passed through to the
@@ -298,7 +298,7 @@ debug = true
 
 # Whether or not debug assertions are enabled for the compiler and standard
 # library.
-debug-assertions = true
+debug-assertions = false
 
 # Whether or not debuginfo is emitted
 #debuginfo = false
