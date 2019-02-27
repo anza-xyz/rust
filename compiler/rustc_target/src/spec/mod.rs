@@ -903,6 +903,7 @@ supported_targets! {
 
     ("bpfeb-unknown-none", bpfeb_unknown_none),
     ("bpfel-unknown-none", bpfel_unknown_none),
+    ("bpfel-unknown-unknown", bpfel_unknown_unknown),
 }
 
 /// Everything `rustc` knows about how to compile for a specific target.
