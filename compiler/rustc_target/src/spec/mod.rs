@@ -1127,6 +1127,7 @@ supported_targets! {
 
     ("bpfeb-unknown-none", bpfeb_unknown_none),
     ("bpfel-unknown-none", bpfel_unknown_none),
+    ("bpfel-unknown-unknown", bpfel_unknown_unknown),
 
     ("armv6k-nintendo-3ds", armv6k_nintendo_3ds),
 
