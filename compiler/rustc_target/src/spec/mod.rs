@@ -897,6 +897,8 @@ supported_targets! {
     ("aarch64_be-unknown-linux-gnu", aarch64_be_unknown_linux_gnu),
     ("aarch64-unknown-linux-gnu_ilp32", aarch64_unknown_linux_gnu_ilp32),
     ("aarch64_be-unknown-linux-gnu_ilp32", aarch64_be_unknown_linux_gnu_ilp32),
+
+    ("bpfel-unknown-unknown", bpfel_unknown_unknown),
 }
 
 /// Everything `rustc` knows about how to compile for a specific target.

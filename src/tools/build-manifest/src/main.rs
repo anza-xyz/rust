@@ -85,6 +85,7 @@ static TARGETS: &[&str] = &[
     "armv7r-none-eabihf",
     "armv7s-apple-ios",
     "asmjs-unknown-emscripten",
+    "bpfel-unknown-unknown",
     "i386-apple-ios",
     "i586-pc-windows-msvc",
     "i586-unknown-linux-gnu",

@@ -99,8 +99,9 @@ changelog-seen = 2
 # LLVM experimental targets to build support for. These targets are specified in
 # the same format as above, but since these targets are experimental, they are
 # not built by default and the experimental Rust compilation targets that depend
-# on them will not work unless the user opts in to building them.
-#experimental-targets = "AVR"
+# on them will not work unless the user opts in to building them. By default the
+# `WebAssembly`, `RISCV`, and `BPF` targets are enabled when compiling LLVM from scratch.
+#experimental-targets = "BPF"
 
 # Cap the number of parallel linker invocations when compiling LLVM.
 # This can be useful when building LLVM with debug info, which significantly
