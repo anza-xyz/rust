@@ -117,6 +117,7 @@ ENV TARGETS=$TARGETS,armv7a-none-eabi
 ENV TARGETS=$TARGETS,aarch64-pc-windows-gnullvm
 ENV TARGETS=$TARGETS,i686-pc-windows-gnullvm
 ENV TARGETS=$TARGETS,x86_64-pc-windows-gnullvm
+ENV TARGETS=$TARGETS,bpfel-unknown-unknown
 
 ENV CFLAGS_armv5te_unknown_linux_musleabi="-march=armv5te -marm -mfloat-abi=soft" \
     CFLAGS_arm_unknown_linux_musleabi="-march=armv6 -marm" \
