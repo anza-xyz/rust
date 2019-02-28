@@ -11,6 +11,3 @@ if [ "$1" == "--llvm" ]; then
     rm build/x86_64-apple-darwin/llvm/llvm-finished-building;
 fi
 ./x.py build --stage 1
-
-# Needed by xargo
-mkdir build/x86_64-apple-darwin/stage1/lib/rustlib/x86_64-apple-darwin/bin
