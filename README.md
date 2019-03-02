@@ -1,7 +1,10 @@
 # Fork of the Rust Programming Language that supports Berkley Packet Filter (BPF) targets
 
+This fork of Rust contains changes that enables rustc to build BPF modules.  It depends on a customized [fork](https://github.com/solana-labs/llvm-project) of Rust's LLVM fork.
 
-This fork of Rust contains changes that enables rustc to build BPF modules.  It depends on a customized [fork](https://github.com/solana-labs/llvm-project) of Rust's LLVM fork
+Solana SDK does not depend directly on this repo.  Instread [rust-bpf-builder] builds and releases binary packages that the Solana SDK pulls in.
+
+BPF modules are built using target triple `bpfel-unknown-unknown` which represents the little endian version of BPF.  There is no support for big endian at this time.
 
 ---
 
