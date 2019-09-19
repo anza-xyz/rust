@@ -28,7 +28,7 @@ pub fn target() -> TargetResult {
         target_endian: "little".to_string(),
         target_pointer_width: "64".to_string(),
         target_c_int_width: "64".to_string(),
-        target_os: "linux".to_string(), // TODO unknown?
+        target_os: "unknown".to_string(),
         target_env: String::new(),
         target_vendor: "unknown".to_string(),
         arch: "bpf".to_string(),
