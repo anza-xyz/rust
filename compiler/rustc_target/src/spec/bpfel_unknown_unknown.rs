@@ -35,7 +35,6 @@ pub fn target() -> TargetResult {
         linker_flavor: LinkerFlavor::Lld(LldFlavor::Ld),
 
         options: TargetOptions {
-            atomic_cas: false,
             executables: true,
             dll_prefix: "".to_string(),
             dynamic_linking: true,
@@ -45,6 +44,7 @@ pub fn target() -> TargetResult {
             panic_strategy: PanicStrategy::Abort,
             position_independent_executables: true,
             singlethread: true,
+            max_atomic_width: Some(64),
             abi_blacklist: abi_blacklist(),
             .. Default::default()
         },
