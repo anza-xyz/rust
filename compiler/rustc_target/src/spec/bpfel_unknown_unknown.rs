@@ -38,7 +38,6 @@ pub fn target() -> TargetResult {
             executables: true,
             dll_prefix: "".to_string(),
             dynamic_linking: true,
-            i128_lowering: true,
             no_builtins: true,
             no_default_libraries: true,
             panic_strategy: PanicStrategy::Abort,
