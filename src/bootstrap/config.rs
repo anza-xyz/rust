@@ -975,8 +975,7 @@ impl Config {
                 config.llvm_link_shared.set(Some(v));
             }
             config.llvm_targets = llvm.targets.clone();
-            config.llvm_experimental_targets = llvm.experimental_targets.clone()
-                .unwrap_or_else(|| "BPF".to_string());
+            config.llvm_experimental_targets = llvm.experimental_targets.clone();
             config.llvm_link_jobs = llvm.link_jobs;
             config.llvm_version_suffix = llvm.version_suffix.clone();
             config.llvm_clang_cl = llvm.clang_cl.clone();
