@@ -2977,9 +2977,10 @@ pub mod nightly_options {
     use crate::EarlyErrorHandler;
     use rustc_feature::UnstableFeatures;
 
-    pub fn is_unstable_enabled(matches: &getopts::Matches) -> bool {
-        match_is_nightly_build(matches)
-            && matches.opt_strs("Z").iter().any(|x| *x == "unstable-options")
+    pub fn is_unstable_enabled(_matches: &getopts::Matches) -> bool {
+        // Newer versions of Cargo might pass options that used to be nightly only
+        // Allow all nightly options on the Rust BPF compiler
+        true
     }
 
     pub fn match_is_nightly_build(matches: &getopts::Matches) -> bool {
