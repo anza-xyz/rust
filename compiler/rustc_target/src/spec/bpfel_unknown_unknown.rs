@@ -44,7 +44,7 @@ pub fn target() -> TargetResult {
             position_independent_executables: true,
             singlethread: true,
             max_atomic_width: Some(64),
-            abi_blacklist: abi_blacklist(),
+            unsupported_abis: abi_blacklist(),
             .. Default::default()
         },
     })
