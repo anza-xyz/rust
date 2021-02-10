@@ -45,6 +45,7 @@ pub fn target() -> TargetResult {
             singlethread: true,
             max_atomic_width: Some(64),
             unsupported_abis: abi_blacklist(),
+            eh_frame_header: false,
             .. Default::default()
         },
     })
