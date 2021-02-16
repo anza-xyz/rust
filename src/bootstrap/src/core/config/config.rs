@@ -176,6 +176,7 @@ pub struct Config {
     pub llvm_enable_warnings: bool,
     pub llvm_from_ci: bool,
     pub llvm_build_config: HashMap<String, String>,
+    pub llvm_enable_projects: Option<String>,
 
     pub bootstrap_override_lld: BootstrapOverrideLld,
     pub lld_enabled: bool,
@@ -329,7 +330,6 @@ pub struct Config {
     /// on each code change might be too much for some computers.
     pub skip_std_check_if_no_download_rustc: bool,
 
-    pub exec_ctx: ExecutionContext,
 }
 
 impl Config {

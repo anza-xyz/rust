@@ -40,6 +40,7 @@ define_config! {
         enable_warnings: Option<bool> = "enable-warnings",
         download_ci_llvm: Option<StringOrBool> = "download-ci-llvm",
         build_config: Option<HashMap<String, String>> = "build-config",
+        enable_projects: Option<String> = "enable-projects",
     }
 }
 
@@ -120,6 +121,7 @@ pub fn check_incompatible_options_for_ci_llvm(
         download_ci_llvm: _,
         build_config,
         enzyme,
+        enable_projects: _,
     } = ci_llvm_config;
 
     err!(current_llvm_config.optimize, optimize);
