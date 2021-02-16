@@ -104,6 +104,7 @@ pub struct Config {
     pub llvm_allow_old_toolchain: bool,
     pub llvm_polly: bool,
     pub llvm_from_ci: bool,
+    pub llvm_enable_projects: Option<String>,
 
     pub use_lld: bool,
     pub lld_enabled: bool,
@@ -432,6 +433,7 @@ struct Llvm {
     allow_old_toolchain: Option<bool>,
     polly: Option<bool>,
     download_ci_llvm: Option<StringOrBool>,
+    enable_projects: Option<String>,
 }
 
 #[derive(Deserialize, Default, Clone, Merge)]
@@ -735,6 +737,7 @@ impl Config {
             config.llvm_link_jobs = llvm.link_jobs;
             config.llvm_version_suffix = llvm.version_suffix.clone();
             config.llvm_clang_cl = llvm.clang_cl.clone();
+            config.llvm_enable_projects = llvm.enable_projects.clone();
 
             config.llvm_cflags = llvm.cflags.clone();
             config.llvm_cxxflags = llvm.cxxflags.clone();
