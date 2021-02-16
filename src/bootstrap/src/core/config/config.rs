@@ -239,6 +239,7 @@ pub struct Config {
     pub llvm_enable_warnings: bool,
     pub llvm_from_ci: bool,
     pub llvm_build_config: HashMap<String, String>,
+    pub llvm_enable_projects: Option<String>,
 
     pub lld_mode: LldMode,
     pub lld_enabled: bool,
@@ -910,6 +911,7 @@ define_config! {
         enable_warnings: Option<bool> = "enable-warnings",
         download_ci_llvm: Option<StringOrBool> = "download-ci-llvm",
         build_config: Option<HashMap<String, String>> = "build-config",
+        enable_projects: Option<String> = "enable-projects",
     }
 }
 
@@ -1798,11 +1800,13 @@ impl Config {
             if let Some(v) = link_shared {
                 config.llvm_link_shared.set(Some(v));
             }
+
             config.llvm_targets.clone_from(&targets);
             config.llvm_experimental_targets.clone_from(&experimental_targets);
             config.llvm_link_jobs = link_jobs;
             config.llvm_version_suffix.clone_from(&version_suffix);
             config.llvm_clang_cl.clone_from(&clang_cl);
+            config.llvm_enable_projects.clone_from(&llvm.enable_projects);
 
             config.llvm_cflags.clone_from(&cflags);
             config.llvm_cxxflags.clone_from(&cxxflags);
