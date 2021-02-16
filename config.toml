@@ -103,6 +103,9 @@ experimental-targets = "BPF"
 # Whether or not to specify `-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=YES`
 #allow-old-toolchain = false
 
+# Which LLVM projects to build along with the LLVM base libraries/tools
+enable-projects = "clang;lld"
+
 # =============================================================================
 # General build configuration options
 # =============================================================================
