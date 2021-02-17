@@ -105,7 +105,7 @@ link-shared = false
 #allow-old-toolchain = false
 
 # Which LLVM projects to build along with the LLVM base libraries/tools
-enable-projects = "clang;llc;lld;llvm-ar;llvm-objcopy;llvm-objdump"
+enable-projects = "clang;lld"
 
 # =============================================================================
 # General build configuration options
