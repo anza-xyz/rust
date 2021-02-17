@@ -215,6 +215,11 @@ impl Step for Llvm {
         // tools to it.
         if builder.llvm_link_tools_dynamically(target) && builder.config.llvm_link_shared {
             cfg.define("LLVM_LINK_LLVM_DYLIB", "ON");
+        } else {
+            cfg.define("LIBCLANG_BUILD_STATIC", "ON");
+            cfg.define("CLANG_LINK_CLANG_DYLIB", "OFF");
+            cfg.define("LLVM_BUILD_LLVM_DYLIB", "OFF");
+            cfg.define("LLVM_LINK_LLVM_DYLIB", "OFF");
         }
 
         // For distribution we want the LLVM tools to be *statically* linked to libstdc++
