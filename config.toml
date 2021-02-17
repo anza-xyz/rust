@@ -58,6 +58,7 @@ assertions = false
 # likely, teach rustc about the C ABI of the target. Get in touch with the
 # Rust team and file an issue if you need assistance in porting!
 #targets = "AArch64;ARM;Hexagon;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86"
+targets = "X86"
 
 # LLVM experimental targets to build support for. These targets are specified in
 # the same format as above, but since these targets are experimental, they are
@@ -76,7 +77,7 @@ experimental-targets = "BPF"
 
 # When invoking `llvm-config` this configures whether the `--shared` argument is
 # passed to prefer linking to shared libraries.
-#link-shared = false
+link-shared = false
 
 # When building llvm, this configures what is being appended to the version.
 # If absent, we let the version as-is.
