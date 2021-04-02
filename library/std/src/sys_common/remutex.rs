@@ -51,6 +51,7 @@ impl<T> ReentrantMutex<T> {
     /// This function is unsafe because it is required that `init` is called
     /// once this mutex is in its final resting place, and only then are the
     /// lock/unlock methods safe.
+    #[cfg(not(target_arch = "bpf"))]
     pub const unsafe fn new(t: T) -> ReentrantMutex<T> {
         ReentrantMutex {
             inner: sys::ReentrantMutex::uninitialized(),
@@ -65,6 +66,7 @@ impl<T> ReentrantMutex<T> {
     ///
     /// Unsafe to call more than once, and must be called after this will no
     /// longer move in memory.
+    #[cfg(not(target_arch = "bpf"))]
     pub unsafe fn init(self: Pin<&mut Self>) {
         self.get_unchecked_mut().inner.init()
     }
@@ -98,6 +100,7 @@ impl<T> ReentrantMutex<T> {
     /// If another user of this mutex panicked while holding the mutex, then
     /// this call will return failure if the mutex would otherwise be
     /// acquired.
+    #[cfg(not(target_arch = "bpf"))]
     pub fn try_lock(self: Pin<&Self>) -> Option<ReentrantMutexGuard<'_, T>> {
         if unsafe { self.inner.try_lock() } {
             Some(ReentrantMutexGuard { lock: self })

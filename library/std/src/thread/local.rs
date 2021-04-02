@@ -285,21 +285,21 @@ macro_rules! __thread_local_inner {
             // The issue of "should enable on Windows sometimes" is #84933
             #[cfg_attr(not(windows), inline)]
             unsafe fn __getit() -> $crate::option::Option<&'static $t> {
-                #[cfg(all(target_arch = "wasm32", not(target_feature = "atomics")))]
+                #[cfg(any(target_arch = "bpf", all(target_arch = "wasm32", not(target_feature = "atomics"))))]
                 static __KEY: $crate::thread::__StaticLocalKeyInner<$t> =
                     $crate::thread::__StaticLocalKeyInner::new();
 
                 #[thread_local]
                 #[cfg(all(
                     target_thread_local,
-                    not(all(target_arch = "wasm32", not(target_feature = "atomics"))),
+                    not(any(target_arch = "bpf", all(target_arch = "wasm32", not(target_feature = "atomics")))),
                 ))]
                 static __KEY: $crate::thread::__FastLocalKeyInner<$t> =
                     $crate::thread::__FastLocalKeyInner::new();
 
                 #[cfg(all(
                     not(target_thread_local),
-                    not(all(target_arch = "wasm32", not(target_feature = "atomics"))),
+                    not(any(target_arch = "bpf", all(target_arch = "wasm32", not(target_feature = "atomics")))),
                 ))]
                 static __KEY: $crate::thread::__OsLocalKeyInner<$t> =
                     $crate::thread::__OsLocalKeyInner::new();
@@ -483,7 +483,7 @@ mod lazy {
 /// On some platforms like wasm32 there's no threads, so no need to generate
 /// thread locals and we can instead just use plain statics!
 #[doc(hidden)]
-#[cfg(all(target_arch = "wasm32", not(target_feature = "atomics")))]
+#[cfg(any(target_arch = "bpf", all(target_arch = "wasm32", not(target_feature = "atomics"))))]
 pub mod statik {
     use super::lazy::LazyKeyInner;
     use crate::fmt;

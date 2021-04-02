@@ -17,6 +17,7 @@
 // this crate, which relies on this attribute (rather than the value of `--crate-name` passed by
 // cargo) to detect this crate.
 
+#![cfg(not(target_arch = "bpf"))]
 #![crate_name = "test"]
 #![unstable(feature = "test", issue = "50297")]
 #![doc(test(attr(deny(warnings))))]

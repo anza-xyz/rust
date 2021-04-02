@@ -1886,6 +1886,7 @@ impl Child {
 ///
 /// [platform-specific behavior]: #platform-specific-behavior
 #[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn exit(code: i32) -> ! {
     crate::sys_common::rt::cleanup();
     crate::sys::os::exit(code)
@@ -1949,7 +1950,10 @@ pub fn exit(code: i32) -> ! {
 #[stable(feature = "process_abort", since = "1.17.0")]
 #[cold]
 pub fn abort() -> ! {
+    #[cfg(not(target_arch = "bpf"))]
     crate::sys::abort_internal();
+    #[cfg(target_arch = "bpf")]
+    unsafe { crate::sys::abort_internal(); }
 }
 
 /// Returns the OS-assigned process identifier associated with this process.
