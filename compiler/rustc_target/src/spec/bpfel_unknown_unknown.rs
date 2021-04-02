@@ -38,6 +38,7 @@ pub fn target() -> Target {
             executables: true,
             dll_prefix: "".to_string(),
             dynamic_linking: true,
+            only_cdylib: true,
             no_default_libraries: true,
             panic_strategy: PanicStrategy::Abort,
             position_independent_executables: true,

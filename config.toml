@@ -1,3 +1,4 @@
+changelog-seen = 2
 # Sample TOML configuration file for building Rust.
 #
 # To configure rustbuild, copy this file to the directory from which you will be
