@@ -172,7 +172,9 @@ than building it.
             continue;
         }
 
-        if !build.config.dry_run() {
+        // bpf target relies on in-tree built llvm,
+        // which doesn't exist when this check runs
+        if !build.config.dry_run() && !target.contains("sbf") && !target.contains("bpf") {
             cmd_finder.must_have(build.cc(*target));
             if let Some(ar) = build.ar(*target) {
                 cmd_finder.must_have(ar);

@@ -421,6 +421,7 @@ extern crate libc;
 // We always need an unwinder currently for backtraces
 #[doc(masked)]
 #[allow(unused_extern_crates)]
+#[cfg(not(target_arch = "bpf"))]
 extern crate unwind;
 
 // FIXME: #94122 this extern crate definition only exist here to stop
@@ -559,6 +560,7 @@ pub mod f64;
 #[macro_use]
 pub mod thread;
 pub mod ascii;
+#[cfg(not(target_arch = "bpf"))]
 pub mod backtrace;
 pub mod collections;
 pub mod env;
@@ -640,6 +642,7 @@ pub mod alloc;
 // Private support modules
 mod panicking;
 
+#[cfg(not(target_arch = "bpf"))]
 #[path = "../../backtrace/src/lib.rs"]
 #[allow(dead_code, unused_attributes, fuzzy_provenance_casts)]
 mod backtrace_rs;
