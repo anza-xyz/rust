@@ -2462,6 +2462,7 @@ impl Child {
 /// [C-exit]: https://en.cppreference.com/w/c/program/exit
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg_attr(not(test), rustc_diagnostic_item = "process_exit")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn exit(code: i32) -> ! {
     crate::rt::cleanup();
     crate::sys::exit::exit(code)
@@ -2530,7 +2531,10 @@ pub fn exit(code: i32) -> ! {
 #[cfg_attr(not(test), rustc_diagnostic_item = "process_abort")]
 #[cfg_attr(miri, track_caller)] // even without panics, this helps for Miri backtraces
 pub fn abort() -> ! {
+    #[cfg(not(target_arch = "bpf"))]
     crate::sys::abort_internal();
+    #[cfg(target_arch = "bpf")]
+    unsafe { crate::sys::abort_internal(); }
 }
 
 /// Returns the OS-assigned process identifier associated with this process.

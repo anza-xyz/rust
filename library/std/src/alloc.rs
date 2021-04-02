@@ -64,8 +64,11 @@
 #![stable(feature = "alloc_module", since = "1.28.0")]
 
 use core::ptr::NonNull;
-use core::sync::atomic::{AtomicBool, AtomicPtr, Ordering};
-use core::{hint, mem, ptr};
+#[cfg(not(target_arch = "bpf"))]
+use core::sync::atomic::{Atomic, AtomicPtr, Ordering};
+#[cfg(not(target_arch = "bpf"))]
+use core::mem;
+use core::{hint, ptr};
 
 #[stable(feature = "alloc_module", since = "1.28.0")]
 #[doc(inline)]
@@ -294,6 +297,7 @@ unsafe impl Allocator for System {
     }
 }
 
+#[cfg(not(target_arch = "bpf"))]
 static HOOK: AtomicPtr<()> = AtomicPtr::new(ptr::null_mut());
 
 /// Registers a custom allocation error hook, replacing any that was previously registered.
@@ -336,6 +340,7 @@ static HOOK: AtomicPtr<()> = AtomicPtr::new(ptr::null_mut());
 /// set_alloc_error_hook(custom_alloc_error_hook);
 /// ```
 #[unstable(feature = "alloc_error_hook", issue = "51245")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn set_alloc_error_hook(hook: fn(Layout)) {
     HOOK.store(hook as *mut (), Ordering::Release);
 }
@@ -346,12 +351,14 @@ pub fn set_alloc_error_hook(hook: fn(Layout)) {
 ///
 /// If no custom hook is registered, the default hook will be returned.
 #[unstable(feature = "alloc_error_hook", issue = "51245")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn take_alloc_error_hook() -> fn(Layout) {
     let hook = HOOK.swap(ptr::null_mut(), Ordering::Acquire);
     if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } }
 }
 
 #[optimize(size)]
+#[cfg(not(target_arch = "bpf"))]
 fn default_alloc_error_hook(layout: Layout) {
     if cfg!(panic = "immediate-abort") {
         return;
@@ -421,13 +428,21 @@ fn default_alloc_error_hook(layout: Layout) {
 #[alloc_error_handler]
 #[unstable(feature = "alloc_internals", issue = "none")]
 pub fn rust_oom(layout: Layout) -> ! {
-    crate::sys::backtrace::__rust_end_short_backtrace(|| {
-        let hook = HOOK.load(Ordering::Acquire);
-        let hook: fn(Layout) =
-            if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } };
-        hook(layout);
+    #[cfg(not(target_arch = "bpf"))]
+    {
+        crate::sys::backtrace::__rust_end_short_backtrace(|| {
+            let hook = HOOK.load(Ordering::Acquire);
+            let hook: fn(Layout) =
+                if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } };
+            hook(layout);
+            crate::process::abort()
+        })
+    }
+    #[cfg(target_arch = "bpf")]
+    {
+        crate::sys::sol_log("Error: memory allocation failed, out of memory");
         crate::process::abort()
-    })
+    }
 }
 
 #[cfg(not(test))]

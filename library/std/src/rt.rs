@@ -149,6 +149,7 @@ pub(crate) fn cleanup() {
 // To reduce the generated code of the new `lang_start`, this function is doing
 // the real work.
 #[cfg(not(test))]
+#[cfg(not(target_arch = "bpf"))]
 fn lang_start_internal(
     main: &(dyn Fn() -> i32 + Sync + crate::panic::RefUnwindSafe),
     argc: isize,
@@ -194,7 +195,9 @@ fn lang_start_internal(
     .unwrap_or_else(handle_rt_panic)
 }
 
-#[cfg(not(any(test, doctest)))]
+#[cfg(not(test))]
+#[inline(never)]
+#[cfg(not(any(test, doctest, target_arch = "bpf")))]
 #[lang = "start"]
 fn lang_start<T: crate::process::Termination + 'static>(
     main: fn() -> T,

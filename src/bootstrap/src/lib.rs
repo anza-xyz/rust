@@ -1007,6 +1007,17 @@ impl Build {
         if self.config.vendor { Some(self.src.join(VENDOR_DIR)) } else { None }
     }
 
+    /// Returns the path to llvm/bin
+    fn llvm_bin(&self, target: TargetSelection) -> PathBuf {
+        let target_config = self.config.target_config.get(&target);
+        if let Some(s) = target_config.and_then(|c| c.llvm_config.as_ref()) {
+            let llvm_bindir = output(Command::new(s).arg("--bindir"));
+            PathBuf::from(llvm_bindir.trim())
+        } else {
+            self.llvm_out(self.config.build).join("bin")
+        }
+    }
+
     /// Returns the path to `FileCheck` binary for the specified target
     fn llvm_filecheck(&self, target: TargetSelection) -> PathBuf {
         let target_config = self.config.target_config.get(&target);

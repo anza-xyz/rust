@@ -126,6 +126,9 @@ pub fn fill_target_compiler(build: &mut Build, target: TargetSelection) {
     {
         cfg.compiler(cxx);
         true
+    } else if &*target.triple == "bpfel-unknown-unknown" {
+        set_compiler(&mut cfg, Language::CPlusPlus, target, config, build);
+        true
     } else {
         // Use an auto-detected compiler (or one configured via `CXX_target_triple` env vars).
         cfg.try_get_compiler().is_ok()
@@ -208,6 +211,9 @@ fn default_compiler(
             } else {
                 None
             }
+        }
+        "bpfel-unknown-unknown" => {
+            cfg.compiler(build.llvm_bin(target).join(compiler.clang()));
         }
 
         t if t.contains("musl") && compiler == Language::C => {

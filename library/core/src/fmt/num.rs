@@ -2,6 +2,7 @@
 
 use crate::fmt::NumBuffer;
 use crate::mem::MaybeUninit;
+#[cfg(not(target_arch = "bpf"))]
 use crate::num::fmt as numfmt;
 use crate::{fmt, str};
 
@@ -374,6 +375,7 @@ macro_rules! impl_Display {
     };
 }
 
+#[cfg(not(target_arch = "bpf"))]
 macro_rules! impl_Exp {
     ($($Signed:ident, $Unsigned:ident),* ; as $T:ident into $fmt_fn:ident) => {
         const _: () = assert!($T::MIN == 0, "need unsigned");
@@ -597,10 +599,11 @@ impl_Debug! {
 mod imp {
     use super::*;
     impl_Display!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize; as u64 into display_u64);
+    #[cfg(not(target_arch = "bpf"))]
     impl_Exp!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize; as u64 into exp_u64);
 }
 
-#[cfg(not(any(target_pointer_width = "64", target_arch = "wasm32")))]
+#[cfg(not(any(target_pointer_width = "64", target_arch = "wasm32", target_arch = "bpf")))]
 mod imp {
     use super::*;
     impl_Display!(i8, u8, i16, u16, i32, u32, isize, usize; as u32 into display_u32);
@@ -609,6 +612,8 @@ mod imp {
     impl_Exp!(i8, u8, i16, u16, i32, u32, isize, usize; as u32 into exp_u32);
     impl_Exp!(i64, u64; as u64 into exp_u64);
 }
+
+#[cfg(not(target_arch = "bpf"))]
 impl_Exp!(i128, u128; as u128 into exp_u128);
 
 const U128_MAX_DEC_N: usize = u128::MAX.ilog10() as usize + 1;

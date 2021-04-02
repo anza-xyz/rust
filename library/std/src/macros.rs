@@ -11,12 +11,28 @@
 #[stable(feature = "rust1", since = "1.0.0")]
 #[allow_internal_unstable(edition_panic)]
 #[cfg_attr(not(test), rustc_diagnostic_item = "std_panic_macro")]
+#[cfg(not(target_arch = "bpf"))]
 macro_rules! panic {
     // Expands to either `$crate::panic::panic_2015` or `$crate::panic::panic_2021`
     // depending on the edition of the caller.
     ($($arg:tt)*) => {
         /* compiler built-in */
     };
+}
+
+#[doc(include = "../../core/src/macros/panic.md")]
+#[macro_export]
+#[stable(feature = "rust1", since = "1.0.0")]
+#[allow_internal_unstable(libstd_sys_internals)]
+#[cfg_attr(not(any(bootstrap, test)), rustc_diagnostic_item = "std_panic_macro")]
+#[cfg(target_arch = "bpf")]
+macro_rules! panic {
+    () => ({ $crate::panic!("explicit panic") });
+    ($msg:expr $(,)?) => ({ $crate::panic!("{}", $msg) });
+    ($fmt:expr, $($arg:tt)+) => ({
+        $crate::rt::begin_panic_fmt(&$crate::format_args!($fmt, $($arg)+),
+                                    &($crate::file!(), $crate::line!(), $crate::column!()))
+    });
 }
 
 /// Prints to the standard output.

@@ -6819,3 +6819,8 @@ dependencies = [
  "quote",
  "syn 2.0.110",
 ]
+
+[[patch.unused]]
+name = "compiler_builtins"
+version = "0.1.76"
+source = "git+https://github.com/solana-labs/compiler-builtins#2044d7e16a99d951853ce362e384027dec4c5b92"
