@@ -5,7 +5,9 @@ mod tests;
 
 use crate::io::prelude::*;
 
-use crate::cell::{Cell, RefCell};
+#[cfg(not(target_arch = "bpf"))]
+use crate::cell::Cell;
+use crate::cell::RefCell;
 use crate::fmt;
 use crate::fs::File;
 use crate::io::{
@@ -13,12 +15,16 @@ use crate::io::{
 };
 use crate::panic::{RefUnwindSafe, UnwindSafe};
 use crate::sync::atomic::{AtomicBool, Ordering};
-use crate::sync::{Arc, Mutex, MutexGuard, OnceLock, ReentrantLock, ReentrantLockGuard};
+#[cfg(not(target_os = "solana"))]
+use crate::sync::Arc;
+use crate::sync::{Mutex, MutexGuard, OnceLock, ReentrantMutex, ReentrantMutexGuard};
 use crate::sys::stdio;
 use crate::thread::AccessError;
 
+#[cfg(not(target_arch = "bpf"))]
 type LocalStream = Arc<Mutex<Vec<u8>>>;
 
+#[cfg(not(target_arch = "bpf"))]
 thread_local! {
     /// Used by the test crate to capture the output of the print macros and panics.
     static OUTPUT_CAPTURE: Cell<Option<LocalStream>> = {
@@ -38,6 +44,7 @@ thread_local! {
 /// have a consistent order between set_output_capture and print_to *within
 /// the same thread*. Within the same thread, things always have a perfectly
 /// consistent order. So Ordering::Relaxed is fine.
+#[cfg(not(target_arch = "bpf"))]
 static OUTPUT_CAPTURE_USED: AtomicBool = AtomicBool::new(false);
 
 /// A handle to a raw instance of the standard input stream of this process.
@@ -66,6 +73,7 @@ struct StderrRaw(stdio::Stderr);
 ///
 /// The returned handle has no external synchronization or buffering.
 #[unstable(feature = "libstd_sys_internals", issue = "none")]
+#[cfg(not(target_arch = "bpf"))]
 const fn stdin_raw() -> StdinRaw {
     StdinRaw(stdio::Stdin::new())
 }
@@ -80,6 +88,7 @@ const fn stdin_raw() -> StdinRaw {
 /// The returned handle has no external synchronization or buffering layered on
 /// top.
 #[unstable(feature = "libstd_sys_internals", issue = "none")]
+#[cfg(not(target_arch = "bpf"))]
 const fn stdout_raw() -> StdoutRaw {
     StdoutRaw(stdio::Stdout::new())
 }
@@ -92,6 +101,7 @@ const fn stdout_raw() -> StdoutRaw {
 /// The returned handle has no external synchronization or buffering layered on
 /// top.
 #[unstable(feature = "libstd_sys_internals", issue = "none")]
+#[cfg(not(target_arch = "bpf"))]
 const fn stderr_raw() -> StderrRaw {
     StderrRaw(stdio::Stderr::new())
 }
@@ -330,6 +340,7 @@ pub struct StdinLock<'a> {
 /// ```
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn stdin() -> Stdin {
     static INSTANCE: OnceLock<Mutex<BufReader<StdinRaw>>> = OnceLock::new();
     Stdin {
@@ -666,6 +677,7 @@ static STDOUT: OnceLock<ReentrantLock<RefCell<LineWriter<StdoutRaw>>>> = OnceLoc
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg_attr(not(test), rustc_diagnostic_item = "io_stdout")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn stdout() -> Stdout {
     Stdout {
         inner: STDOUT
@@ -915,6 +927,7 @@ pub struct StderrLock<'a> {
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg_attr(not(test), rustc_diagnostic_item = "io_stderr")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn stderr() -> Stderr {
     // Note that unlike `stdout()` we don't use `at_exit` here to register a
     // destructor. Stderr is not buffered, so there's no need to run a
@@ -1064,6 +1077,7 @@ impl fmt::Debug for StderrLock<'_> {
     issue = "none"
 )]
 #[doc(hidden)]
+#[cfg(not(target_arch = "bpf"))]
 pub fn set_output_capture(sink: Option<LocalStream>) -> Option<LocalStream> {
     try_set_output_capture(sink).expect(
         "cannot access a Thread Local Storage value \
@@ -1105,6 +1119,7 @@ pub fn try_set_output_capture(
 ///
 /// Writing to non-blocking stdout/stderr can cause an error, which will lead
 /// this function to panic.
+#[cfg(not(target_arch = "bpf"))]
 fn print_to<T>(args: fmt::Arguments<'_>, global_s: fn() -> T, label: &str)
 where
     T: Write,
@@ -1190,8 +1205,19 @@ impl_is_terminal!(File, Stdin, StdinLock<'_>, Stdout, StdoutLock<'_>, Stderr, St
 )]
 #[doc(hidden)]
 #[cfg(not(test))]
+#[cfg(not(target_arch = "bpf"))]
 pub fn _print(args: fmt::Arguments<'_>) {
     print_to(args, stdout, "stdout");
+}
+
+#[unstable(
+    feature = "print_internals",
+    reason = "implementation detail which may disappear or be replaced at any time",
+    issue = "none")]
+#[doc(hidden)]
+#[cfg(not(test))]
+#[cfg(target_arch = "bpf")]
+pub fn _print(_args: fmt::Arguments<'_>) {
 }
 
 #[unstable(
@@ -1201,8 +1227,19 @@ pub fn _print(args: fmt::Arguments<'_>) {
 )]
 #[doc(hidden)]
 #[cfg(not(test))]
+#[cfg(not(target_arch = "bpf"))]
 pub fn _eprint(args: fmt::Arguments<'_>) {
     print_to(args, stderr, "stderr");
+}
+
+#[unstable(
+    feature = "print_internals",
+    reason = "implementation detail which may disappear or be replaced at any time",
+    issue = "none")]
+#[doc(hidden)]
+#[cfg(not(test))]
+#[cfg(target_arch = "bpf")]
+pub fn _eprint(_args: fmt::Arguments<'_>) {
 }
 
 #[cfg(test)]

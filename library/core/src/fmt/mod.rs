@@ -5,6 +5,8 @@
 use crate::cell::{Cell, Ref, RefCell, RefMut, SyncUnsafeCell, UnsafeCell};
 use crate::char::EscapeDebugExtArgs;
 use crate::iter;
+#[cfg(target_arch = "bpf")]
+use crate::intrinsics::abort;
 use crate::marker::PhantomData;
 use crate::mem;
 use crate::num::fmt as numfmt;

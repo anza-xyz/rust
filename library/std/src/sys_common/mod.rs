@@ -20,6 +20,7 @@
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "backtrace")]
 pub mod backtrace;
 pub mod fs;
 pub mod io;
