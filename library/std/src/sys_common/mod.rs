@@ -20,6 +20,7 @@
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "backtrace")]
 pub mod backtrace;
 pub mod condvar;
 pub mod fs;
@@ -40,6 +41,7 @@ pub mod wtf8;
 cfg_if::cfg_if! {
     if #[cfg(any(target_os = "l4re",
                  target_os = "hermit",
+                 target_arch = "bpf",
                  feature = "restricted-std",
                  all(target_family = "wasm", not(target_os = "emscripten")),
                  all(target_vendor = "fortanix", target_env = "sgx")))] {

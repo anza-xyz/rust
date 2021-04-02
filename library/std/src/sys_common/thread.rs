@@ -1,7 +1,11 @@
+#[cfg(not(target_arch = "bpf"))]
 use crate::env;
+#[cfg(not(target_arch = "bpf"))]
 use crate::sync::atomic::{self, Ordering};
+#[cfg(not(target_arch = "bpf"))]
 use crate::sys::thread as imp;
 
+#[cfg(not(target_arch = "bpf"))]
 pub fn min_stack() -> usize {
     static MIN: atomic::AtomicUsize = atomic::AtomicUsize::new(0);
     match MIN.load(Ordering::Relaxed) {
@@ -15,4 +19,9 @@ pub fn min_stack() -> usize {
     // initialization has run
     MIN.store(amt + 1, Ordering::Relaxed);
     amt
+}
+
+#[cfg(target_arch = "bpf")]
+pub fn min_stack() -> usize {
+    0
 }

@@ -574,6 +574,7 @@ impl OnceState {
 
     /// Poison the associated [`Once`] without explicitly panicking.
     // NOTE: This is currently only exposed for the `lazy` module
+    #[cfg(not(target_arch = "bpf"))]
     pub(crate) fn poison(&self) {
         self.set_state_on_drop_to.set(ptr::invalid_mut(POISONED));
     }
