@@ -1852,6 +1852,7 @@ impl Config {
 
         if let Some(llvm) = toml.llvm {
             let Llvm {
+                enable_projects: _,
                 optimize: optimize_toml,
                 thin_lto,
                 release_debuginfo,
@@ -2957,6 +2958,7 @@ pub(crate) fn check_incompatible_options_for_ci_llvm(
     };
 
     let Llvm {
+        enable_projects: _,
         optimize,
         thin_lto,
         release_debuginfo,

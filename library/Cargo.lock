@@ -502,3 +502,8 @@ name = "windows_x86_64_msvc"
 version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
+
+[[patch.unused]]
+name = "compiler_builtins"
+version = "0.1.112"
+source = "git+https://github.com/solana-labs/compiler-builtins#8e7bd0b5b32d58c96aca7c6d45d3989211e1a378"
