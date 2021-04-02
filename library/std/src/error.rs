@@ -4,6 +4,7 @@
 #[cfg(test)]
 mod tests;
 
+#[cfg(not(target_os = "solana"))]
 use crate::backtrace::Backtrace;
 use crate::fmt::{self, Write};
 

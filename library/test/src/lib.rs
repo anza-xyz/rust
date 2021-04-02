@@ -14,6 +14,7 @@
 // running tests while providing a base that other test frameworks may
 // build off of.
 
+#![cfg(not(target_arch = "bpf"))]
 #![unstable(feature = "test", issue = "50297")]
 #![doc(test(attr(deny(warnings))))]
 #![cfg_attr(not(bootstrap), doc(rust_logo))]

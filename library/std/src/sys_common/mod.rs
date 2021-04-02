@@ -20,6 +20,7 @@
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "backtrace")]
 pub mod backtrace;
 pub mod fs;
 pub mod io;
@@ -45,6 +46,7 @@ cfg_if::cfg_if! {
 cfg_if::cfg_if! {
     if #[cfg(any(target_os = "l4re",
                  target_os = "uefi",
+                 target_arch = "bpf",
                  feature = "restricted-std",
                  all(target_family = "wasm", not(target_os = "emscripten")),
                  target_os = "xous",

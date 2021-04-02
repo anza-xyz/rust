@@ -448,6 +448,7 @@ impl Builder {
     ///
     /// [`io::Result`]: crate::io::Result
     #[unstable(feature = "thread_spawn_unchecked", issue = "55132")]
+    #[cfg(not(target_arch = "bpf"))]
     pub unsafe fn spawn_unchecked<'a, F, T>(self, f: F) -> io::Result<JoinHandle<T>>
     where
         F: FnOnce() -> T,
@@ -572,6 +573,57 @@ impl Builder {
             thread: my_thread,
             packet: my_packet,
         })
+    }
+
+    /// BPF version of spawn_unchecked
+    #[unstable(feature = "thread_spawn_unchecked", issue = "55132")]
+    #[cfg(target_arch = "bpf")]
+    pub unsafe fn spawn_unchecked<'a, F, T>(self, _f: F) -> io::Result<JoinHandle<T>>
+    where
+        F: FnOnce() -> T,
+        F: Send + 'a,
+        T: Send + 'a,
+    {
+        let Builder { name, stack_size } = self;
+        let stack_size = stack_size.unwrap_or_else(thread::min_stack);
+        let my_thread = Thread::new(name);
+        let their_thread = my_thread.clone();
+        let my_packet: Arc<UnsafeCell<Option<Result<T>>>> = Arc::new(UnsafeCell::new(None));
+        let main = move || {
+            if let Some(name) = their_thread.cname() {
+                imp::Thread::set_name(name);
+            }
+            // SAFETY: the stack guard passed is the one for the current thread.
+            // This means the current thread's stack and the new thread's stack
+            // are properly set and protected from each other.
+            thread_info::set(unsafe { imp::guard::current() }, their_thread);
+        };
+
+        Ok(JoinHandle(JoinInner {
+            // SAFETY:
+            //
+            // `imp::Thread::new` takes a closure with a `'static` lifetime, since it's passed
+            // through FFI or otherwise used with low-level threading primitives that have no
+            // notion of or way to enforce lifetimes.
+            //
+            // As mentioned in the `Safety` section of this function's documentation, the caller of
+            // this function needs to guarantee that the passed-in lifetime is sufficiently long
+            // for the lifetime of the thread.
+            //
+            // Similarly, the `sys` implementation must guarantee that no references to the closure
+            // exist after the thread has terminated, which is signaled by `Thread::join`
+            // returning.
+            native: unsafe {
+                Some(imp::Thread::new(
+                    stack_size,
+                    mem::transmute::<Box<dyn FnOnce() + 'a>, Box<dyn FnOnce() + 'static>>(
+                        Box::new(main),
+                    ),
+                )?)
+            },
+            thread: my_thread,
+            packet: Packet(my_packet),
+        }))
     }
 }
 

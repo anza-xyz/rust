@@ -316,6 +316,7 @@ impl OnceState {
 
     /// Poison the associated [`Once`] without explicitly panicking.
     // NOTE: This is currently only exposed for `OnceLock`.
+    #[cfg(not(target_os = "solana"))]
     #[inline]
     pub(crate) fn poison(&self) {
         self.inner.poison();
