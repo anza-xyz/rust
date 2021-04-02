@@ -15,9 +15,11 @@ use crate::rc::Rc;
 use crate::sync::atomic;
 use crate::sync::{Arc, Mutex, RwLock};
 use crate::task::{Context, Poll};
+#[cfg(not(target_arch = "bpf"))]
 use crate::thread::Result;
 
 #[stable(feature = "panic_hooks", since = "1.10.0")]
+#[cfg(not(target_arch = "bpf"))]
 pub use crate::panicking::{set_hook, take_hook};
 
 #[stable(feature = "panic_hooks", since = "1.10.0")]
@@ -31,6 +33,7 @@ pub use core::panic::{Location, PanicInfo};
 /// accessed later using [`PanicInfo::payload`].
 ///
 /// See the [`panic!`] macro for more information about panicking.
+#[cfg(not(target_arch = "bpf"))]
 #[unstable(feature = "panic_any", issue = "78500")]
 #[inline]
 pub fn panic_any<M: Any + Send>(msg: M) -> ! {
@@ -392,6 +395,7 @@ impl<F: Future> Future for AssertUnwindSafe<F> {
 /// assert!(result.is_err());
 /// ```
 #[stable(feature = "catch_unwind", since = "1.9.0")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R> {
     unsafe { panicking::r#try(f) }
 }
@@ -422,8 +426,18 @@ pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R> {
 /// }
 /// ```
 #[stable(feature = "resume_unwind", since = "1.9.0")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn resume_unwind(payload: Box<dyn Any + Send>) -> ! {
     panicking::rust_panic_without_hook(payload)
+}
+
+/// BPF version of resume_unwind
+#[stable(feature = "resume_unwind", since = "1.9.0")]
+#[cfg(target_arch = "bpf")]
+pub fn resume_unwind(_payload: Box<dyn Any + Send>) -> ! {
+    // Only used by thread, redirect to plain old panic
+    panicking::begin_panic_fmt(&format_args!("unwind"),
+                               &(file!(), line!(), column!()))
 }
 
 #[cfg(test)]

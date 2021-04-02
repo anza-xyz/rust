@@ -3,6 +3,8 @@
 #![stable(feature = "rust1", since = "1.0.0")]
 
 use crate::cell::{Cell, Ref, RefCell, RefMut, UnsafeCell};
+#[cfg(target_arch = "bpf")]
+use crate::intrinsics::abort;
 use crate::marker::PhantomData;
 use crate::mem;
 use crate::num::flt2dec;
@@ -258,7 +260,14 @@ pub struct ArgumentV1<'a> {
 static USIZE_MARKER: fn(&usize, &mut Formatter<'_>) -> Result = |ptr, _| {
     // SAFETY: ptr is a reference
     let _v: usize = unsafe { crate::ptr::read_volatile(ptr) };
-    loop {}
+    #[cfg(not(target_arch = "bpf"))]
+    {
+        loop {}
+    }
+    #[cfg(target_arch = "bpf")]
+    {
+        abort()
+    }
 };
 
 impl<'a> ArgumentV1<'a> {

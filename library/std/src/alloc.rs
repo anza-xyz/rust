@@ -60,9 +60,13 @@
 
 use core::intrinsics;
 use core::ptr::NonNull;
+#[cfg(not(target_arch = "bpf"))]
 use core::sync::atomic::{AtomicPtr, Ordering};
-use core::{mem, ptr};
+#[cfg(not(target_arch = "bpf"))]
+use core::mem;
+use core::ptr;
 
+#[cfg(not(target_arch = "bpf"))]
 use crate::sys_common::util::dumb_print;
 
 #[stable(feature = "alloc_module", since = "1.28.0")]
@@ -286,6 +290,7 @@ unsafe impl Allocator for System {
     }
 }
 
+#[cfg(not(target_arch = "bpf"))]
 static HOOK: AtomicPtr<()> = AtomicPtr::new(ptr::null_mut());
 
 /// Registers a custom allocation error hook, replacing any that was previously registered.
@@ -300,6 +305,7 @@ static HOOK: AtomicPtr<()> = AtomicPtr::new(ptr::null_mut());
 ///
 /// The allocation error hook is a global resource.
 #[unstable(feature = "alloc_error_hook", issue = "51245")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn set_alloc_error_hook(hook: fn(Layout)) {
     HOOK.store(hook as *mut (), Ordering::SeqCst);
 }
@@ -310,11 +316,13 @@ pub fn set_alloc_error_hook(hook: fn(Layout)) {
 ///
 /// If no custom hook is registered, the default hook will be returned.
 #[unstable(feature = "alloc_error_hook", issue = "51245")]
+#[cfg(not(target_arch = "bpf"))]
 pub fn take_alloc_error_hook() -> fn(Layout) {
     let hook = HOOK.swap(ptr::null_mut(), Ordering::SeqCst);
     if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } }
 }
 
+#[cfg(not(target_arch = "bpf"))]
 fn default_alloc_error_hook(layout: Layout) {
     dumb_print(format_args!("memory allocation of {} bytes failed\n", layout.size()));
 }
@@ -323,11 +331,18 @@ fn default_alloc_error_hook(layout: Layout) {
 #[doc(hidden)]
 #[alloc_error_handler]
 #[unstable(feature = "alloc_internals", issue = "none")]
-pub fn rust_oom(layout: Layout) -> ! {
-    let hook = HOOK.load(Ordering::SeqCst);
-    let hook: fn(Layout) =
-        if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } };
-    hook(layout);
+pub fn rust_oom(_layout: Layout) -> ! {
+    #[cfg(not(target_arch = "bpf"))]
+    {
+        let hook = HOOK.load(Ordering::SeqCst);
+        let hook: fn(Layout) =
+            if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } };
+        hook(_layout);
+    }
+    #[cfg(target_arch = "bpf")]
+    {
+        crate::sys::sol_log("Error: memory allocation failed, out of memory");
+    }
     crate::process::abort()
 }
 

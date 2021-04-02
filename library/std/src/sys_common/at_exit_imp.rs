@@ -1,6 +1,7 @@
 //! Implementation of running at_exit routines
 //!
 //! Documentation can be found on the `rt::at_exit` function.
+#![cfg(not(target_arch = "bpf"))]
 
 use crate::mem;
 use crate::ptr;
