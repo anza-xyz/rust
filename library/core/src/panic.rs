@@ -163,6 +163,7 @@ impl<'a> PanicInfo<'a> {
     }
 }
 
+#[cfg(not(target_arcg = "bpf"))]
 #[stable(feature = "panic_hook_display", since = "1.26.0")]
 impl fmt::Display for PanicInfo<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -171,6 +172,24 @@ impl fmt::Display for PanicInfo<'_> {
             write!(formatter, "'{}', ", message)?
         } else if let Some(payload) = self.payload.downcast_ref::<&'static str>() {
             write!(formatter, "'{}', ", payload)?
+        }
+        // NOTE: we cannot use downcast_ref::<String>() here
+        // since String is not available in libcore!
+        // The payload is a String when `std::panic!` is called with multiple arguments,
+        // but in that case the message is also available.
+
+        self.location.fmt(formatter)
+    }
+}
+
+#[cfg(target_arcg = "bpf")]
+#[stable(feature = "panic_hook_display", since = "1.26.0")]
+impl fmt::Display for PanicInfo<'_> {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(message) = self.message {
+            write!(formatter, "Panicked at: '{}', ", message)?
+        } else if let Some(payload) = self.payload.downcast_ref::<&'static str>() {
+            write!(formatter, "Panicked at: '{}', ", payload)?
         }
         // NOTE: we cannot use downcast_ref::<String>() here
         // since String is not available in libcore!

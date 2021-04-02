@@ -2332,7 +2332,9 @@ fn strongest_failure_ordering(order: Ordering) -> Ordering {
 }
 
 #[inline]
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
 unsafe fn atomic_store<T: Copy>(dst: *mut T, val: T, order: Ordering) {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_store`.
     unsafe {
         match order {
@@ -2343,10 +2345,17 @@ unsafe fn atomic_store<T: Copy>(dst: *mut T, val: T, order: Ordering) {
             AcqRel => panic!("there is no such thing as an acquire/release store"),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_store`.
+    unsafe {
+        *dst = val;
+    }
 }
 
 #[inline]
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
 unsafe fn atomic_load<T: Copy>(dst: *const T, order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_load`.
     unsafe {
         match order {
@@ -2357,11 +2366,18 @@ unsafe fn atomic_load<T: Copy>(dst: *const T, order: Ordering) -> T {
             AcqRel => panic!("there is no such thing as an acquire/release load"),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_load`.
+    unsafe {
+        *dst
+    }
 }
 
 #[inline]
 #[cfg(target_has_atomic = "8")]
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
 unsafe fn atomic_swap<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_swap`.
     unsafe {
         match order {
@@ -2372,12 +2388,21 @@ unsafe fn atomic_swap<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
             SeqCst => intrinsics::atomic_xchg(dst, val),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_swap`.
+    unsafe {
+        let old = *dst;
+        *dst = val;
+        old
+    }
 }
 
 /// Returns the previous value (like __sync_fetch_and_add).
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_add<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
+unsafe fn atomic_add<T: Copy + crate::ops::Add<Output = T>>(dst: *mut T, val: T, order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_add`.
     unsafe {
         match order {
@@ -2388,12 +2413,21 @@ unsafe fn atomic_add<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
             SeqCst => intrinsics::atomic_xadd(dst, val),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_add`.
+    unsafe {
+        let old = *dst;
+        *dst = old + val;
+        old
+    }
 }
 
 /// Returns the previous value (like __sync_fetch_and_sub).
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_sub<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
+unsafe fn atomic_sub<T: Copy + crate::ops::Sub<Output = T>>(dst: *mut T, val: T, order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_sub`.
     unsafe {
         match order {
@@ -2404,64 +2438,100 @@ unsafe fn atomic_sub<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
             SeqCst => intrinsics::atomic_xsub(dst, val),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_sub`.
+    unsafe {
+        let old = *dst;
+        *dst = old - val;
+        old
+    }
 }
 
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_compare_exchange<T: Copy>(
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
+unsafe fn atomic_compare_exchange<T: Copy + crate::cmp::PartialEq>(
     dst: *mut T,
     old: T,
     new: T,
     success: Ordering,
     failure: Ordering,
 ) -> Result<T, T> {
+    #[cfg(not(target_arch = "bpf"))]
+    {
+        // SAFETY: the caller must uphold the safety contract for `atomic_compare_exchange`.
+        let (val, ok) = unsafe {
+            match (success, failure) {
+                (Acquire, Acquire) => intrinsics::atomic_cxchg_acq(dst, old, new),
+                (Release, Relaxed) => intrinsics::atomic_cxchg_rel(dst, old, new),
+                (AcqRel, Acquire) => intrinsics::atomic_cxchg_acqrel(dst, old, new),
+                (Relaxed, Relaxed) => intrinsics::atomic_cxchg_relaxed(dst, old, new),
+                (SeqCst, SeqCst) => intrinsics::atomic_cxchg(dst, old, new),
+                (Acquire, Relaxed) => intrinsics::atomic_cxchg_acq_failrelaxed(dst, old, new),
+                (AcqRel, Relaxed) => intrinsics::atomic_cxchg_acqrel_failrelaxed(dst, old, new),
+                (SeqCst, Relaxed) => intrinsics::atomic_cxchg_failrelaxed(dst, old, new),
+                (SeqCst, Acquire) => intrinsics::atomic_cxchg_failacq(dst, old, new),
+                (_, AcqRel) => panic!("there is no such thing as an acquire/release failure ordering"),
+                (_, Release) => panic!("there is no such thing as a release failure ordering"),
+                _ => panic!("a failure ordering can't be stronger than a success ordering"),
+            }
+        };
+        if ok { Ok(val) } else { Err(val) }
+    }
+    #[cfg(target_arch = "bpf")]
     // SAFETY: the caller must uphold the safety contract for `atomic_compare_exchange`.
-    let (val, ok) = unsafe {
-        match (success, failure) {
-            (Acquire, Acquire) => intrinsics::atomic_cxchg_acq(dst, old, new),
-            (Release, Relaxed) => intrinsics::atomic_cxchg_rel(dst, old, new),
-            (AcqRel, Acquire) => intrinsics::atomic_cxchg_acqrel(dst, old, new),
-            (Relaxed, Relaxed) => intrinsics::atomic_cxchg_relaxed(dst, old, new),
-            (SeqCst, SeqCst) => intrinsics::atomic_cxchg(dst, old, new),
-            (Acquire, Relaxed) => intrinsics::atomic_cxchg_acq_failrelaxed(dst, old, new),
-            (AcqRel, Relaxed) => intrinsics::atomic_cxchg_acqrel_failrelaxed(dst, old, new),
-            (SeqCst, Relaxed) => intrinsics::atomic_cxchg_failrelaxed(dst, old, new),
-            (SeqCst, Acquire) => intrinsics::atomic_cxchg_failacq(dst, old, new),
-            (_, AcqRel) => panic!("there is no such thing as an acquire/release failure ordering"),
-            (_, Release) => panic!("there is no such thing as a release failure ordering"),
-            _ => panic!("a failure ordering can't be stronger than a success ordering"),
+    unsafe {
+        let current = *dst;
+        if current == old {
+            *dst = new;
+            Ok(current)
+        } else {
+            Err(current)
         }
-    };
-    if ok { Ok(val) } else { Err(val) }
+    }
 }
 
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_compare_exchange_weak<T: Copy>(
+unsafe fn atomic_compare_exchange_weak<T: Copy + crate::cmp::PartialEq>(
     dst: *mut T,
     old: T,
     new: T,
-    success: Ordering,
-    failure: Ordering,
+    _success: Ordering,
+    _failure: Ordering,
 ) -> Result<T, T> {
+    #[cfg(not(target_arch = "bpf"))]
+    {
+        // SAFETY: the caller must uphold the safety contract for `atomic_compare_exchange_weak`.
+        let (val, ok) = unsafe {
+            match (_success, _failure) {
+                (Acquire, Acquire) => intrinsics::atomic_cxchgweak_acq(dst, old, new),
+                (Release, Relaxed) => intrinsics::atomic_cxchgweak_rel(dst, old, new),
+                (AcqRel, Acquire) => intrinsics::atomic_cxchgweak_acqrel(dst, old, new),
+                (Relaxed, Relaxed) => intrinsics::atomic_cxchgweak_relaxed(dst, old, new),
+                (SeqCst, SeqCst) => intrinsics::atomic_cxchgweak(dst, old, new),
+                (Acquire, Relaxed) => intrinsics::atomic_cxchgweak_acq_failrelaxed(dst, old, new),
+                (AcqRel, Relaxed) => intrinsics::atomic_cxchgweak_acqrel_failrelaxed(dst, old, new),
+                (SeqCst, Relaxed) => intrinsics::atomic_cxchgweak_failrelaxed(dst, old, new),
+                (SeqCst, Acquire) => intrinsics::atomic_cxchgweak_failacq(dst, old, new),
+                (_, AcqRel) => panic!("there is no such thing as an acquire/release failure ordering"),
+                (_, Release) => panic!("there is no such thing as a release failure ordering"),
+                _ => panic!("a failure ordering can't be stronger than a success ordering"),
+            }
+        };
+        if ok { Ok(val) } else { Err(val) }
+    }
+    #[cfg(target_arch = "bpf")]
     // SAFETY: the caller must uphold the safety contract for `atomic_compare_exchange_weak`.
-    let (val, ok) = unsafe {
-        match (success, failure) {
-            (Acquire, Acquire) => intrinsics::atomic_cxchgweak_acq(dst, old, new),
-            (Release, Relaxed) => intrinsics::atomic_cxchgweak_rel(dst, old, new),
-            (AcqRel, Acquire) => intrinsics::atomic_cxchgweak_acqrel(dst, old, new),
-            (Relaxed, Relaxed) => intrinsics::atomic_cxchgweak_relaxed(dst, old, new),
-            (SeqCst, SeqCst) => intrinsics::atomic_cxchgweak(dst, old, new),
-            (Acquire, Relaxed) => intrinsics::atomic_cxchgweak_acq_failrelaxed(dst, old, new),
-            (AcqRel, Relaxed) => intrinsics::atomic_cxchgweak_acqrel_failrelaxed(dst, old, new),
-            (SeqCst, Relaxed) => intrinsics::atomic_cxchgweak_failrelaxed(dst, old, new),
-            (SeqCst, Acquire) => intrinsics::atomic_cxchgweak_failacq(dst, old, new),
-            (_, AcqRel) => panic!("there is no such thing as an acquire/release failure ordering"),
-            (_, Release) => panic!("there is no such thing as a release failure ordering"),
-            _ => panic!("a failure ordering can't be stronger than a success ordering"),
+    unsafe {
+        let current = *dst;
+        if current == old {
+            *dst = new;
+            Ok(current)
+        } else {
+            Err(current)
         }
-    };
-    if ok { Ok(val) } else { Err(val) }
+    }
 }
 
 #[inline]
@@ -2527,10 +2597,11 @@ unsafe fn atomic_xor<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
 /// returns the max value (signed comparison)
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_max<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+unsafe fn atomic_max<T: Copy + crate::cmp::Ord>(dst: *mut T, val: T, _order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_max`
     unsafe {
-        match order {
+        match _order {
             Acquire => intrinsics::atomic_max_acq(dst, val),
             Release => intrinsics::atomic_max_rel(dst, val),
             AcqRel => intrinsics::atomic_max_acqrel(dst, val),
@@ -2538,15 +2609,21 @@ unsafe fn atomic_max<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
             SeqCst => intrinsics::atomic_max(dst, val),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_max`
+    unsafe {
+        crate::cmp::max(*dst, val)
+    }
 }
 
 /// returns the min value (signed comparison)
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_min<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+unsafe fn atomic_min<T: Copy + crate::cmp::Ord>(dst: *mut T, val: T, _order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_min`
     unsafe {
-        match order {
+        match _order {
             Acquire => intrinsics::atomic_min_acq(dst, val),
             Release => intrinsics::atomic_min_rel(dst, val),
             AcqRel => intrinsics::atomic_min_acqrel(dst, val),
@@ -2554,15 +2631,21 @@ unsafe fn atomic_min<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
             SeqCst => intrinsics::atomic_min(dst, val),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_min`
+    unsafe {
+        crate::cmp::min(*dst, val)
+    }
 }
 
 /// returns the max value (unsigned comparison)
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_umax<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+unsafe fn atomic_umax<T: Copy + crate::cmp::Ord>(dst: *mut T, val: T, _order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_umax`
     unsafe {
-        match order {
+        match _order {
             Acquire => intrinsics::atomic_umax_acq(dst, val),
             Release => intrinsics::atomic_umax_rel(dst, val),
             AcqRel => intrinsics::atomic_umax_acqrel(dst, val),
@@ -2570,21 +2653,32 @@ unsafe fn atomic_umax<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
             SeqCst => intrinsics::atomic_umax(dst, val),
         }
     }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_umax`
+    unsafe {
+        crate::cmp::max(*dst, val)
+    }
 }
 
 /// returns the min value (unsigned comparison)
 #[inline]
 #[cfg(target_has_atomic = "8")]
-unsafe fn atomic_umin<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
+unsafe fn atomic_umin<T: Copy + crate::cmp::Ord>(dst: *mut T, val: T, _order: Ordering) -> T {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: the caller must uphold the safety contract for `atomic_umin`
     unsafe {
-        match order {
+        match _order {
             Acquire => intrinsics::atomic_umin_acq(dst, val),
             Release => intrinsics::atomic_umin_rel(dst, val),
             AcqRel => intrinsics::atomic_umin_acqrel(dst, val),
             Relaxed => intrinsics::atomic_umin_relaxed(dst, val),
             SeqCst => intrinsics::atomic_umin(dst, val),
         }
+    }
+    #[cfg(target_arch = "bpf")]
+    // SAFETY: the caller must uphold the safety contract for `atomic_umin`
+    unsafe {
+        crate::cmp::min(*dst, val)
     }
 }
 
@@ -2660,8 +2754,16 @@ unsafe fn atomic_umin<T: Copy>(dst: *mut T, val: T, order: Ordering) -> T {
 /// ```
 #[inline]
 #[stable(feature = "rust1", since = "1.0.0")]
+#[cfg_attr(any(target_arch = "bpf", target_arch = "wasm32"), allow(unused_variables))]
 pub fn fence(order: Ordering) {
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "bpf")))]
     // SAFETY: using an atomic fence is safe.
+    // On wasm32 and BPF it looks like fences aren't implemented in LLVM yet in that
+    // they will cause LLVM to abort. The wasm instruction set doesn't have
+    // fences right now. There's discussion online about the best way for tools
+    // to conventionally implement fences at
+    // https://github.com/WebAssembly/tool-conventions/issues/59. We should
+    // follow that discussion and implement a solution when one comes about!
     unsafe {
         match order {
             Acquire => intrinsics::atomic_fence_acq(),
@@ -2741,7 +2843,9 @@ pub fn fence(order: Ordering) {
 /// [memory barriers]: https://www.kernel.org/doc/Documentation/memory-barriers.txt
 #[inline]
 #[stable(feature = "compiler_fences", since = "1.21.0")]
+#[cfg_attr(target_arch = "bpf", allow(unused_variables))]
 pub fn compiler_fence(order: Ordering) {
+    #[cfg(not(target_arch = "bpf"))]
     // SAFETY: using an atomic fence is safe.
     unsafe {
         match order {

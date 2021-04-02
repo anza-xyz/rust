@@ -21,6 +21,7 @@ use core::convert::Infallible;
 
 use crate::alloc::{AllocError, LayoutError};
 use crate::any::TypeId;
+#[cfg(not(target_arch = "bpf"))]
 use crate::backtrace::Backtrace;
 use crate::borrow::Cow;
 use crate::cell;
@@ -131,6 +132,7 @@ pub trait Error: Debug + Display {
     /// `Backtrace` may actually be empty. For more information consult the
     /// `Backtrace` type itself.
     #[unstable(feature = "backtrace", issue = "53487")]
+    #[cfg(not(target_arch = "bpf"))]
     fn backtrace(&self) -> Option<&Backtrace> {
         None
     }

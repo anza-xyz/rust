@@ -40,6 +40,10 @@ fn cc2ar(cc: &Path, target: TargetSelection) -> Option<PathBuf> {
         Some(PathBuf::from(ar))
     } else if let Some(ar) = env::var_os("AR") {
         Some(PathBuf::from(ar))
+    } else if target.contains("bpf") {
+        let parent = cc.parent().unwrap();
+        let file = PathBuf::from("llvm-ar");
+        Some(parent.join(file))
     } else if target.contains("msvc") {
         None
     } else if target.contains("musl") {
@@ -128,6 +132,9 @@ pub fn find(build: &mut Build) {
         } else if build.hosts.contains(&target) || build.build == target {
             set_compiler(&mut cfg, Language::CPlusPlus, target, config, build);
             true
+        } else if &*target.triple == "bpfel-unknown-unknown" {
+            set_compiler(&mut cfg, Language::CPlusPlus, target, config, build);
+            true
         } else {
             // Use an auto-detected compiler (or one configured via `CXX_target_triple` env vars).
             cfg.try_get_compiler().is_ok()
@@ -209,6 +216,9 @@ fn set_compiler(
             if cfg.get_compiler().path().to_str() == Some("gcc") {
                 cfg.compiler("mipsel-linux-musl-gcc");
             }
+        }
+        "bpfel-unknown-unknown" => {
+            cfg.compiler(build.llvm_bin(target).join(compiler.clang()));
         }
 
         t if t.contains("musl") => {

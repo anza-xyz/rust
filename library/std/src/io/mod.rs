@@ -272,9 +272,13 @@ pub use self::cursor::Cursor;
 pub use self::error::{Error, ErrorKind, Result};
 #[unstable(feature = "internal_output_capture", issue = "none")]
 #[doc(no_inline, hidden)]
+#[cfg(not(target_arch = "bpf"))]
 pub use self::stdio::set_output_capture;
 #[stable(feature = "rust1", since = "1.0.0")]
-pub use self::stdio::{stderr, stdin, stdout, Stderr, Stdin, Stdout};
+pub use self::stdio::{Stderr, Stdin, Stdout};
+#[cfg(not(target_arch = "bpf"))]
+#[stable(feature = "rust1", since = "1.0.0")]
+pub use self::stdio::{stdin, stdout, stderr};
 #[stable(feature = "rust1", since = "1.0.0")]
 pub use self::stdio::{StderrLock, StdinLock, StdoutLock};
 #[unstable(feature = "print_internals", issue = "none")]
