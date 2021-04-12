@@ -1,10 +1,47 @@
 # Fork of the Rust Programming Language that supports Berkley Packet Filter (BPF) targets
 
-This fork of Rust contains changes that enables rustc to build BPF modules.  It depends on a customized [fork](https://github.com/solana-labs/llvm-project) of Rust's LLVM fork.
+This fork of Rust contains changes that enable rustc to build BPF
+modules.  It depends on a customized
+[fork](https://github.com/solana-labs/llvm-project) of Rust's LLVM
+fork.
 
-Solana SDK does not depend directly on this repo.  Instead [rust-bpf-builder] builds and releases binary packages that the Solana SDK pulls in.
+Solana SDK does not depend directly on this repo.  Instead [bpf-tools]
+builds and releases binary packages that the Solana SDK pulls in.
 
-BPF modules are built using target triple `bpfel-unknown-unknown` which represents the little endian version of BPF.  There is no support for big endian at this time.
+[bpf-tools]: https://github.com/solana-labs/bpf-tools
+
+BPF modules are built using target triple `bpfel-unknown-unknown`
+which represents the little endian version of BPF.  There is no
+support for big endian at this time.
+
+Upgrading the compiler and standard library source tree
+-------------------------------------------------------
+
+The source tree has two external dependencies
+1. [compiler-builtins]
+2. [llvm-project]
+
+If any of the depencies is changed or this repository is updated to
+make a new release of the bpf-tools, tag the dependencies, and this
+repository with a new bpf-tools-v1.x tag, so that all components of
+the released bpf-tools have the same tag, e.g. bpf-tools-v1.6. Thus,
+release of every version of the bpf-tools is fully specified by the
+release version.
+
+The [llvm-project] is a submodule of this repository, therefore its
+version is explicitly committed in this repository.  However,
+[compiler-builtins] is pulled in as a cargo package.  Therefore, it is
+necessary to update the `[patch.crates-io]` subsection of the
+top-level `Cargo.toml` file, and specify which tag must be used to
+pull the correct version of [compiler-builtins].
+
+After this repository is tagged for a new release, update the
+`bpf-tools/build.sh` in [bpf-tools] repository to pull the correct
+version of the rust repository and make a new release tag in
+[bpf-tools] repository.
+
+[compiler-builtins]: https://github.com/solana-labs/compiler-builtins
+[llvm-project]: https://github.com/solana-labs/llvm-project
 
 ---
 
