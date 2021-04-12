@@ -1223,6 +1223,13 @@ impl Build {
             base.push("-fno-omit-frame-pointer".into());
         }
 
+        if &*target.triple == "bpfel-unknown-unknown" {
+            base.push("-Xclang".into());
+            base.push("-target-feature".into());
+            base.push("-Xclang".into());
+            base.push("+solana".into());
+        }
+
         if let Some(map_to) = self.debuginfo_map_to(which) {
             let map = format!("{}={}", self.src.display(), map_to);
             let cc = self.cc(target);
