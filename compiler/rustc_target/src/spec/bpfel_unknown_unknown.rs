@@ -33,6 +33,7 @@ pub fn target() -> Target {
             c_int_width: "64".to_string(),
             os: "unknown".to_string(),
             env: String::new(),
+            features: "+solana".to_string(),
             vendor: "unknown".to_string(),
             linker_flavor: LinkerFlavor::Lld(LldFlavor::Ld),
             executables: true,
