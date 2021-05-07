@@ -1,6 +1,7 @@
 use crate::error::Error as StdError;
 use crate::ffi::{OsString, OsStr};
 use crate::fmt;
+use crate::intrinsics;
 use crate::io;
 use crate::path::{self, PathBuf};
 use crate::str;
@@ -91,6 +92,10 @@ pub fn temp_dir() -> PathBuf {
 
 pub fn home_dir() -> Option<PathBuf> {
     None
+}
+
+pub fn exit(_code: i32) -> ! {
+    intrinsics::abort()
 }
 
 pub fn getpid() -> u32 {

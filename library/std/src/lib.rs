@@ -303,7 +303,7 @@
 #![cfg_attr(bootstrap, feature(or_patterns))]
 #![feature(panic_info_message)]
 #![feature(panic_internals)]
-#![cfg_attr(not(target_arch = "bpf"), feature(panic_unwind))]
+#![feature(panic_unwind)]
 #![feature(pin_static_ref)]
 #![feature(prelude_2021)]
 #![feature(prelude_import)]
@@ -358,7 +358,6 @@ extern crate libc;
 // We always need an unwinder currently for backtraces
 #[doc(masked)]
 #[allow(unused_extern_crates)]
-#[cfg(not(target_arch = "bpf"))]
 extern crate unwind;
 
 // During testing, this crate is not actually the "real" std library, but rather
