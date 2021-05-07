@@ -356,7 +356,6 @@ pub use core::panic::abort_unwind;
 /// assert!(result.is_err());
 /// ```
 #[stable(feature = "catch_unwind", since = "1.9.0")]
-#[cfg(not(target_arch = "bpf"))]
 pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R> {
     unsafe { panicking::r#try(f) }
 }
