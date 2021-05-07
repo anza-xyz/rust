@@ -421,7 +421,6 @@ extern crate libc;
 // We always need an unwinder currently for backtraces
 #[doc(masked)]
 #[allow(unused_extern_crates)]
-#[cfg(not(target_arch = "bpf"))]
 extern crate unwind;
 
 // FIXME: #94122 this extern crate definition only exist here to stop

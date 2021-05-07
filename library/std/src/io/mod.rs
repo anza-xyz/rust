@@ -313,7 +313,6 @@ pub use self::error::RawOsError;
 pub(crate) use self::stdio::attempt_print_to_stderr;
 #[unstable(feature = "internal_output_capture", issue = "none")]
 #[doc(no_inline, hidden)]
-#[cfg(not(target_arch = "bpf"))]
 pub use self::stdio::set_output_capture;
 #[stable(feature = "is_terminal", since = "1.70.0")]
 pub use self::stdio::IsTerminal;
