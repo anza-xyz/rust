@@ -264,7 +264,6 @@ use crate::sys_common::memchr;
 pub use self::buffered::WriterPanicked;
 #[unstable(feature = "internal_output_capture", issue = "none")]
 #[doc(no_inline, hidden)]
-#[cfg(not(target_arch = "bpf"))]
 pub use self::stdio::set_output_capture;
 #[unstable(feature = "print_internals", issue = "none")]
 pub use self::stdio::{_eprint, _print};

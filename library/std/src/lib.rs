@@ -382,7 +382,6 @@ extern crate libc;
 // We always need an unwinder currently for backtraces
 #[doc(masked)]
 #[allow(unused_extern_crates)]
-#[cfg(not(target_arch = "bpf"))]
 extern crate unwind;
 
 #[doc(masked)]

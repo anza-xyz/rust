@@ -47,6 +47,7 @@ pub fn target() -> Target {
             max_atomic_width: Some(64),
             unsupported_abis: abi_blacklist(),
             eh_frame_header: false,
+            main_needs_argc_argv: false,
             .. Default::default()
         },
     }

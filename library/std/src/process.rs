@@ -2046,8 +2046,8 @@ impl Child {
 /// process::exit(0x0100);
 /// ```
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(not(target_arch = "bpf"))]
 pub fn exit(code: i32) -> ! {
+    #[cfg(not(target_arch = "bpf"))]
     crate::rt::cleanup();
     crate::sys::os::exit(code)
 }

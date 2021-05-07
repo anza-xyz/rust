@@ -94,6 +94,7 @@ impl<T> ReentrantMutex<T> {
     /// If another user of this mutex panicked while holding the mutex, then
     /// this call will return failure if the mutex would otherwise be
     /// acquired.
+    #[cfg(not(target_arch = "bpf"))]
     pub fn lock(&self) -> ReentrantMutexGuard<'_, T> {
         let this_thread = current_thread_unique_ptr();
         // Safety: We only touch lock_count when we own the lock.

@@ -14,13 +14,12 @@ use crate::panic::BacktraceStyle;
 use core::panic::BoxMeUp;
 use core::panic::{Location, PanicInfo};
 
-#[cfg(not(target_arch = "bpf"))]
 use crate::any::Any;
 use crate::fmt;
-#[cfg(not(target_arch = "bpf"))]
 use crate::intrinsics;
+use crate::mem::ManuallyDrop;
 #[cfg(not(target_arch = "bpf"))]
-use crate::mem::{self, ManuallyDrop};
+use crate::mem;
 #[cfg(not(target_arch = "bpf"))]
 use crate::process;
 #[cfg(not(target_arch = "bpf"))]
@@ -54,7 +53,6 @@ use realstd::io::set_output_capture;
 // One day this may look a little less ad-hoc with the compiler helping out to
 // hook up these functions, but it is not this day!
 #[allow(improper_ctypes)]
-#[cfg(not(target_arch = "bpf"))]
 extern "C" {
     fn __rust_panic_cleanup(payload: *mut u8) -> *mut (dyn Any + Send + 'static);
 }
@@ -161,6 +159,12 @@ pub fn set_hook(hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
             }
         }
     }
+}
+
+/// Dummy version for satisfying library/test dependencies for BPF target
+#[cfg(target_arch = "bpf")]
+#[stable(feature = "panic_hooks", since = "1.10.0")]
+pub fn set_hook(_hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
 }
 
 /// Unregisters the current panic hook, returning it.
@@ -279,6 +283,13 @@ where
     }
 }
 
+/// Dummy version for satisfying library/test dependencies for BPF target
+#[cfg(target_arch = "bpf")]
+#[stable(feature = "panic_hooks", since = "1.10.0")]
+pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
+    Box::new(default_hook)
+}
+
 #[cfg(not(target_arch = "bpf"))]
 fn default_hook(info: &PanicInfo<'_>) {
     // If this is a double panic, make sure that we print a backtrace
@@ -335,7 +346,11 @@ fn default_hook(info: &PanicInfo<'_>) {
     }
 }
 
-#[cfg(all(not(test), not(target_arch = "bpf")))]
+#[cfg(target_arch = "bpf")]
+fn default_hook(_info: &PanicInfo<'_>) {
+}
+
+#[cfg(not(test))]
 #[doc(hidden)]
 #[unstable(feature = "update_panic_count", issue = "none")]
 pub mod panic_count {
@@ -366,6 +381,7 @@ pub mod panic_count {
     // panicking thread consumes at least 2 bytes of address space.
     static GLOBAL_PANIC_COUNT: AtomicUsize = AtomicUsize::new(0);
 
+    #[cfg(not(target_arch = "bpf"))]
     pub fn increase() -> (bool, usize) {
         (
             GLOBAL_PANIC_COUNT.fetch_add(1, Ordering::Relaxed) & ALWAYS_ABORT_FLAG != 0,
@@ -392,12 +408,14 @@ pub mod panic_count {
 
     // Disregards ALWAYS_ABORT_FLAG
     #[must_use]
+    #[cfg(not(target_arch = "bpf"))]
     pub fn get_count() -> usize {
         LOCAL_PANIC_COUNT.with(|c| c.get())
     }
 
     // Disregards ALWAYS_ABORT_FLAG
     #[must_use]
+    #[cfg(not(target_arch = "bpf"))]
     #[inline]
     pub fn count_is_zero() -> bool {
         if GLOBAL_PANIC_COUNT.load(Ordering::Relaxed) & !ALWAYS_ABORT_FLAG == 0 {
@@ -418,6 +436,7 @@ pub mod panic_count {
 
     // Slow path is in a separate function to reduce the amount of code
     // inlined from `is_zero`.
+    #[cfg(not(target_arch = "bpf"))]
     #[inline(never)]
     #[cold]
     fn is_zero_slow_path() -> bool {
@@ -425,11 +444,10 @@ pub mod panic_count {
     }
 }
 
-#[cfg(all(test, not(target_arch = "bpf")))]
+#[cfg(test)]
 pub use realstd::rt::panic_count;
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
-#[cfg(not(target_arch = "bpf"))]
 pub unsafe fn r#try<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
     union Data<F, R> {
         f: ManuallyDrop<F>,

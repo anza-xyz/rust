@@ -44,12 +44,9 @@ impl Mutex {
 // All empty stubs because BPF has no threads, lock acquisition always
 // succeeds.
 pub struct ReentrantMutex {
-    pub inner: UnsafeCell<bool>,
 }
 
 impl ReentrantMutex {
-    // pub unsafe fn init(&self) {}
-    pub unsafe fn lock(&self) {}
     pub unsafe fn unlock(&self) {}
     pub unsafe fn destroy(&self) {}
 }

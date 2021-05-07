@@ -409,6 +409,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
     ) -> Bx::Function {
         // The entry function is either `int main(void)` or `int main(int argc, char **argv)`,
         // depending on whether the target needs `argc` and `argv` to be passed in.
+        let is_bpf = cx.sess().target.arch == "bpf" && cx.sess().opts.test;
         let llfty = if cx.sess().target.main_needs_argc_argv {
             cx.type_func(&[cx.type_int(), cx.type_ptr_to(cx.type_i8p())], cx.type_int())
         } else {
@@ -444,13 +445,15 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         let llbb = Bx::append_block(&cx, llfn, "top");
         let mut bx = Bx::build(&cx, llbb);
 
-        bx.insert_reference_to_gdb_debug_scripts_section_global();
+        if !is_bpf {
+            bx.insert_reference_to_gdb_debug_scripts_section_global();
+        }
 
         let isize_ty = cx.type_isize();
         let i8pp_ty = cx.type_ptr_to(cx.type_i8p());
         let (arg_argc, arg_argv) = get_argc_argv(cx, &mut bx);
 
-        let (start_fn, start_ty, args) = if let EntryFnType::Main { sigpipe } = entry_type {
+        let (start_fn, start_ty, args) = if !is_bpf && let EntryFnType::Main { sigpipe } = entry_type {
             let start_def_id = cx.tcx().require_lang_item(LangItem::Start, None);
             let start_fn = cx.get_fn_addr(
                 ty::Instance::resolve(
@@ -475,9 +478,17 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             (rust_main, start_ty, vec![arg_argc, arg_argv])
         };
 
-        let result = bx.call(start_ty, start_fn, &args, None);
-        let cast = bx.intcast(result, cx.type_int(), true);
-        bx.ret(cast);
+        if is_bpf {
+            let args = Vec::new();
+            bx.call(start_ty, start_fn, &args, None);
+            let result = bx.const_i32(0);
+            let cast = bx.intcast(result, cx.type_int(), true);
+            bx.ret(cast);
+        } else {
+            let result = bx.call(start_ty, start_fn, &args, None);
+            let cast = bx.intcast(result, cx.type_int(), true);
+            bx.ret(cast);
+        }
 
         llfn
     }
