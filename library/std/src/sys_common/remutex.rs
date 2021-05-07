@@ -83,6 +83,7 @@ impl<T> ReentrantMutex<T> {
     /// If another user of this mutex panicked while holding the mutex, then
     /// this call will return failure if the mutex would otherwise be
     /// acquired.
+    #[cfg(not(target_arch = "bpf"))]
     pub fn lock(self: Pin<&Self>) -> ReentrantMutexGuard<'_, T> {
         unsafe { self.inner.lock() }
         ReentrantMutexGuard { lock: self }

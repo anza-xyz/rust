@@ -51,7 +51,7 @@ pub type StdoutTerminal = dyn Terminal<Output = Stdout> + Send;
 /// Alias for stderr terminals.
 pub type StderrTerminal = dyn Terminal<Output = Stderr> + Send;
 
-#[cfg(all(not(windows), not(target_arch = "bpf")))]
+#[cfg(not(windows))]
 /// Returns a Terminal wrapping stdout, or None if a terminal couldn't be
 /// opened.
 pub fn stdout() -> Option<Box<StdoutTerminal>> {
@@ -67,7 +67,7 @@ pub fn stdout() -> Option<Box<StdoutTerminal>> {
         .or_else(|| WinConsole::new(io::stdout()).ok().map(|t| Box::new(t) as Box<StdoutTerminal>))
 }
 
-#[cfg(all(not(windows), not(target_arch = "bpf")))]
+#[cfg(not(windows))]
 /// Returns a Terminal wrapping stderr, or None if a terminal couldn't be
 /// opened.
 pub fn stderr() -> Option<Box<StderrTerminal>> {
