@@ -243,7 +243,6 @@ pub use core::panic::{AssertUnwindSafe, RefUnwindSafe, UnwindSafe};
 #[unstable(feature = "panic_update_hook", issue = "92649")]
 pub use crate::panicking::update_hook;
 #[stable(feature = "panic_hooks", since = "1.10.0")]
-#[cfg(not(target_arch = "bpf"))]
 pub use crate::panicking::{set_hook, take_hook};
 
 /// Panics the current thread with the given message as the panic payload.
@@ -358,7 +357,6 @@ pub use core::panic::abort_unwind;
 /// assert!(result.is_err());
 /// ```
 #[stable(feature = "catch_unwind", since = "1.9.0")]
-#[cfg(not(target_arch = "bpf"))]
 pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R> {
     unsafe { panicking::catch_unwind(f) }
 }

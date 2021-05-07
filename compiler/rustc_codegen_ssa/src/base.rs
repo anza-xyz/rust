@@ -498,6 +498,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
     ) -> Bx::Function {
         // The entry function is either `int main(void)` or `int main(int argc, char **argv)`, or
         // `usize efi_main(void *handle, void *system_table)` depending on the target.
+        let is_bpf = cx.sess().target.arch == "bpf" && cx.sess().opts.test;
         let llfty = if cx.sess().target.os == Os::Uefi {
             cx.type_func(&[cx.type_ptr(), cx.type_ptr()], cx.type_isize())
         } else if cx.sess().target.main_needs_argc_argv {
@@ -529,14 +530,16 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         let llbb = Bx::append_block(cx, llfn, "top");
         let mut bx = Bx::build(cx, llbb);
 
-        bx.insert_reference_to_gdb_debug_scripts_section_global();
+        if !is_bpf {
+            bx.insert_reference_to_gdb_debug_scripts_section_global();
+        }
 
         let isize_ty = cx.type_isize();
         let ptr_ty = cx.type_ptr();
         let (arg_argc, arg_argv) = get_argc_argv(&mut bx);
 
         let EntryFnType::Main { sigpipe } = entry_type;
-        let (start_fn, start_ty, args, instance) = {
+        let (start_fn, start_ty, args, instance) = if !is_bpf {
             let start_def_id = cx.tcx().require_lang_item(LangItem::Start, DUMMY_SP);
             let start_instance = ty::Instance::expect_resolve(
                 cx.tcx(),
@@ -558,8 +561,15 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
                 Some(start_instance),
             )
         };
+        
+        let result = if is_bpf {
+            let args = Vec::new();
+            bx.call(start_ty, None, None, start_fn, &args, None, instance);
+            bx.const_i32(0)
+        } else {
+            bx.call(start_ty, None, None, start_fn, &args, None, instance)
+        };
 
-        let result = bx.call(start_ty, None, None, start_fn, &args, None, instance);
         if cx.sess().target.os == Os::Uefi {
             bx.ret(result);
         } else {

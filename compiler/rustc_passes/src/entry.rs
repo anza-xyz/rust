@@ -22,7 +22,8 @@ struct EntryContext<'tcx> {
 
 fn entry_fn(tcx: TyCtxt<'_>, (): ()) -> Option<(DefId, EntryFnType)> {
     let any_exe = tcx.crate_types().contains(&CrateType::Executable);
-    if !any_exe {
+    let exe_only = tcx.sess.target.arch != "bpf" || !tcx.sess.opts.test;
+    if !any_exe && exe_only {
         // No need to find a main function.
         return None;
     }
