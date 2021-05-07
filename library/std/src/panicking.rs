@@ -14,13 +14,12 @@ use crate::panic::BacktraceStyle;
 use core::panic::{PanicPayload};
 use core::panic::{Location, PanicInfo};
 
-#[cfg(not(target_arch = "bpf"))]
 use crate::any::Any;
 use crate::fmt;
-#[cfg(not(target_arch = "bpf"))]
 use crate::intrinsics;
+use crate::mem::ManuallyDrop;
 #[cfg(not(target_arch = "bpf"))]
-use crate::mem::{self, ManuallyDrop};
+use crate::mem;
 #[cfg(not(target_arch = "bpf"))]
 use crate::process;
 #[cfg(not(target_arch = "bpf"))]
@@ -53,7 +52,6 @@ use realstd::io::set_output_capture;
 // One day this may look a little less ad-hoc with the compiler helping out to
 // hook up these functions, but it is not this day!
 #[allow(improper_ctypes)]
-#[cfg(not(target_arch = "bpf"))]
 extern "C" {
     fn __rust_panic_cleanup(payload: *mut u8) -> *mut (dyn Any + Send + 'static);
 }
@@ -161,6 +159,12 @@ pub fn set_hook(hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
     drop(old);
 }
 
+/// Dummy version for satisfying library/test dependencies for BPF target
+#[cfg(target_arch = "bpf")]
+#[stable(feature = "panic_hooks", since = "1.10.0")]
+pub fn set_hook(_hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
+}
+
 /// Unregisters the current panic hook and returns it, registering the default hook
 /// in its place.
 ///
@@ -252,6 +256,13 @@ where
     *hook = Hook::Custom(Box::new(move |info| hook_fn(&prev, info)));
 }
 
+/// Dummy version for satisfying library/test dependencies for BPF target
+#[cfg(target_arch = "bpf")]
+#[stable(feature = "panic_hooks", since = "1.10.0")]
+pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
+    Box::new(default_hook)
+}
+
 /// The default panic handler.
 #[cfg(not(target_arch = "bpf"))]
 fn default_hook(info: &PanicInfo<'_>) {
@@ -312,7 +323,11 @@ fn default_hook(info: &PanicInfo<'_>) {
     }
 }
 
-#[cfg(all(not(test), not(target_arch = "bpf")))]
+#[cfg(target_arch = "bpf")]
+fn default_hook(_info: &PanicInfo<'_>) {
+}
+
+#[cfg(not(test))]
 #[doc(hidden)]
 #[cfg(feature = "panic_immediate_abort")]
 #[unstable(feature = "update_panic_count", issue = "none")]
@@ -407,6 +422,7 @@ pub mod panic_count {
     //
     // This also updates thread-local state to keep track of whether a panic
     // hook is currently executing.
+    #[cfg(not(target_arch = "bpf"))]
     pub fn increase(run_panic_hook: bool) -> Option<MustAbort> {
         let global_count = GLOBAL_PANIC_COUNT.fetch_add(1, Ordering::Relaxed);
         if global_count & ALWAYS_ABORT_FLAG != 0 {
@@ -444,12 +460,14 @@ pub mod panic_count {
 
     // Disregards ALWAYS_ABORT_FLAG
     #[must_use]
+    #[cfg(not(target_arch = "bpf"))]
     pub fn get_count() -> usize {
         LOCAL_PANIC_COUNT.with(|c| c.get().0)
     }
 
     // Disregards ALWAYS_ABORT_FLAG
     #[must_use]
+    #[cfg(not(target_arch = "bpf"))]
     #[inline]
     pub fn count_is_zero() -> bool {
         if GLOBAL_PANIC_COUNT.load(Ordering::Relaxed) & !ALWAYS_ABORT_FLAG == 0 {
@@ -470,6 +488,7 @@ pub mod panic_count {
 
     // Slow path is in a separate function to reduce the amount of code
     // inlined from `count_is_zero`.
+    #[cfg(not(target_arch = "bpf"))]
     #[inline(never)]
     #[cold]
     fn is_zero_slow_path() -> bool {
@@ -477,7 +496,7 @@ pub mod panic_count {
     }
 }
 
-#[cfg(all(test, not(target_arch = "bpf")))]
+#[cfg(test)]
 pub use realstd::rt::panic_count;
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.

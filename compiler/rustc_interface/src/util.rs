@@ -404,6 +404,9 @@ pub fn collect_crate_types(session: &Session, attrs: &[ast::Attribute]) -> Vec<C
     // If we're generating a test executable, then ignore all other output
     // styles at all other locations
     if session.opts.test {
+        if session.target.arch == "bpf" {
+            return vec![CrateType::Cdylib];
+        }
         return vec![CrateType::Executable];
     }
 

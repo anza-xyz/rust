@@ -2206,8 +2206,8 @@ impl Child {
 /// ```
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg_attr(not(test), rustc_diagnostic_item = "process_exit")]
-#[cfg(not(target_arch = "bpf"))]
 pub fn exit(code: i32) -> ! {
+    #[cfg(not(target_arch = "bpf"))]
     crate::rt::cleanup();
     crate::sys::os::exit(code)
 }
