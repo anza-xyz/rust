@@ -11,7 +11,7 @@ pub const UNIX_EPOCH: SystemTime = SystemTime(Duration::from_secs(0));
 
 impl Instant {
     pub fn now() -> Instant {
-        panic!();
+        Instant(Duration::from_secs(0))
     }
 
     pub const fn zero() -> Instant {
@@ -19,7 +19,7 @@ impl Instant {
     }
 
     pub fn actually_monotonic() -> bool {
-        false
+        true
     }
 
     pub fn checked_sub_instant(&self, other: &Instant) -> Option<Duration> {
