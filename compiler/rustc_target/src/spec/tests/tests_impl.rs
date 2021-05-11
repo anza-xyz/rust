@@ -154,6 +154,7 @@ impl Target {
     fn can_use_os_unknown(&self) -> bool {
         self.llvm_target == "wasm32-unknown-unknown"
             || self.llvm_target == "wasm64-unknown-unknown"
+            || self.llvm_target == "bpf"
             || (self.env == "sgx" && self.vendor == "fortanix")
     }
 }
