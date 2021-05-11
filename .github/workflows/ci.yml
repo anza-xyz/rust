@@ -41,15 +41,15 @@ jobs:
       matrix:
         include:
           - name: mingw-check
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-llvm-10
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-tools
             env:
               CI_ONLY_WHEN_SUBMODULES_CHANGED: 1
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
@@ -163,101 +163,101 @@ jobs:
               - ARM64
               - linux
           - name: arm-android
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: armhf-gnu
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-aarch64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-android
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-arm-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-armhf-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-armv7-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-i586-gnu-i586-i686-musl
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-i686-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-mips-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-mips64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-mips64el-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-mipsel-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-powerpc-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-powerpc64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-powerpc64le-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-riscv64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-s390x-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-various-1
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-various-2
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-x86_64-freebsd
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-x86_64-illumos
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-x86_64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-x86_64-linux-alt
             env:
               IMAGE: dist-x86_64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
           - name: dist-x86_64-musl
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: dist-x86_64-netbsd
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: i686-gnu
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: i686-gnu-nopt
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: mingw-check
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: test-various
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: wasm32
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-stable
             env:
@@ -265,25 +265,25 @@ jobs:
               RUST_CI_OVERRIDE_RELEASE_CHANNEL: stable
             os: ubuntu-latest-xl
           - name: x86_64-gnu-aux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-debug
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-distcheck
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-llvm-10
             env:
               RUST_BACKTRACE: 1
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
           - name: x86_64-gnu-nopt
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-tools
             env:
               DEPLOY_TOOLSTATES_JSON: toolstates-linux.json
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
           - name: dist-x86_64-apple
             env:
               SCRIPT: "./x.py dist"
@@ -331,95 +331,95 @@ jobs:
             env:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --enable-profiler"
               SCRIPT: make ci-subset-1
-            os: windows-latest-xl
+            os: windows-latest
           - name: x86_64-msvc-2
             env:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --enable-profiler"
               SCRIPT: make ci-subset-2
-            os: windows-latest-xl
+            os: windows-latest
           - name: i686-msvc-1
             env:
               RUST_CONFIGURE_ARGS: "--build=i686-pc-windows-msvc"
               SCRIPT: make ci-subset-1
-            os: windows-latest-xl
+            os: windows-latest
           - name: i686-msvc-2
             env:
               RUST_CONFIGURE_ARGS: "--build=i686-pc-windows-msvc"
               SCRIPT: make ci-subset-2
-            os: windows-latest-xl
+            os: windows-latest
           - name: x86_64-msvc-cargo
             env:
               SCRIPT: python x.py --stage 2 test src/tools/cargotest src/tools/cargo
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --enable-lld"
               VCVARS_BAT: vcvars64.bat
-            os: windows-latest-xl
+            os: windows-latest
           - name: x86_64-msvc-tools
             env:
               SCRIPT: src/ci/docker/host-x86_64/x86_64-gnu-tools/checktools.sh x.py /tmp/toolstate/toolstates.json windows
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --save-toolstates=/tmp/toolstate/toolstates.json"
               DEPLOY_TOOLSTATES_JSON: toolstates-windows.json
-            os: windows-latest-xl
+            os: windows-latest
           - name: i686-mingw-1
             env:
               RUST_CONFIGURE_ARGS: "--build=i686-pc-windows-gnu"
               SCRIPT: make ci-mingw-subset-1
               CUSTOM_MINGW: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: i686-mingw-2
             env:
               RUST_CONFIGURE_ARGS: "--build=i686-pc-windows-gnu"
               SCRIPT: make ci-mingw-subset-2
               CUSTOM_MINGW: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: x86_64-mingw-1
             env:
               SCRIPT: make ci-mingw-subset-1
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-gnu --enable-profiler"
               CUSTOM_MINGW: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: x86_64-mingw-2
             env:
               SCRIPT: make ci-mingw-subset-2
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-gnu --enable-profiler"
               CUSTOM_MINGW: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: dist-x86_64-msvc
             env:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --host=x86_64-pc-windows-msvc --target=x86_64-pc-windows-msvc --enable-full-tools --enable-profiler"
               SCRIPT: python x.py dist
               DIST_REQUIRE_ALL_TOOLS: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: dist-i686-msvc
             env:
               RUST_CONFIGURE_ARGS: "--build=i686-pc-windows-msvc --host=i686-pc-windows-msvc --target=i686-pc-windows-msvc,i586-pc-windows-msvc --enable-full-tools --enable-profiler"
               SCRIPT: python x.py dist
               DIST_REQUIRE_ALL_TOOLS: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: dist-aarch64-msvc
             env:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --host=aarch64-pc-windows-msvc --enable-full-tools --enable-profiler"
               SCRIPT: python x.py dist
               DIST_REQUIRE_ALL_TOOLS: 0
-            os: windows-latest-xl
+            os: windows-latest
           - name: dist-i686-mingw
             env:
               RUST_CONFIGURE_ARGS: "--build=i686-pc-windows-gnu --enable-full-tools --enable-profiler"
               SCRIPT: python x.py dist
               CUSTOM_MINGW: 1
               DIST_REQUIRE_ALL_TOOLS: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: dist-x86_64-mingw
             env:
               SCRIPT: python x.py dist
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-gnu --enable-full-tools --enable-profiler"
               CUSTOM_MINGW: 1
               DIST_REQUIRE_ALL_TOOLS: 1
-            os: windows-latest-xl
+            os: windows-latest
           - name: dist-x86_64-msvc-alt
             env:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --enable-extended --enable-profiler"
               SCRIPT: python x.py dist
-            os: windows-latest-xl
+            os: windows-latest
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
@@ -528,7 +528,7 @@ jobs:
       matrix:
         include:
           - name: dist-x86_64-linux
-            os: ubuntu-latest-xl
+            os: ubuntu-latest
             env: {}
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
