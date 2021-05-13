@@ -1,6 +1,6 @@
-use crate::spec::abi::Abi;
-use crate::spec::{LinkerFlavor, LldFlavor, PanicStrategy,
-           Target, TargetOptions};
+use super::abi::Abi;
+use super::{LinkerFlavor, PanicStrategy, Target, TargetOptions};
+use std::{collections::BTreeMap, env, path::Path};
 
 // All the calling conventions trigger an assertion(Unsupported calling
 // convention) in llvm on BPF
@@ -22,6 +22,32 @@ pub fn abi_blacklist() -> Vec<Abi> {
 }
 
 pub fn target() -> Target {
+    let linker_script = r"
+PHDRS
+{
+  text PT_LOAD ;
+  rodata PT_LOAD ;
+  dynamic PT_DYNAMIC ;
+}
+
+SECTIONS
+{
+  . = SIZEOF_HEADERS;
+  .text : { *(.text*) } :text
+  .rodata : { *(.rodata*) } :rodata
+  .data.rel.ro : { *(.data.rel.ro*) } :rodata
+  .dynamic : { *(.dynamic) } :dynamic
+}
+";
+    let mut lld_args = Vec::new();
+    lld_args.push("--Bdynamic".to_string());
+    lld_args.push("--entry=entrypoint".to_string());
+    lld_args.push("--threads=1".to_string());
+    lld_args.push("-z".to_string());
+    lld_args.push("notext".to_string());
+    let mut pre_link_args = BTreeMap::new();
+    pre_link_args.insert(LinkerFlavor::Ld, lld_args);
+
     Target {
         llvm_target: "bpf".to_string(),
         pointer_width: 64,
@@ -35,7 +61,11 @@ pub fn target() -> Target {
             env: String::new(),
             features: "+solana".to_string(),
             vendor: "unknown".to_string(),
-            linker_flavor: LinkerFlavor::Lld(LldFlavor::Ld),
+            linker_flavor: LinkerFlavor::Ld,
+            linker_is_gnu: true,
+            linker: find_linker(),
+            link_script: Some(linker_script.to_string()),
+            pre_link_args,
             executables: true,
             dll_prefix: "".to_string(),
             dynamic_linking: true,
@@ -51,4 +81,44 @@ pub fn target() -> Target {
             .. Default::default()
         },
     }
+}
+
+fn find_linker() -> Option<String> {
+    fn construct_linker_path(path: &Path) -> Option<String> {
+        if let Some(base) = path.parent() {
+            let path = base
+                .join("llvm")
+                .join("bin")
+                .join("ld.lld");
+            if path.exists() {
+                if let Some(ld_str) = path.to_str() {
+                    return Some(ld_str.to_string());
+                }
+            }
+        }
+        None
+    }
+
+    if let Ok(path) = env::current_exe() {
+        let mut ancestors = path.ancestors();
+        // ~/.rustup/bpf/bin/rustc
+        let base = ancestors.next();
+        if base == None {
+            return None;
+        }
+        // ~/.rustup/bpf/bin
+        let base = ancestors.next();
+        if base == None {
+            return None;
+        }
+        // ~/.rustup/bpf
+        if let Some(base) = ancestors.next() {
+            if let Ok(link) = base.read_link() {
+                return construct_linker_path(&link);
+            } else {
+                return construct_linker_path(&base);
+            }
+        }
+    }
+    None
 }
