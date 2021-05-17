@@ -1,3 +1,4 @@
+use crate::abi::Endian;
 use super::abi::Abi;
 use super::{LinkerFlavor, PanicStrategy, Target, TargetOptions};
 use std::{collections::BTreeMap, env, path::Path};
@@ -7,10 +8,10 @@ use std::{collections::BTreeMap, env, path::Path};
 pub fn abi_blacklist() -> Vec<Abi> {
     vec![
         Abi::Cdecl,
-        Abi::Stdcall,
+        Abi::Stdcall { unwind: false },
         Abi::Fastcall,
         Abi::Vectorcall,
-        Abi::Thiscall,
+        Abi::Thiscall { unwind: false },
         Abi::Aapcs,
         Abi::Win64,
         Abi::SysV64,
@@ -55,7 +56,7 @@ SECTIONS
         data_layout: "e-m:e-p:64:64-i64:64-n32:64-S128".to_string(),
 
         options: TargetOptions {
-            endian: "little".to_string(),
+            endian: Endian::Little,
             c_int_width: "64".to_string(),
             os: "unknown".to_string(),
             env: String::new(),
