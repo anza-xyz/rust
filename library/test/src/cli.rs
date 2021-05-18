@@ -314,7 +314,7 @@ fn parse_opts_impl(matches: getopts::Matches) -> OptRes {
 fn parse_opts_impl(_matches: getopts::Matches) -> OptRes {
     let test_opts = TestOpts {
         list: false,
-        filter: None,
+        filters: Vec::new(),
         filter_exact: false,
         force_run_in_process: false,
         exclude_should_panic: false,
