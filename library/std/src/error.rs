@@ -530,6 +530,7 @@ impl<'a, T: Error + ?Sized> Error for &'a T {
         Error::source(&**self)
     }
 
+    #[cfg(not(target_arch = "bpf"))]
     fn backtrace(&self) -> Option<&Backtrace> {
         Error::backtrace(&**self)
     }
@@ -551,6 +552,7 @@ impl<T: Error + ?Sized> Error for Arc<T> {
         Error::source(&**self)
     }
 
+    #[cfg(not(target_arch = "bpf"))]
     fn backtrace(&self) -> Option<&Backtrace> {
         Error::backtrace(&**self)
     }
