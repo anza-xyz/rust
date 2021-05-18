@@ -180,8 +180,7 @@ pub fn resume_unwind(payload: Box<dyn Any + Send>) -> ! {
 #[cfg(target_arch = "bpf")]
 pub fn resume_unwind(_payload: Box<dyn Any + Send>) -> ! {
     // Only used by thread, redirect to plain old panic
-    panicking::begin_panic_fmt(&format_args!("unwind"),
-                               &(file!(), line!(), column!()))
+    panicking::begin_panic_fmt(&format_args!("unwind"))
 }
 
 /// Make all future panics abort directly without running the panic hook or unwinding.

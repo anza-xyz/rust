@@ -59,6 +59,7 @@ extern "C" {
 extern "Rust" {
     /// `PanicPayload` lazily performs allocation only when needed (this avoids
     /// allocations when using the "abort" panic runtime).
+    #[cfg(not(target_arch = "bpf"))]
     fn __rust_start_panic(payload: &mut dyn PanicPayload) -> u32;
 }
 
@@ -911,38 +912,37 @@ pub fn rust_begin_panic(info: &PanicInfo<'_>) -> ! {
     crate::sys::panic(info);
 }
 
-/// The entry point for panicking with a formatted message.
-///
-/// This is designed to reduce the amount of code required at the call
-/// site as much as possible (so that `panic!()` has as low an impact
-/// on (e.g.) the inlining of other functions as possible), by moving
-/// the actual formatting into this shared place.
+/// The entry point for panicking with a formatted message BPF version.
 #[cfg(target_arch = "bpf")]
 #[unstable(feature = "libstd_sys_internals", reason = "used by the panic! macro", issue = "none")]
 #[cold]
 // If panic_immediate_abort, inline the abort call,
 // otherwise avoid inlining because of it is cold path.
-#[cfg_attr(not(feature="panic_immediate_abort"),inline(never))]
-#[cfg_attr(    feature="panic_immediate_abort" ,inline)]
-pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>,
-                       file_line_col: &(&'static str, u32, u32)) -> ! {
-    begin_panic(msg, file_line_col);
+#[cfg_attr(not(feature = "panic_immediate_abort"), track_caller)]
+#[cfg_attr(not(feature = "panic_immediate_abort"), inline(never))]
+#[cfg_attr(feature = "panic_immediate_abort", inline)]
+pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>) -> ! {
+    let info = PanicInfo::internal_constructor(
+        Some(msg),
+        Location::caller(),
+    );
+    crate::sys::panic(&info);
 }
 
-/// Entry point of panicking for panic!() and assert!().
+/// Entry point of panicking for panic!() and assert!() BPF version.
 #[cfg(target_arch = "bpf")]
 #[unstable(feature = "libstd_sys_internals", reason = "used by the panic! macro", issue = "none")]
 #[cfg_attr(not(test), lang = "begin_panic")]
+// lang item for CTFE panic support
 // never inline unless panic_immediate_abort to avoid code
 // bloat at the call sites as much as possible
 #[cfg_attr(not(feature = "panic_immediate_abort"), inline(never))]
 #[cold]
-pub fn begin_panic(msg: &fmt::Arguments<'_>, file_line_col: &(&'static str, u32, u32)) -> ! {
-    let (file, line, col) = *file_line_col;
-    let location = Location::internal_constructor(file, line, col);
+#[track_caller]
+pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
     let info = PanicInfo::internal_constructor(
-        Some(msg),
-        &location,
+        None,
+        Location::caller(),
     );
     crate::sys::panic(&info);
 }
