@@ -20,11 +20,12 @@ macro_rules! panic {
     };
 }
 
-#[doc(include = "../../core/src/macros/panic.md")]
+#[doc = include_str!("../../core/src/macros/panic.md")]
 #[macro_export]
+#[rustc_builtin_macro = "std_panic"]
 #[stable(feature = "rust1", since = "1.0.0")]
-#[allow_internal_unstable(libstd_sys_internals)]
-#[cfg_attr(not(any(bootstrap, test)), rustc_diagnostic_item = "std_panic_macro")]
+#[allow_internal_unstable(edition_panic)]
+#[cfg_attr(not(test), rustc_diagnostic_item = "std_panic_macro")]
 #[cfg(target_arch = "bpf")]
 macro_rules! panic {
     () => ({ $crate::panic!("explicit panic") });
