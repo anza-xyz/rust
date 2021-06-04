@@ -5,7 +5,7 @@ use std::path::Path;
 
 /// List of allowed sources for packages.
 const ALLOWED_SOURCES: &[&str] = &["\"registry+https://github.com/rust-lang/crates.io-index\"",
-"\"git+https://github.com/solana-labs/compiler-builtins?tag=bpf-tools-v1.9#5083d99128300b9023858ea08102ba96ca90b688\""];
+"\"git+https://github.com/solana-labs/compiler-builtins?tag=bpf-tools-v1.10#317af4b2e9a254e7954808bc9cca592ca305b444\""];
 
 /// Checks for external package sources. `root` is the path to the directory that contains the
 /// workspace `Cargo.toml`.
