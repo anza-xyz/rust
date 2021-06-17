@@ -5751,8 +5751,3 @@ checksum = "fe5c30ade05e61656247b2e334a031dfd0cc466fadef865bdcdea8d537951bf1"
 dependencies = [
  "winapi 0.3.9",
 ]
-
-[[patch.unused]]
-name = "compiler_builtins"
-version = "0.1.39"
-source = "git+https://github.com/solana-labs/compiler-builtins?tag=bpf-tools-v1.6#f9a6ccbcfd4baf38fe48fdb298f54380e41d8546"
