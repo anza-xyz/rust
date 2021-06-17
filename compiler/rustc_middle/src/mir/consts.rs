@@ -515,10 +515,30 @@ impl<'tcx> TyCtxt<'tcx> {
     pub fn span_as_caller_location(self, span: Span) -> ConstValue {
         let topmost = span.ctxt().outer_expn().expansion_cause().unwrap_or(span);
         let caller = self.sess.source_map().lookup_char_pos(topmost.lo());
-        self.const_caller_location(
+        let file_name = if self.sess.target.arch == "bpf" {
+            let file_name = caller.file.name.prefer_remapped().to_string_lossy();
+            let mut path = Path::new(&file_name);
+            let components = path.components().collect::<Vec<_>>();
+            let len = components.len();
+            let mut buf = PathBuf::new();
+            if len > 3 {
+                buf.push(components[len - 3].as_os_str());
+                buf.push(components[len - 2].as_os_str());
+                buf.push(components[len - 1].as_os_str());
+                path = buf.as_path();
+            }
+            if let Some(path_str) = path.to_str() {
+                Symbol::intern(&path_str)
+            } else {
+                Symbol::intern(&file_name)
+            }
+        } else {
             Symbol::intern(
                 &caller.file.name.display(RemapPathScopeComponents::MACRO).to_string_lossy(),
-            ),
+            )
+        };
+        self.const_caller_location(
+            file_name,
             caller.line as u32,
             caller.col_display as u32 + 1,
         )
