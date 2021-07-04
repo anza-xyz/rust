@@ -295,6 +295,7 @@ mod util;
 
 const DEFAULT_BUF_SIZE: usize = crate::sys_common::io::DEFAULT_BUF_SIZE;
 
+#[cfg(not(target_arch = "bpf"))]
 pub(crate) fn cleanup() {
     stdio::cleanup()
 }
