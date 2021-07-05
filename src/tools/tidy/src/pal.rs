@@ -49,6 +49,7 @@ const EXCEPTION_PATHS: &[&str] = &[
     "library/std/src/net/test.rs",
     "library/std/src/net/addr",
     "library/std/src/net/udp",
+    "library/std/src/sys_common/backtrace.rs",
     "library/std/src/sys_common/remutex.rs",
     "library/std/src/sync/mutex.rs",
     "library/std/src/sync/rwlock.rs",
