@@ -38,8 +38,25 @@ const EXCEPTION_PATHS: &[&str] = &[
     "library/panic_abort",
     "library/panic_unwind",
     "library/unwind",
-    "library/rtstartup", // Not sure what to do about this. magic stuff for mingw
-    "library/test",      // Probably should defer to unstable `std::sys` APIs.
+    "library/std/src/sys/", // Platform-specific code for std lives here.
+    // This has the trailing slash so that sys_common is not excepted.
+    "library/std/src/os", // Platform-specific public interfaces
+    "library/rtstartup",  // Not sure what to do about this. magic stuff for mingw
+    // Integration test for platform-specific run-time feature detection:
+    "library/std/tests/run-time-detect.rs",
+    "library/std/src/net/test.rs",
+    "library/std/src/net/addr",
+    "library/std/src/net/udp",
+    "library/std/src/sys_common/backtrace.rs",
+    "library/std/src/sys_common/remutex.rs",
+    "library/std/src/sync/mutex.rs",
+    "library/std/src/sync/rwlock.rs",
+    "library/term", // Not sure how to make this crate portable, but test crate needs it.
+    "library/test", // Probably should defer to unstable `std::sys` APIs.
+    // std testing crates, okay for now at least
+    "library/core/tests",
+    "library/alloc/tests/lib.rs",
+    "library/alloc/benches/lib.rs",
     // The `VaList` implementation must have platform specific code.
     // The Windows implementation of a `va_list` is always a character
     // pointer regardless of the target architecture. As a result,
