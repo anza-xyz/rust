@@ -908,7 +908,6 @@ pub fn panicking() -> bool {
 #[panic_handler]
 #[unwind(allowed)]
 pub fn rust_begin_panic(info: &PanicInfo<'_>) -> ! {
-    crate::sys::sol_log("libstd rust_begin_panic");
     crate::sys::panic(info);
 }
 
