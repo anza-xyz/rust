@@ -537,6 +537,7 @@ impl<'tcx> TyCtxt<'tcx> {
                 &caller.file.name.display(RemapPathScopeComponents::MACRO).to_string_lossy(),
             )
         };
+
         self.const_caller_location(
             file_name,
             caller.line as u32,

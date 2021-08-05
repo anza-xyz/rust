@@ -2531,10 +2531,7 @@ pub fn exit(code: i32) -> ! {
 #[cfg_attr(not(test), rustc_diagnostic_item = "process_abort")]
 #[cfg_attr(miri, track_caller)] // even without panics, this helps for Miri backtraces
 pub fn abort() -> ! {
-    #[cfg(not(target_arch = "bpf"))]
     crate::sys::abort_internal();
-    #[cfg(target_arch = "bpf")]
-    unsafe { crate::sys::abort_internal(); }
 }
 
 /// Returns the OS-assigned process identifier associated with this process.
