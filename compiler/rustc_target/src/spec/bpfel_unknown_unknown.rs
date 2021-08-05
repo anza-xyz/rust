@@ -50,18 +50,18 @@ SECTIONS
     pre_link_args.insert(LinkerFlavor::Ld, lld_args);
 
     Target {
-        llvm_target: "bpf".to_string(),
+        llvm_target: "bpfel".to_string(),
         pointer_width: 64,
         arch: "bpf".to_string(),
         data_layout: "e-m:e-p:64:64-i64:64-n32:64-S128".to_string(),
 
         options: TargetOptions {
+            allow_asm: true,
             endian: Endian::Little,
             c_int_width: "64".to_string(),
-            os: "unknown".to_string(),
             env: String::new(),
             features: "+solana".to_string(),
-            vendor: "unknown".to_string(),
+            vendor: "solana".to_string(),
             linker_flavor: LinkerFlavor::Ld,
             linker_is_gnu: true,
             linker: find_linker(),
@@ -74,6 +74,7 @@ SECTIONS
             no_default_libraries: true,
             panic_strategy: PanicStrategy::Abort,
             position_independent_executables: true,
+            requires_lto: false,
             singlethread: true,
             max_atomic_width: Some(64),
             unsupported_abis: abi_blacklist(),
