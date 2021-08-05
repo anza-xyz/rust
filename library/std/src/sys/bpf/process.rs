@@ -1,6 +1,7 @@
 use crate::ffi::{CString, OsStr};
 use crate::fmt;
 use crate::io;
+use crate::num::NonZeroI32;
 use crate::path::Path;
 use crate::sys::fs::File;
 use crate::sys::pipe::AnonPipe;
@@ -104,7 +105,7 @@ impl fmt::Debug for Command {
 pub struct ExitStatus(Void);
 
 impl ExitStatus {
-    pub fn success(&self) -> bool {
+    pub fn exit_ok(&self) -> Result<(), ExitStatusError> {
         match self.0 {}
     }
 
@@ -138,6 +139,21 @@ impl fmt::Debug for ExitStatus {
 
 impl fmt::Display for ExitStatus {
     fn fmt(&self, _f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.0 {}
+    }
+}
+
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+pub struct ExitStatusError(ExitStatus);
+
+impl Into<ExitStatus> for ExitStatusError {
+    fn into(self) -> ExitStatus {
+        match self.0 {}
+    }
+}
+
+impl ExitStatusError {
+    pub fn code(self) -> Option<NonZeroI32> {
         match self.0 {}
     }
 }
