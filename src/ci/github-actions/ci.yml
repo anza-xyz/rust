@@ -145,9 +145,9 @@ x--expand-yaml-anchors--remove:
         run: src/ci/scripts/should-skip-this.sh
         <<: *step
 
-      - name: ensure the channel matches the target branch
-        run: src/ci/scripts/verify-channel.sh
-        <<: *step
+#      - name: ensure the channel matches the target branch
+#        run: src/ci/scripts/verify-channel.sh
+#        <<: *step
 
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
