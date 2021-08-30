@@ -652,8 +652,8 @@ dependencies = [
 
 [[package]]
 name = "compiler_builtins"
-version = "0.1.46"
-source = "git+https://github.com/solana-labs/compiler-builtins?tag=bpf-tools-v1.15#26d310d0664757331e0ee1b825fbbc33736a9f9a"
+version = "0.1.49"
+source = "git+https://github.com/solana-labs/compiler-builtins?tag=bpf-tools-v1.16#37b1868dc9927eb713ff05c53a916a6d07dd69a4"
 dependencies = [
  "cc",
  "rustc-std-workspace-core",
