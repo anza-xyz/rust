@@ -366,6 +366,7 @@ pub mod panic_count {
 #[cfg(not(feature = "panic_immediate_abort"))]
 #[unstable(feature = "update_panic_count", issue = "none")]
 pub mod panic_count {
+    #[cfg(not(target_arch = "bpf"))]
     use crate::cell::Cell;
     use crate::sync::atomic::{AtomicUsize, Ordering};
 
@@ -380,6 +381,7 @@ pub mod panic_count {
 
     // Panic count for the current thread and whether a panic hook is currently
     // being executed..
+    #[cfg(not(target_arch = "bpf"))]
     thread_local! {
         static LOCAL_PANIC_COUNT: Cell<(usize, bool)> = const { Cell::new((0, false)) }
     }
@@ -441,6 +443,7 @@ pub mod panic_count {
         });
     }
 
+    #[cfg(not(target_arch = "bpf"))]
     pub fn decrease() {
         GLOBAL_PANIC_COUNT.fetch_sub(1, Ordering::Relaxed);
         LOCAL_PANIC_COUNT.with(|c| {
@@ -561,6 +564,7 @@ pub unsafe fn r#try<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>>
     // non-cold function, though, as of the writing of this comment).
     #[cold]
     #[optimize(size)]
+    #[cfg(not(target_arch = "bpf"))]
     unsafe fn cleanup(payload: *mut u8) -> Box<dyn Any + Send + 'static> {
         // SAFETY: The whole unsafe block hinges on a correct implementation of
         // the panic handler `__rust_panic_cleanup`. As such we can only
@@ -569,6 +573,17 @@ pub unsafe fn r#try<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>>
         let obj = unsafe { Box::from_raw(__rust_panic_cleanup(payload)) };
         panic_count::decrease();
         obj
+    }
+
+    #[cold]
+    #[cfg(target_arch = "bpf")]
+    unsafe fn cleanup(payload: *mut u8) -> Box<dyn Any + Send + 'static> {
+        // SAFETY: The whole unsafe block hinges on a correct implementation of
+        // the panic handler `__rust_panic_cleanup`. As such we can only
+        // assume it returns the correct thing for `Box::from_raw` to work
+        // without undefined behavior.
+        let obj = unsafe { Box::from_raw(__rust_panic_cleanup(payload)) };
+         obj
     }
 
     // SAFETY:
@@ -928,7 +943,6 @@ pub fn panicking() -> bool {
 /// Entry point of panic from the libcore crate.
 #[cfg(all(not(test), target_arch = "bpf"))]
 #[panic_handler]
-#[unwind(allowed)]
 pub fn rust_begin_panic(info: &PanicInfo<'_>) -> ! {
     crate::sys::panic(info);
 }

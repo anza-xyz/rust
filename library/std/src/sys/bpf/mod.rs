@@ -33,13 +33,14 @@ pub mod thread;
 pub mod time;
 pub mod stdio;
 
+#[path = "../unix/os_str.rs"]
+pub mod os_str;
+
 pub mod condvar;
 pub mod mutex;
 pub mod rwlock;
 pub mod thread_local_dtor;
 pub mod thread_local_key;
-
-pub use crate::sys_common::os_str_bytes as os_str;
 
 extern "C" {
     fn abort() -> !;
