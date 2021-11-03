@@ -1,26 +1,6 @@
 use crate::abi::Endian;
-use super::abi::Abi;
 use super::{LinkerFlavor, PanicStrategy, Target, TargetOptions};
 use std::{collections::BTreeMap, env, path::Path};
-
-// All the calling conventions trigger an assertion(Unsupported calling
-// convention) in llvm on BPF
-pub fn abi_blacklist() -> Vec<Abi> {
-    vec![
-        Abi::Cdecl,
-        Abi::Stdcall { unwind: false },
-        Abi::Fastcall,
-        Abi::Vectorcall,
-        Abi::Thiscall { unwind: false },
-        Abi::Aapcs,
-        Abi::Win64,
-        Abi::SysV64,
-        Abi::PtxKernel,
-        Abi::Msp430Interrupt,
-        Abi::X86Interrupt,
-        Abi::AmdGpuKernel,
-    ]
-}
 
 pub fn target() -> Target {
     let linker_script = r"
@@ -77,7 +57,6 @@ SECTIONS
             requires_lto: false,
             singlethread: true,
             max_atomic_width: Some(64),
-            unsupported_abis: abi_blacklist(),
             eh_frame_header: false,
             main_needs_argc_argv: false,
             .. Default::default()

@@ -475,6 +475,45 @@ impl Stdin {
         self.lock().read_line(buf)
     }
 
+    // Locks this handle with any lifetime. This depends on the
+    // implementation detail that the underlying `Mutex` is static.
+    #[cfg(not(target_arch = "bpf"))]
+    fn lock_any<'a>(&self) -> StdinLock<'a> {
+        StdinLock { inner: self.inner.lock().unwrap_or_else(|e| e.into_inner()) }
+    }
+
+    /// Consumes this handle to the standard input stream, locking the
+    /// shared global buffer associated with the stream and returning a
+    /// readable guard.
+    ///
+    /// The lock is released when the returned guard goes out of scope. The
+    /// returned guard also implements the [`Read`] and [`BufRead`] traits
+    /// for accessing the underlying data.
+    ///
+    /// It is often simpler to directly get a locked handle using the
+    /// [`stdin_locked`] function instead, unless nearby code also needs to
+    /// use an unlocked handle.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// #![feature(stdio_locked)]
+    /// use std::io::{self, BufRead};
+    ///
+    /// fn main() -> io::Result<()> {
+    ///     let mut buffer = String::new();
+    ///     let mut handle = io::stdin().into_locked();
+    ///
+    ///     handle.read_line(&mut buffer)?;
+    ///     Ok(())
+    /// }
+    /// ```
+    #[unstable(feature = "stdio_locked", issue = "86845")]
+    #[cfg(not(target_arch = "bpf"))]
+    pub fn into_locked(self) -> StdinLock<'static> {
+        self.lock_any()
+    }
+
     /// Consumes this handle and returns an iterator over input lines.
     ///
     /// For detailed semantics of this method, see the documentation on
@@ -492,8 +531,33 @@ impl Stdin {
     /// ```
     #[must_use = "`self` will be dropped if the result is not used"]
     #[stable(feature = "stdin_forwarders", since = "1.62.0")]
+    #[cfg(not(target_arch = "bpf"))]
     pub fn lines(self) -> Lines<StdinLock<'static>> {
         self.lock().lines()
+    }
+
+    /// Consumes this handle and returns an iterator over input bytes,
+    /// split at the specified byte value.
+    ///
+    /// For detailed semantics of this method, see the documentation on
+    /// [`BufRead::split`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// #![feature(stdin_forwarders)]
+    /// use std::io;
+    ///
+    /// let splits = io::stdin().split(b'-');
+    /// for split in splits {
+    ///     println!("got a chunk: {}", String::from_utf8_lossy(&split.unwrap()));
+    /// }
+    /// ```
+    #[must_use = "`self` will be dropped if the result is not used"]
+    #[unstable(feature = "stdin_forwarders", issue = "87096")]
+    #[cfg(not(target_arch = "bpf"))]
+    pub fn split(self, byte: u8) -> Split<StdinLock<'static>> {
+        self.into_locked().split(byte)
     }
 }
 
@@ -879,6 +943,45 @@ impl Stdout {
         // static.
         StdoutLock { inner: self.inner.lock() }
     }
+
+    // Locks this handle with any lifetime. This depends on the
+    // implementation detail that the underlying `ReentrantMutex` is
+    // static.
+    #[cfg(not(target_arch = "bpf"))]
+    fn lock_any<'a>(&self) -> StdoutLock<'a> {
+        StdoutLock { inner: self.inner.lock() }
+    }
+
+    /// Consumes this handle to the standard output stream, locking the
+    /// shared global buffer associated with the stream and returning a
+    /// writable guard.
+    ///
+    /// The lock is released when the returned lock goes out of scope. The
+    /// returned guard also implements the [`Write`] trait for writing data.
+    ///
+    /// It is often simpler to directly get a locked handle using the
+    /// [`io::stdout_locked`] function instead, unless nearby code also
+    /// needs to use an unlocked handle.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// #![feature(stdio_locked)]
+    /// use std::io::{self, Write};
+    ///
+    /// fn main() -> io::Result<()> {
+    ///     let mut handle = io::stdout().into_locked();
+    ///
+    ///     handle.write_all(b"hello world")?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
+    #[unstable(feature = "stdio_locked", issue = "86845")]
+    #[cfg(not(target_arch = "bpf"))]
+    pub fn into_locked(self) -> StdoutLock<'static> {
+        self.lock_any()
+    }
 }
 
 #[stable(feature = "catch_unwind", since = "1.9.0")]
@@ -1202,6 +1305,42 @@ impl Stderr {
         // implementation detail that the underlying `ReentrantMutex` is
         // static.
         StderrLock { inner: self.inner.lock() }
+    }
+
+    // Locks this handle with any lifetime. This depends on the
+    // implementation detail that the underlying `ReentrantMutex` is
+    // static.
+    #[cfg(not(target_arch = "bpf"))]
+    fn lock_any<'a>(&self) -> StderrLock<'a> {
+        StderrLock { inner: self.inner.lock() }
+    }
+
+    /// Locks and consumes this handle to the standard error stream,
+    /// returning a writable guard.
+    ///
+    /// The lock is released when the returned guard goes out of scope. The
+    /// returned guard also implements the [`Write`] trait for writing
+    /// data.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// #![feature(stdio_locked)]
+    /// use std::io::{self, Write};
+    ///
+    /// fn foo() -> io::Result<()> {
+    ///     let stderr = io::stderr();
+    ///     let mut handle = stderr.into_locked();
+    ///
+    ///     handle.write_all(b"hello world")?;
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
+    #[unstable(feature = "stdio_locked", issue = "86845")]
+    #[cfg(not(target_arch = "bpf"))]
+    pub fn into_locked(self) -> StderrLock<'static> {
+        self.lock_any()
     }
 }
 
