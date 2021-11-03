@@ -7,7 +7,6 @@ use crate::collections;
 use crate::panicking;
 use crate::sync::atomic::{AtomicUsize, Ordering};
 use crate::sync::{Mutex, RwLock};
-#[cfg(not(target_arch = "bpf"))]
 use crate::thread::Result;
 
 #[doc(hidden)]

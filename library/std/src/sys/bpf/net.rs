@@ -78,6 +78,14 @@ impl TcpStream {
         match self.0 {}
     }
 
+    pub fn set_linger(&self, _: Option<Duration>) -> io::Result<()> {
+        unsupported()
+    }
+
+    pub fn linger(&self) -> io::Result<Option<Duration>> {
+        unsupported()
+    }
+
     pub fn set_nodelay(&self, _: bool) -> io::Result<()> {
         match self.0 {}
     }
