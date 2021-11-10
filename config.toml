@@ -103,8 +103,12 @@ assertions = false
 # Note: this is NOT related to Rust compilation targets. However, as Rust is
 # dependent on LLVM for code generation, turning targets off here WILL lead to
 # the resulting rustc being unable to compile for the disabled architectures.
-#
-# To add support for new targets, see https://rustc-dev-guide.rust-lang.org/building/new-target.html.
+# Also worth pointing out is that, in case support for new targets are added to
+# LLVM, enabling them here doesn't mean Rust is automatically gaining said
+# support. You'll need to write a target specification at least, and most
+# likely, teach rustc about the C ABI of the target. Get in touch with the
+# Rust team and file an issue if you need assistance in porting!
+#targets = "AArch64;ARM;Hexagon;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86"
 targets = "X86"
 
 # LLVM experimental targets to build support for. These targets are specified in
