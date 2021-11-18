@@ -208,6 +208,10 @@ impl<'ll, CX: Borrow<SCx<'ll>>> BaseTypeCodegenMethods for GenericCx<'ll, CX> {
         unsafe { llvm::LLVMFP128TypeInContext(self.llcx()) }
     }
 
+    fn type_void(&self) -> &'ll Type {
+        unsafe { llvm::LLVMVoidTypeInContext(self.llcx()) }
+    }
+
     fn type_func(&self, args: &[&'ll Type], ret: &'ll Type) -> &'ll Type {
         unsafe { llvm::LLVMFunctionType(ret, args.as_ptr(), args.len() as c_uint, FALSE) }
     }
