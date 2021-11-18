@@ -485,8 +485,13 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             (start_fn, start_ty, vec![rust_main, arg_argc, arg_argv, arg_sigpipe])
         } else {
             debug!("using user-defined start fn");
-            let start_ty = cx.type_func(&[isize_ty, ptr_ty], isize_ty);
-            (rust_main, start_ty, vec![arg_argc, arg_argv])
+            if is_bpf {
+                let start_ty = cx.type_func(&[], cx.type_void());
+                (rust_main, start_ty, Vec::new())
+            } else {
+                let start_ty = cx.type_func(&[isize_ty, ptr_ty], isize_ty);
+                (rust_main, start_ty, vec![arg_argc, arg_argv])
+            }
         };
 
         let result = if is_bpf {

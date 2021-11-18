@@ -164,6 +164,10 @@ impl<'ll, 'tcx> BaseTypeMethods<'tcx> for CodegenCx<'ll, 'tcx> {
         unsafe { llvm::LLVMDoubleTypeInContext(self.llcx) }
     }
 
+    fn type_void(&self) -> &'ll Type {
+        unsafe { llvm::LLVMVoidTypeInContext(self.llcx) }
+    }
+
     fn type_func(&self, args: &[&'ll Type], ret: &'ll Type) -> &'ll Type {
         unsafe { llvm::LLVMFunctionType(ret, args.as_ptr(), args.len() as c_uint, False) }
     }
