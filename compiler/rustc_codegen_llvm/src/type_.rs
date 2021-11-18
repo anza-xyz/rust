@@ -172,6 +172,9 @@ impl<'ll, 'tcx> BaseTypeMethods<'tcx> for CodegenCx<'ll, 'tcx> {
 
     fn type_f128(&self) -> &'ll Type {
         unsafe { llvm::LLVMFP128TypeInContext(self.llcx) }
+
+    fn type_void(&self) -> &'ll Type {
+        unsafe { llvm::LLVMVoidTypeInContext(self.llcx) }
     }
 
     fn type_func(&self, args: &[&'ll Type], ret: &'ll Type) -> &'ll Type {
