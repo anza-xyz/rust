@@ -442,6 +442,12 @@ impl<'a> GccLinker<'a> {
                     soname.push(name);
                     self.link_arg(soname);
                 }
+            } else if self.sess.target.arch == "bpf" {
+                if self.sess.opts.test {
+                    self.linker_arg("--entry=main");
+                } else {
+                    self.linker_arg("--entry=entrypoint");
+                }
             }
         }
     }

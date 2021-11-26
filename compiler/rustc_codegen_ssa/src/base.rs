@@ -484,9 +484,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         let llbb = Bx::append_block(cx, llfn, "top");
         let mut bx = Bx::build(cx, llbb);
 
-        if !is_bpf {
-            bx.insert_reference_to_gdb_debug_scripts_section_global();
-        }
+        bx.insert_reference_to_gdb_debug_scripts_section_global();
 
         let isize_ty = cx.type_isize();
         let ptr_ty = cx.type_ptr();
@@ -533,6 +531,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             bx.call(start_ty, None, None, start_fn, &args, None, instance)
         };
 
+        let result = bx.call(start_ty, None, start_fn, &args, None);
         if cx.sess().target.os.contains("uefi") {
             bx.ret(result);
         } else {
