@@ -791,7 +791,8 @@ dependencies = [
 name = "core"
 version = "0.0.0"
 dependencies = [
- "rand",
+ "getrandom 0.1.14",
+ "rand 0.7.3",
  "rand_xorshift",
 ]
 
