@@ -21,8 +21,6 @@ SECTIONS
 }
 ";
     let mut lld_args = Vec::new();
-    lld_args.push("--Bdynamic".to_string());
-    lld_args.push("--entry=entrypoint".to_string());
     lld_args.push("--threads=1".to_string());
     lld_args.push("-z".to_string());
     lld_args.push("notext".to_string());
@@ -59,6 +57,7 @@ SECTIONS
             max_atomic_width: Some(64),
             eh_frame_header: false,
             main_needs_argc_argv: false,
+            emit_debug_gdb_scripts: false,
             .. Default::default()
         },
     }
