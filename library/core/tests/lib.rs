@@ -113,6 +113,7 @@ mod ascii;
 mod ascii_char;
 mod asserting;
 mod async_iter;
+#[cfg(not(target_arch = "bpf"))]
 mod atomic;
 mod bool;
 mod cell;
@@ -122,18 +123,22 @@ mod cmp;
 mod const_ptr;
 mod convert;
 mod ffi;
+#[cfg(not(target_arch = "bpf"))]
 mod fmt;
 mod future;
+#[cfg(not(target_arch = "bpf"))]
 mod hash;
 mod intrinsics;
 mod io;
 mod iter;
+#[cfg(not(target_arch = "bpf"))]
 mod lazy;
 mod macros;
 mod manually_drop;
 mod mem;
 mod net;
 mod nonzero;
+#[cfg(not(target_arch = "bpf"))]
 mod num;
 mod ops;
 mod option;
@@ -141,9 +146,11 @@ mod panic;
 mod pattern;
 mod pin;
 mod pin_macro;
+#[cfg(not(target_arch = "bpf"))]
 mod ptr;
 mod result;
 mod simd;
+#[cfg(not(target_arch = "bpf"))]
 mod slice;
 mod str;
 mod str_lossy;
