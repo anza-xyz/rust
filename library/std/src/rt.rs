@@ -173,3 +173,14 @@ fn lang_start<T: crate::process::Termination + 'static>(
     );
     v
 }
+
+#[cfg(not(test))]
+#[cfg(target_arch = "bpf")]
+#[lang = "start"]
+fn lang_start<T: crate::process::Termination + 'static>(
+    main: fn() -> T,
+    _argc: isize,
+    _argv: *const *const u8,
+) -> isize {
+    main().report() as isize
+}

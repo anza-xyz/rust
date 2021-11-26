@@ -314,9 +314,7 @@ fn collect_roots(tcx: TyCtxt<'_>, mode: MonoItemCollectionMode) -> Vec<MonoItem<
             collector.process_impl_item(id);
         }
 
-        if tcx.sess.target.arch != "bpf" || !tcx.sess.opts.test {
-            collector.push_extra_entry_roots();
-        }
+        collector.push_extra_entry_roots();
     }
 
     // We can only codegen items that are instantiable - items all of

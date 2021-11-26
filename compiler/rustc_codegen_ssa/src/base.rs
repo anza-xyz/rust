@@ -420,6 +420,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         rust_main_def_id: DefId,
         entry_type: EntryFnType,
     ) -> Bx::Function {
+<<<<<<< HEAD
         // The entry function is either `int main(void)` or `int main(int argc, char **argv)`, or
         // `usize efi_main(void *handle, void *system_table)` depending on the target.
         let is_bpf = cx.sess().target.arch == "bpf" && cx.sess().opts.test;
@@ -427,6 +428,12 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             cx.type_func(&[cx.type_ptr(), cx.type_ptr()], cx.type_isize())
         } else if cx.sess().target.main_needs_argc_argv {
             cx.type_func(&[cx.type_int(), cx.type_ptr()], cx.type_int())
+=======
+        // The entry function is either `int main(void)` or `int main(int argc, char **argv)`,
+        // depending on whether the target needs `argc` and `argv` to be passed in.
+        let llfty = if cx.sess().target.main_needs_argc_argv {
+            cx.type_func(&[cx.type_int(), cx.type_ptr_to(cx.type_i8p())], cx.type_int())
+>>>>>>> e5c32090239 ([SOL] rework test harness codegen a bit)
         } else {
             cx.type_func(&[], cx.type_int())
         };
@@ -457,15 +464,13 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         let llbb = Bx::append_block(&cx, llfn, "top");
         let mut bx = Bx::build(&cx, llbb);
 
-        if !is_bpf {
-            bx.insert_reference_to_gdb_debug_scripts_section_global();
-        }
+        bx.insert_reference_to_gdb_debug_scripts_section_global();
 
         let isize_ty = cx.type_isize();
         let ptr_ty = cx.type_ptr();
         let (arg_argc, arg_argv) = get_argc_argv(cx, &mut bx);
 
-        let (start_fn, start_ty, args) = if !is_bpf && let EntryFnType::Main { sigpipe } = entry_type {
+        let (start_fn, start_ty, args) = if let EntryFnType::Main { sigpipe } = entry_type {
             let start_def_id = cx.tcx().require_lang_item(LangItem::Start, None);
             let start_fn = cx.get_fn_addr(
                 ty::Instance::resolve(
@@ -485,23 +490,11 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             (start_fn, start_ty, vec![rust_main, arg_argc, arg_argv, arg_sigpipe])
         } else {
             debug!("using user-defined start fn");
-            if is_bpf {
-                let start_ty = cx.type_func(&[], cx.type_void());
-                (rust_main, start_ty, Vec::new())
-            } else {
-                let start_ty = cx.type_func(&[isize_ty, ptr_ty], isize_ty);
-                (rust_main, start_ty, vec![arg_argc, arg_argv])
-            }
+            let start_ty = cx.type_func(&[isize_ty, ptr_ty], isize_ty);
+            (rust_main, start_ty, vec![arg_argc, arg_argv])
         };
 
-        let result = if is_bpf {
-            let args = Vec::new();
-            bx.call(start_ty, None, None, start_fn, &args, None);
-            bx.const_i32(0)
-        } else {
-            bx.call(start_ty, None, None, start_fn, &args, None)
-        };
-
+        let result = bx.call(start_ty, None, start_fn, &args, None);
         if cx.sess().target.os.contains("uefi") {
             bx.ret(result);
         } else {

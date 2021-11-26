@@ -354,6 +354,12 @@ impl<'a> GccLinker<'a> {
                         self.linker_arg(&format!("--out-implib={}", (*implib).to_str().unwrap()));
                     }
                 }
+            } else if self.sess.target.arch == "bpf" {
+                if self.sess.opts.test {
+                    self.linker_arg("--entry=main");
+                } else {
+                    self.linker_arg("--entry=entrypoint");
+                }
             }
         }
     }
