@@ -505,7 +505,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             let i8_ty = cx.type_i8();
             let arg_sigpipe = bx.const_u8(sigpipe);
 
-            let start_ty = cx.type_func(&[cx.val_ty(rust_main), isize_ty, ptr_ty, i8_ty], isize_ty);
+        let start_ty = cx.type_func(&[cx.val_ty(rust_main), isize_ty, ptr_ty, i8_ty], isize_ty);
             (
                 start_fn,
                 start_ty,
@@ -514,24 +514,11 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             )
         } else {
             debug!("using user-defined start fn");
-            if is_bpf {
-                let start_ty = cx.type_func(&[], cx.type_void());
-                (rust_main, start_ty, Vec::new(), None)
-            } else {
-                let start_ty = cx.type_func(&[isize_ty, ptr_ty], isize_ty);
-                (rust_main, start_ty, vec![arg_argc, arg_argv], None)
-            }
-        };
-        
-        let result = if is_bpf {
-            let args = Vec::new();
-            bx.call(start_ty, None, None, start_fn, &args, None, instance);
-            bx.const_i32(0)
-        } else {
-            bx.call(start_ty, None, None, start_fn, &args, None, instance)
+            let start_ty = cx.type_func(&[isize_ty, ptr_ty], isize_ty);
+            (rust_main, start_ty, vec![arg_argc, arg_argv], None)
         };
 
-        let result = bx.call(start_ty, None, start_fn, &args, None);
+        let result = bx.call(start_ty, None, None, start_fn, &args, None, instance);
         if cx.sess().target.os.contains("uefi") {
             bx.ret(result);
         } else {

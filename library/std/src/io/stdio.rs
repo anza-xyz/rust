@@ -481,30 +481,6 @@ impl Stdin {
     pub fn lines(self) -> Lines<StdinLock<'static>> {
         self.lock().lines()
     }
-
-    /// Consumes this handle and returns an iterator over input bytes,
-    /// split at the specified byte value.
-    ///
-    /// For detailed semantics of this method, see the documentation on
-    /// [`BufRead::split`].
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// #![feature(stdin_forwarders)]
-    /// use std::io;
-    ///
-    /// let splits = io::stdin().split(b'-');
-    /// for split in splits {
-    ///     println!("got a chunk: {}", String::from_utf8_lossy(&split.unwrap()));
-    /// }
-    /// ```
-    #[must_use = "`self` will be dropped if the result is not used"]
-    #[unstable(feature = "stdin_forwarders", issue = "87096")]
-    #[cfg(not(target_arch = "bpf"))]
-    pub fn split(self, byte: u8) -> Split<StdinLock<'static>> {
-        self.into_locked().split(byte)
-    }
 }
 
 #[stable(feature = "std_debug", since = "1.16.0")]

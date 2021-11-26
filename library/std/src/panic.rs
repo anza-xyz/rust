@@ -5,9 +5,6 @@
 use crate::any::Any;
 use crate::sync::atomic::{AtomicU8, Ordering};
 use crate::sync::{Condvar, Mutex, RwLock};
-#[cfg(not(target_arch = "bpf"))]
-use crate::sync::atomic::{AtomicU8, Ordering};
-use crate::sync::{Condvar, Mutex, RwLock};
 use crate::thread::Result;
 use crate::{collections, fmt, panicking};
 
