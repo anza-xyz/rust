@@ -62,11 +62,24 @@ jobs:
     continue-on-error: "${{ matrix.continue_on_error || false }}"
     strategy:
       matrix:
-        include: "${{ fromJSON(needs.calculate_matrix.outputs.jobs) }}"
-    if: "fromJSON(needs.calculate_matrix.outputs.jobs)[0] != null"
-    defaults:
-      run:
-        shell: "${{ contains(matrix.os, 'windows') && 'msys2 {0}' || 'bash' }}"
+        include:
+          - name: mingw-check
+            os: ubuntu-20.04-4core-16gb
+            env: {}
+          - name: mingw-check-tidy
+            os: ubuntu-20.04-4core-16gb
+            env: {}
+          - name: x86_64-gnu-llvm-15
+            env:
+              ENABLE_GCC_CODEGEN: "1"
+            os: ubuntu-20.04-16core-64gb
+            env: {}
+          - name: bpfel-unknown-unknown
+            os: ubuntu-latest
+            env: {}
+          - name: x86_64-gnu-tools
+            os: ubuntu-20.04-16core-64gb
+            env: {}
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
