@@ -145,9 +145,9 @@ x--expand-yaml-anchors--remove:
         run: src/ci/scripts/should-skip-this.sh
         <<: *step
 
-#      - name: ensure the channel matches the target branch
-#        run: src/ci/scripts/verify-channel.sh
-#        <<: *step
+      #      - name: ensure the channel matches the target branch
+      #        run: src/ci/scripts/verify-channel.sh
+      #        <<: *step
 
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
@@ -338,6 +338,9 @@ jobs:
             env:
               ENABLE_GCC_CODEGEN: "1"
             <<: *job-linux-16c
+
+          - name: bpfel-unknown-unknown
+            <<: *job-linux-xl
 
           - name: x86_64-gnu-tools
             <<: *job-linux-16c
