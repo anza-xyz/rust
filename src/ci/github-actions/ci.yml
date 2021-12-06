@@ -36,22 +36,24 @@ x--expand-yaml-anchors--remove:
     HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
   - &public-variables
-    SCCACHE_BUCKET: rust-lang-ci-sccache2
+    SCCACHE_BUCKET: cached-ci-artifacts
+    SCCACHE_REGION: us-east-2
     TOOLSTATE_REPO: https://github.com/rust-lang-nursery/rust-toolstate
-    CACHE_DOMAIN: ci-caches.rust-lang.org
+    CACHE_DOMAIN: cached-ci-artifacts.s3.us-east-2.amazonaws.com
 
   - &prod-variables
-    SCCACHE_BUCKET: rust-lang-ci-sccache2
+    SCCACHE_BUCKET: cached-ci-artifacts
+    SCCACHE_REGION: us-east-2
     DEPLOY_BUCKET: rust-lang-ci2
     TOOLSTATE_REPO: https://github.com/rust-lang-nursery/rust-toolstate
     TOOLSTATE_ISSUES_API_URL: https://api.github.com/repos/rust-lang/rust/issues
-    TOOLSTATE_PUBLISH: 1
+    TOOLSTATE_PUBLISH: 0
     # AWS_SECRET_ACCESS_KEYs are stored in GitHub's secrets storage, named
     # AWS_SECRET_ACCESS_KEY_<keyid>. Including the key id in the name allows to
     # rotate them in a single branch while keeping the old key in another
     # branch, which wouldn't be possible if the key was named with the kind
     # (caches, artifacts...).
-    CACHES_AWS_ACCESS_KEY_ID: AKIA46X5W6CZI5DHEBFL
+    CACHES_AWS_ACCESS_KEY_ID: AKIASSXOBJJGY5HRQO4U
     ARTIFACTS_AWS_ACCESS_KEY_ID: AKIA46X5W6CZN24CBO55
     AWS_REGION: us-west-1
     CACHE_DOMAIN: ci-caches.rust-lang.org
@@ -253,6 +255,7 @@ x--expand-yaml-anchors--remove:
         env:
           AWS_ACCESS_KEY_ID: ${{ env.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}
+          SKIP_JOB: 1
         # Adding a condition on DEPLOY=1 or DEPLOY_ALT=1 is not needed as all deploy
         # builders *should* have the AWS credentials available. Still, explicitly
         # adding the condition is helpful as this way CI will not silently skip
@@ -344,6 +347,24 @@ jobs:
 
           - name: x86_64-gnu-tools
             <<: *job-linux-16c
+
+  push:
+    <<: *base-ci-job
+    name: push
+    env:
+      <<: [*shared-ci-variables, *prod-variables]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'solana-labs/rust'
+    strategy:
+      matrix:
+        include:
+          - name: mingw-check
+            <<: *job-linux-xl
+
+          - name: x86_64-gnu-llvm-10
+            <<: *job-linux-xl
+
+          - name: bpfel-unknown-unknown
+            <<: *job-linux-xl
 
   auto:
     <<: *base-ci-job
