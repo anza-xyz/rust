@@ -22,6 +22,7 @@ RUN git clone https://github.com/solana-labs/cargo-run-bpf-tests
 WORKDIR /cargo-run-bpf-tests
 RUN cargo build
 RUN cp target/debug/cargo-run-bpf-tests /usr/local/bin
+RUN rm -rf target
 WORKDIR /
 
 COPY scripts/sccache.sh /scripts/
