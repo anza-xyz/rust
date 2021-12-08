@@ -23,6 +23,7 @@ name: CI
       - try-perf
       - automation/bors/try
       - master
+      - solana-**
   pull_request:
     branches:
       - "**"
@@ -184,7 +185,7 @@ jobs:
       CACHES_AWS_ACCESS_KEY_ID: AKIASSXOBJJGY5HRQO4U
       ARTIFACTS_AWS_ACCESS_KEY_ID: AKIA46X5W6CZN24CBO55
       CACHE_DOMAIN: cached-ci-artifacts.s3.us-east-2.amazonaws.com
-    if: "github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'solana-labs/rust'"
+    if: "github.event_name == 'push' && startsWith(github.ref, 'refs/heads/solana-') && github.repository == 'solana-labs/rust'"
     strategy:
       matrix:
         include:

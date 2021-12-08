@@ -298,6 +298,7 @@ on:
       - try-perf
       - automation/bors/try
       - master
+      - solana-**
   pull_request:
     branches:
       - "**"
@@ -353,7 +354,7 @@ jobs:
     name: push
     env:
       <<: [*shared-ci-variables, *prod-variables]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'solana-labs/rust'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/solana-') && github.repository == 'solana-labs/rust'
     strategy:
       matrix:
         include:
