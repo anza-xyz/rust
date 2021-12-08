@@ -13,7 +13,8 @@ on:
     branches:
       - automation/bors/auto
       - automation/bors/try
-      - try-perf
+      - master
+      - solana-**
   pull_request:
     branches:
       - "**"
