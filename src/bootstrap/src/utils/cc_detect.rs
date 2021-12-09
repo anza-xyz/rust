@@ -41,7 +41,7 @@ fn cc2ar(cc: &Path, target: TargetSelection) -> Option<PathBuf> {
         Some(PathBuf::from(ar))
     } else if target.is_msvc() {
         None
-    } else if target.contains("bpf") {
+    } else if target.contains("sbf") || target.contains("bpf") {
         let parent = cc.parent().unwrap();
         let file = PathBuf::from("llvm-ar");
         Some(parent.join(file))
@@ -136,7 +136,7 @@ pub fn find_target(build: &Build, target: TargetSelection) {
     {
         cfg.compiler(cxx);
         true
-    } else if &*target.triple == "bpfel-unknown-unknown" {
+    } else if &*target.triple == "sbf-solana-solana" || &*target.triple == "bpfel-unknown-unknown" {
         set_compiler(&mut cfg, Language::CPlusPlus, target, config, build);
         true
     } else {
@@ -219,6 +219,9 @@ fn default_compiler(
             }
         }
         "bpfel-unknown-unknown" => {
+            cfg.compiler(build.llvm_bin(target).join(compiler.clang()));
+        }
+        "sbf-solana-solana" => {
             cfg.compiler(build.llvm_bin(target).join(compiler.clang()));
         }
 

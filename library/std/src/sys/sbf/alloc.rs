@@ -1,8 +1,8 @@
-//! This is an implementation of a global allocator on the BPF platform.
+//! This is an implementation of a global allocator on the SBF platform.
 //! In that situation there's no actual runtime for us
 //! to lean on for allocation, so instead we provide our own!
 //!
-//! The crate itself provides a global allocator which on BPF has no
+//! The crate itself provides a global allocator which on SBF has no
 //! synchronization as there are no threads!
 
 use crate::alloc::{GlobalAlloc, Layout, System};

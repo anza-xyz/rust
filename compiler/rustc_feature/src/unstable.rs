@@ -310,6 +310,7 @@ declare_features! (
     (unstable, prfchw_target_feature, "1.78.0", Some(44839)),
     (unstable, riscv_target_feature, "1.45.0", Some(44839)),
     (unstable, rtm_target_feature, "1.35.0", Some(44839)),
+    (unstable, sbf_target_feature, "1.54.0", Some(44839), None),
     (unstable, sse4a_target_feature, "1.27.0", Some(44839)),
     (unstable, tbm_target_feature, "1.27.0", Some(44839)),
     (unstable, wasm_target_feature, "1.30.0", Some(44839)),
