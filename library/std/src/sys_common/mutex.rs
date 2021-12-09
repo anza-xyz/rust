@@ -61,9 +61,9 @@ unsafe impl Sync for MovableMutex {}
 impl MovableMutex {
     /// Creates a new mutex.
     pub fn new() -> Self {
-        #[cfg(not(target_arch = "bpf"))]
+        #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
         let mut mutex = imp::MovableMutex::from(imp::Mutex::new());
-        #[cfg(target_arch = "bpf")]
+        #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
         let mutex = imp::MovableMutex::from(imp::Mutex::new());
         unsafe { mutex.init() };
         Self(mutex)

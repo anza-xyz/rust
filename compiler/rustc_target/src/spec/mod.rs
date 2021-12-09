@@ -74,6 +74,7 @@ mod msvc_base;
 mod netbsd_base;
 mod openbsd_base;
 mod redox_base;
+mod sbf_base;
 mod solaris_base;
 mod thumb_base;
 mod uefi_msvc_base;
@@ -942,6 +943,7 @@ supported_targets! {
     ("bpfeb-unknown-none", bpfeb_unknown_none),
     ("bpfel-unknown-none", bpfel_unknown_none),
     ("bpfel-unknown-unknown", bpfel_unknown_unknown),
+    ("sbf-solana-solana", sbf_solana_solana),
 }
 
 /// Warnings encountered when parsing the target `json`.

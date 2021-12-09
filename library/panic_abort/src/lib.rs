@@ -119,6 +119,7 @@ pub mod personalities {
         all(target_arch = "wasm32", not(target_os = "emscripten"),),
         all(target_os = "windows", target_env = "gnu", target_arch = "x86_64",),
         target_arch = "bpf",
+        target_arch = "sbf",
     )))]
     pub extern "C" fn rust_eh_personality() {}
 

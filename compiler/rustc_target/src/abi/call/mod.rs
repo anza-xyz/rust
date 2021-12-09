@@ -17,6 +17,7 @@ mod powerpc;
 mod powerpc64;
 mod riscv;
 mod s390x;
+mod sbf;
 mod sparc;
 mod sparc64;
 mod wasm;
@@ -655,6 +656,7 @@ impl<'a, Ty> FnAbi<'a, Ty> {
             }
             "asmjs" => wasm::compute_c_abi_info(cx, self),
             "bpf" => bpf::compute_abi_info(self),
+            "sbf" => sbf::compute_abi_info(self),
             a => return Err(format!("unrecognized arch \"{}\" in target specification", a)),
         }
 

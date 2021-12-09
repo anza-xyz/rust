@@ -28,6 +28,7 @@ fn main() {
         || target.contains("asmjs")
         || target.contains("espidf")
         || target.contains("bpf")
+        || target.contains("sbf")
     {
         // These platforms don't have any special requirements.
     } else {

@@ -1,20 +1,20 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(unused_macros)]
 
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sync::Once;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys_common::thread_info;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::thread::Thread;
 
 // One-time runtime initialization.
 // Runs before `main`.
 // SAFETY: must be called only once during runtime initialization.
 // NOTE: this is not guaranteed to run, for example when Rust code is called externally.
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[cfg_attr(test, allow(dead_code))]
 pub unsafe fn init(argc: isize, argv: *const *const u8) {
     unsafe {
@@ -33,7 +33,7 @@ pub unsafe fn init(argc: isize, argv: *const *const u8) {
 // One-time runtime cleanup.
 // Runs after `main` or at program exit.
 // NOTE: this is not guaranteed to run, for example when the program aborts.
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[cfg_attr(test, allow(dead_code))]
 pub fn cleanup() {
     static CLEANUP: Once = Once::new();
