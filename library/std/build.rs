@@ -57,6 +57,7 @@ fn main() {
         || target_os == "rtems"
         || target_os == "nuttx"
         || target_os == "bpf"
+        || target_os == "sbf"
 
         // See src/bootstrap/src/core/build_steps/synthetic_targets.rs
         || env::var("RUSTC_BOOTSTRAP_SYNTHETIC_TARGET").is_ok()

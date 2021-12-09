@@ -252,7 +252,7 @@ pub use crate::panicking::{set_hook, take_hook};
 /// accessed later using [`PanicHookInfo::payload`].
 ///
 /// See the [`panic!`] macro for more information about panicking.
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[stable(feature = "panic_any", since = "1.51.0")]
 #[inline]
 #[track_caller]
@@ -385,14 +385,14 @@ pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R> {
 /// }
 /// ```
 #[stable(feature = "resume_unwind", since = "1.9.0")]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub fn resume_unwind(payload: Box<dyn Any + Send>) -> ! {
     panicking::rust_panic_without_hook(payload)
 }
 
-/// BPF version of resume_unwind
+/// SBF version of resume_unwind
 #[stable(feature = "resume_unwind", since = "1.9.0")]
-#[cfg(target_arch = "bpf")]
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 pub fn resume_unwind(_payload: Box<dyn Any + Send>) -> ! {
     // Only used by thread, redirect to plain old panic
     panicking::begin_panic_fmt(&format_args!("unwind"), &(file!(), line!(), column!()))

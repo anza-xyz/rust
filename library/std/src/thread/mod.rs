@@ -437,7 +437,7 @@ impl Builder {
     /// ```
     ///
     /// [`io::Result`]: crate::io::Result
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     #[stable(feature = "thread_spawn_unchecked", since = "1.82.0")]
     pub unsafe fn spawn_unchecked<F, T>(self, f: F) -> io::Result<JoinHandle<T>>
     where
@@ -581,9 +581,9 @@ impl Builder {
         })
     }
 
-    /// BPF version of spawn_unchecked
+    /// SBF version of spawn_unchecked
     #[unstable(feature = "thread_spawn_unchecked", issue = "55132")]
-    #[cfg(target_arch = "bpf")]
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
     pub unsafe fn spawn_unchecked<'a, F, T>(self, _f: F) -> io::Result<JoinHandle<T>>
     where
         F: FnOnce() -> T,

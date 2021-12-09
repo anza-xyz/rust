@@ -1,4 +1,4 @@
-// use crate::arch::BPF;
+// use crate::arch::SBF;
 use crate::cell::UnsafeCell;
 use crate::mem;
 use crate::sync::atomic::{AtomicUsize, AtomicU32, Ordering::SeqCst};

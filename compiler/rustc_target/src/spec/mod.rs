@@ -59,6 +59,8 @@ pub mod abi;
 pub mod crt_objects;
 
 mod base;
+mod sbf_base;
+
 pub use base::apple::{
     deployment_target_for_target as current_apple_deployment_target,
     platform as current_apple_platform,
@@ -1907,6 +1909,7 @@ supported_targets! {
     ("bpfeb-unknown-none", bpfeb_unknown_none),
     ("bpfel-unknown-none", bpfel_unknown_none),
     ("bpfel-unknown-unknown", bpfel_unknown_unknown),
+    ("sbf-solana-solana", sbf_solana_solana),
 
     ("armv6k-nintendo-3ds", armv6k_nintendo_3ds),
 

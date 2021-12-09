@@ -47,13 +47,13 @@ pub fn join_paths<I, T>(_paths: I) -> Result<OsString, JoinPathsError>
 
 impl fmt::Display for JoinPathsError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        "not supported on BPF yet".fmt(f)
+        "not supported on SBF yet".fmt(f)
     }
 }
 
 impl StdError for JoinPathsError {
     fn description(&self) -> &str {
-        "not supported on BPF yet"
+        "not supported on SBF yet"
     }
 }
 

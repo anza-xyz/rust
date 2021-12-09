@@ -1762,6 +1762,7 @@ symbols! {
         saturating_add,
         saturating_div,
         saturating_sub,
+        sbf_target_feature,
         select_unpredictable,
         self_in_typedefs,
         self_struct_ctor,
