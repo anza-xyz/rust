@@ -14,16 +14,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     gdb \
     libssl-dev \
     pkg-config \
-    xz-utils \
-    git \
-    cargo
+    xz-utils
 
-RUN git clone https://github.com/solana-labs/cargo-run-bpf-tests
-WORKDIR /cargo-run-bpf-tests
-RUN cargo build
-RUN cp target/debug/cargo-run-bpf-tests /usr/local/bin
-RUN rm -rf target
-WORKDIR /
+ENV RUSTUP_INIT_SKIP_PATH_CHECK="yes"
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+RUN PATH="${HOME}/.cargo/bin:${PATH}" \
+    cargo install --git https://github.com/solana-labs/cargo-run-bpf-tests.git \
+                  --bin cargo-run-bpf-tests --root /usr/local
 
 COPY scripts/sccache.sh /scripts/
 RUN sh /scripts/sccache.sh
@@ -34,5 +32,6 @@ ENV RUST_CONFIGURE_ARGS \
 
 ENV SCRIPT CARGO_TARGET_BPFEL_UNKNOWN_UNKNOWN_RUNNER=cargo-run-bpf-tests \
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
+    PATH="${HOME}/.cargo/bin:${PATH}" \
     python3 /checkout/x.py --stage 1 test --host='' --target bpfel-unknown-unknown \
     library/core
