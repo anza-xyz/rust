@@ -26,6 +26,7 @@ mod powerpc;
 mod powerpc64;
 mod riscv;
 mod s390x;
+mod sbf;
 mod sparc;
 mod sparc64;
 mod wasm;
@@ -702,6 +703,7 @@ impl<'a, Ty> FnAbi<'a, Ty> {
             Arch::RiscV32 | Arch::RiscV64 => riscv::compute_abi_info(cx, self),
             Arch::Wasm32 | Arch::Wasm64 => wasm::compute_abi_info(cx, self),
             Arch::Bpf => bpf::compute_abi_info(cx, self),
+            Arch::Sbf => sbf::compute_abi_info(self),
             arch @ (Arch::SpirV | Arch::Other(_)) => {
                 panic!("no lowering implemented for {arch}")
             }

@@ -14,8 +14,6 @@ use crate::versions::{PkgType, Versions};
 
 include!(concat!(env!("OUT_DIR"), "/targets.rs"));
 
-/// This allows the manifest to contain rust-docs and rustc-docs for hosts
-/// that don't build certain docs.
 ///
 /// Tuples of `(host_partial, host_instead)`. If the host does not have the
 /// corresponding docs component available, then if the host name contains

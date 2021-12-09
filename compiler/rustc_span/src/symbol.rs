@@ -1811,6 +1811,7 @@ symbols! {
         sdylib,
         search_unbox,
         select_unpredictable,
+        sbf_target_feature,
         self_in_typedefs,
         self_struct_ctor,
         semiopaque,

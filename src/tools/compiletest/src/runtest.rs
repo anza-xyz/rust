@@ -1445,8 +1445,9 @@ impl<'test> TestCx<'test> {
             || self.config.target.contains("wasm32")
             || self.config.target.contains("nvptx")
             || self.is_vxworks_pure_static()
-            || self.config.target.contains("bpf")
             || !self.config.target_cfg().dynamic_linking
+            || self.config.target.contains("bpf")
+            || self.config.target.contains("sbf")
             || matches!(self.config.mode, TestMode::CoverageMap | TestMode::CoverageRun)
         {
             // We primarily compile all auxiliary libraries as dynamic libraries

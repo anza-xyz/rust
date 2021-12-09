@@ -10,27 +10,27 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 
 use core::panic::Location;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_os = "solana"))]
 use core::panic::PanicPayload;
 // make sure to use the stderr output configured
 // by libtest in the real copy of std
-#[cfg(all(test, not(target_arch = "bpf")))]
+#[cfg(all(test, not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use realstd::io::set_output_capture;
 
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_os = "solana"))]
 use crate::any::Any;
-#[cfg(all(not(test), not(target_arch = "bpf")))]
+#[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::io::try_set_output_capture;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_os = "solana"))]
 use crate::mem::{self, ManuallyDrop};
 use crate::panic::{BacktraceStyle, PanicHookInfo};
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_os = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicBool, Ordering};
 use crate::sync::nonpoison::RwLock;
 use crate::sys::backtrace;
 use crate::sys::stdio::panic_output;
 use crate::fmt;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_os = "solana"))]
 use crate::{intrinsics, process, thread};
 
 // This forces codegen of the function called by panic!() inside the std crate, rather than in
@@ -59,7 +59,7 @@ pub static EMPTY_PANIC: fn(&'static str) -> ! =
 //
 // One day this may look a little less ad-hoc with the compiler helping out to
 // hook up these functions, but it is not this day!
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[allow(improper_ctypes)]
 unsafe extern "C" {
     #[rustc_std_internal_symbol]
@@ -70,14 +70,14 @@ unsafe extern "Rust" {
     /// `PanicPayload` lazily performs allocation only when needed (this avoids
     /// allocations when using the "abort" panic runtime).
     #[rustc_std_internal_symbol]
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     fn __rust_start_panic(payload: &mut dyn PanicPayload) -> u32;
 }
 
 /// This function is called by the panic runtime if FFI code catches a Rust
 /// panic but doesn't rethrow it. We don't support this case since it messes
 /// with our panic count.
-#[cfg(all(not(test), not(target_arch = "bpf")))]
+#[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[rustc_std_internal_symbol]
 extern "C" fn __rust_drop_panic() -> ! {
     rtabort!("Rust panics must be rethrown");
@@ -85,13 +85,13 @@ extern "C" fn __rust_drop_panic() -> ! {
 
 /// This function is called by the panic runtime if it catches an exception
 /// object which does not correspond to a Rust panic.
-#[cfg(all(not(test), not(target_arch = "bpf")))]
+#[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[rustc_std_internal_symbol]
 extern "C" fn __rust_foreign_exception() -> ! {
     rtabort!("Rust cannot catch foreign exceptions");
 }
 
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_os = "solana"))]
 #[derive(Default)]
 enum Hook {
     #[default]
@@ -157,7 +157,7 @@ static HOOK: RwLock<Hook> = RwLock::new(Hook::Default);
 ///
 /// panic!("Normal panic");
 /// ```
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
 pub fn set_hook(hook: Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send>) {
     if thread::panicking() {
@@ -169,8 +169,8 @@ pub fn set_hook(hook: Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send>) {
     drop(HOOK.replace(Hook::Custom(hook)));
 }
 
-/// Dummy version for satisfying library/test dependencies for BPF target
-#[cfg(target_arch = "bpf")]
+/// Dummy version for satisfying library/test dependencies for SBF target
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
 pub fn set_hook(_hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
 }
@@ -204,7 +204,7 @@ pub fn set_hook(_hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
 /// panic!("Normal panic");
 /// ```
 #[must_use]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
 pub fn take_hook() -> Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send> {
     if thread::panicking() {
@@ -263,7 +263,7 @@ where
 }
 
 /// Dummy version for satisfying library/test dependencies for BPF target
-#[cfg(target_arch = "bpf")]
+#[cfg(target_os = "solana")]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
 pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
     Box::new(default_hook)
@@ -271,7 +271,7 @@ pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
 
 /// The default panic handler.
 #[optimize(size)]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 fn default_hook(info: &PanicHookInfo<'_>) {
     // If this is a double panic, make sure that we print a backtrace
     // for this panic. Otherwise only print it if logging is enabled.
@@ -355,7 +355,7 @@ fn default_hook(info: &PanicHookInfo<'_>) {
     }
 }
 
-#[cfg(target_arch = "bpf")]
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 fn default_hook(_info: &PanicInfo<'_>) {
 }
 
@@ -404,7 +404,7 @@ pub mod panic_count {
 #[cfg(not(panic = "immediate-abort"))]
 #[unstable(feature = "update_panic_count", issue = "none")]
 pub mod panic_count {
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     use crate::cell::Cell;
     use crate::sync::atomic::{Atomic, AtomicUsize, Ordering};
 
@@ -419,7 +419,7 @@ pub mod panic_count {
 
     // Panic count for the current thread and whether a panic hook is currently
     // being executed..
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     thread_local! {
         static LOCAL_PANIC_COUNT: Cell<(usize, bool)> = const { Cell::new((0, false)) }
     }
@@ -456,7 +456,7 @@ pub mod panic_count {
     //
     // This also updates thread-local state to keep track of whether a panic
     // hook is currently executing.
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(not(target_os = "solana"))]
     pub fn increase(run_panic_hook: bool) -> Option<MustAbort> {
         let global_count = GLOBAL_PANIC_COUNT.fetch_add(1, Ordering::Relaxed);
         if global_count & ALWAYS_ABORT_FLAG != 0 {
@@ -481,7 +481,7 @@ pub mod panic_count {
         });
     }
 
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     pub fn decrease() {
         GLOBAL_PANIC_COUNT.fetch_sub(1, Ordering::Relaxed);
         LOCAL_PANIC_COUNT.with(|c| {
@@ -496,14 +496,14 @@ pub mod panic_count {
 
     // Disregards ALWAYS_ABORT_FLAG
     #[must_use]
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     pub fn get_count() -> usize {
         LOCAL_PANIC_COUNT.with(|c| c.get().0)
     }
 
     // Disregards ALWAYS_ABORT_FLAG
     #[must_use]
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     #[inline]
     pub fn count_is_zero() -> bool {
         if GLOBAL_PANIC_COUNT.load(Ordering::Relaxed) & !ALWAYS_ABORT_FLAG == 0 {
@@ -524,7 +524,7 @@ pub mod panic_count {
 
     // Slow path is in a separate function to reduce the amount of code
     // inlined from `count_is_zero`.
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(not(target_os = "solana"))]
     #[inline(never)]
     #[cold]
     fn is_zero_slow_path() -> bool {
@@ -602,7 +602,7 @@ pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any +
     // non-cold function, though, as of the writing of this comment).
     #[cold]
     #[optimize(size)]
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     unsafe fn cleanup(payload: *mut u8) -> Box<dyn Any + Send + 'static> {
         // SAFETY: The whole unsafe block hinges on a correct implementation of
         // the panic handler `__rust_panic_cleanup`. As such we can only
@@ -614,7 +614,7 @@ pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any +
     }
 
     #[cold]
-    #[cfg(target_arch = "bpf")]
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
     unsafe fn cleanup(payload: *mut u8) -> Box<dyn Any + Send + 'static> {
         // SAFETY: The whole unsafe block hinges on a correct implementation of
         // the panic handler `__rust_panic_cleanup`. As such we can only
@@ -671,7 +671,7 @@ pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any +
 }
 
 /// Determines whether the current thread is unwinding because of panic.
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[inline]
 pub fn panicking() -> bool {
     !panic_count::count_is_zero()
@@ -769,7 +769,7 @@ pub fn panic_handler(info: &core::panic::PanicInfo<'_>) -> ! {
 /// This is the entry point of panicking for the non-format-string variants of
 /// panic!() and assert!(). In particular, this is the only entry point that supports
 /// arbitrary payloads, not just format strings.
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[unstable(feature = "libstd_sys_internals", reason = "used by the panic! macro", issue = "none")]
 #[cfg_attr(not(any(test, doctest)), lang = "begin_panic")]
 // lang item for CTFE panic support
@@ -846,7 +846,7 @@ fn payload_as_str(payload: &dyn Any) -> &str {
 /// panics, panic hooks, and finally dispatching to the panic runtime to either
 /// abort or unwind.
 #[optimize(size)]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 fn panic_with_hook(
     payload: &mut dyn PanicPayload,
     location: &Location<'_>,
@@ -916,7 +916,7 @@ fn panic_with_hook(
 /// This is the entry point for `resume_unwind`.
 /// It just forwards the payload to the panic runtime.
 #[cfg_attr(panic = "immediate-abort", inline)]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub fn resume_unwind(payload: Box<dyn Any + Send>) -> ! {
     panic_count::increase(false);
 
@@ -941,9 +941,10 @@ pub fn resume_unwind(payload: Box<dyn Any + Send>) -> ! {
     rust_panic(&mut RewrapBox(payload))
 }
 
+
 /// A function with a fixed suffix (through `rustc_std_internal_symbol`)
 /// on which to slap yer breakpoints.
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #[inline(never)]
 #[cfg_attr(not(test), rustc_std_internal_symbol)]
 #[cfg(not(panic = "immediate-abort"))]
@@ -959,32 +960,32 @@ fn rust_panic(_: &mut dyn PanicPayload) -> ! {
 }
 
 // Note: The panicking functions have been stripped and rewritten
-//       in order to save space in BPF programs.  Panic messages
+//       in order to save space in SBF programs.  Panic messages
 //       are not supported, just file, line, column.
 
 /// This function is called by the panic runtime if it catches an exception
 /// object which does not correspond to a Rust panic.
-#[cfg(all(not(test), target_arch = "bpf"))]
+#[cfg(all(not(test), any(target_arch = "bpf", target_arch = "sbf")))]
 #[rustc_std_internal_symbol]
 extern "C" fn __rust_foreign_exception() -> ! {
     rtabort!("Rust cannot catch foreign exceptions");
 }
 
 /// Determines whether the current thread is unwinding because of panic.
-#[cfg(target_arch = "bpf")]
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 pub fn panicking() -> bool {
     true
 }
 
 /// Entry point of panic from the libcore crate.
-#[cfg(all(not(test), target_arch = "bpf"))]
+#[cfg(all(not(test), any(target_arch = "bpf", target_arch = "sbf")))]
 #[panic_handler]
 pub fn rust_begin_panic(info: &PanicInfo<'_>) -> ! {
     crate::sys::panic(info);
 }
 
-/// The entry point for panicking with a formatted message BPF version.
-#[cfg(target_arch = "bpf")]
+/// The entry point for panicking with a formatted message SBF version.
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 #[unstable(feature = "libstd_sys_internals", reason = "used by the panic! macro", issue = "none")]
 #[cold]
 // If panic_immediate_abort, inline the abort call,
@@ -1000,8 +1001,8 @@ pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>) -> ! {
     crate::sys::panic(&info);
 }
 
-/// Entry point of panicking for panic!() and assert!() BPF version.
-#[cfg(target_arch = "bpf")]
+/// Entry point of panicking for panic!() and assert!() SBF version.
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 #[unstable(feature = "libstd_sys_internals", reason = "used by the panic! macro", issue = "none")]
 #[cfg_attr(not(test), lang = "begin_panic")]
 // lang item for CTFE panic support

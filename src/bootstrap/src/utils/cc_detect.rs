@@ -29,7 +29,6 @@ use crate::core::config::TargetSelection;
 use crate::utils::exec::{BootstrapCommand, command};
 use crate::{Build, CLang, GitRepo};
 
-/// Creates and configures a new [`cc::Build`] instance for the given target.
 fn new_cc_build(build: &Build, target: TargetSelection) -> cc::Build {
     let mut cfg = cc::Build::new();
     cfg.cargo_metadata(false)
@@ -126,7 +125,7 @@ pub fn fill_target_compiler(build: &mut Build, target: TargetSelection) {
     {
         cfg.compiler(cxx);
         true
-    } else if &*target.triple == "bpfel-unknown-unknown" {
+    } else if &*target.triple == "sbf-solana-solana" || &*target.triple == "bpfel-unknown-unknown" {
         set_compiler(&mut cfg, Language::CPlusPlus, target, config, build);
         true
     } else {
@@ -213,6 +212,9 @@ fn default_compiler(
             }
         }
         "bpfel-unknown-unknown" => {
+            cfg.compiler(build.llvm_bin(target).join(compiler.clang()));
+        }
+        "sbf-solana-solana" => {
             cfg.compiler(build.llvm_bin(target).join(compiler.clang()));
         }
 

@@ -1765,6 +1765,7 @@ supported_targets! {
     ("bpfeb-unknown-none", bpfeb_unknown_none),
     ("bpfel-unknown-none", bpfel_unknown_none),
     ("bpfel-unknown-unknown", bpfel_unknown_unknown),
+    ("sbf-solana-solana", sbf_solana_solana),
 
     ("armv6k-nintendo-3ds", armv6k_nintendo_3ds),
 
@@ -1875,6 +1876,7 @@ crate::target_spec_enum! {
         Arm64EC = "arm64ec",
         Avr = "avr",
         Bpf = "bpf",
+        Sbf = "sbf",
         CSky = "csky",
         Hexagon = "hexagon",
         LoongArch32 = "loongarch32",
@@ -1912,6 +1914,7 @@ impl Arch {
             Self::Arm64EC => sym::arm64ec,
             Self::Avr => sym::avr,
             Self::Bpf => sym::bpf,
+            Self::Sbf => sym::sbf,
             Self::CSky => sym::csky,
             Self::Hexagon => sym::hexagon,
             Self::LoongArch32 => sym::loongarch32,
@@ -1945,7 +1948,7 @@ impl Arch {
 
         match self {
             // These targets just do not support c-variadic definitions.
-            Bpf | SpirV => false,
+            Bpf | Sbf | SpirV => false,
 
             // We don't know if the target supports c-variadic definitions, but we don't want
             // to needlessly restrict custom target.json configurations.
