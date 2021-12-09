@@ -7,7 +7,7 @@ pub struct Mutex {
 pub type MovableMutex = Box<Mutex>;
 
 unsafe impl Send for Mutex {}
-unsafe impl Sync for Mutex {} // no threads on BPF
+unsafe impl Sync for Mutex {} // no threads on SBF
 
 #[allow(dead_code)] // sys isn't exported yet
 impl Mutex {
@@ -41,7 +41,7 @@ impl Mutex {
     }
 }
 
-// All empty stubs because BPF has no threads, lock acquisition always
+// All empty stubs because SBF has no threads, lock acquisition always
 // succeeds.
 pub struct ReentrantMutex {
 }

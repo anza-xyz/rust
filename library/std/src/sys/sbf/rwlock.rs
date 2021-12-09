@@ -7,7 +7,7 @@ pub struct RWLock {
 pub type MovableRWLock = RWLock;
 
 unsafe impl Send for RWLock {}
-unsafe impl Sync for RWLock {} // no threads on BPF
+unsafe impl Sync for RWLock {} // no threads on SBF
 
 impl RWLock {
     pub const fn new() -> RWLock {
