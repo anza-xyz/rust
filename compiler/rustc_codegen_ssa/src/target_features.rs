@@ -394,9 +394,10 @@ pub fn supported_target_features(sess: &Session) -> &'static [(&'static str, Opt
         "powerpc" | "powerpc64" => POWERPC_ALLOWED_FEATURES,
         "riscv32" | "riscv64" => RISCV_ALLOWED_FEATURES,
         "wasm32" | "wasm64" => WASM_ALLOWED_FEATURES,
-        "bpf" => BPF_ALLOWED_FEATURES,
         "csky" => CSKY_ALLOWED_FEATURES,
         "loongarch64" => LOONGARCH_ALLOWED_FEATURES,
+        "bpf" => BPF_ALLOWED_FEATURES,
+        "sbf" => BPF_ALLOWED_FEATURES,
         _ => &[],
     }
 }

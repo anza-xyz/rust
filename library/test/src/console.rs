@@ -291,12 +291,12 @@ fn on_test_event(
 /// A simple console test runner.
 /// Runs provided tests reporting process and results to the stdout.
 pub fn run_tests_console(opts: &TestOpts, tests: Vec<TestDescAndFn>) -> io::Result<bool> {
-    #[cfg(not(target_arch = "bpf"))]
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     let output = match term::stdout() {
         None => OutputLocation::Raw(io::stdout()),
         Some(t) => OutputLocation::Pretty(t),
     };
-    #[cfg(target_arch = "bpf")]
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
     let output = OutputLocation::Raw(io::stdout());
 
     let max_name_len = tests

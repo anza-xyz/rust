@@ -293,6 +293,7 @@ declare_features! (
     (unstable, powerpc_target_feature, "1.27.0", Some(44839), None),
     (unstable, riscv_target_feature, "1.45.0", Some(44839), None),
     (unstable, rtm_target_feature, "1.35.0", Some(44839), None),
+    (unstable, sbf_target_feature, "1.54.0", Some(44839), None),
     (unstable, sse4a_target_feature, "1.27.0", Some(44839), None),
     (unstable, tbm_target_feature, "1.27.0", Some(44839), None),
     (unstable, wasm_target_feature, "1.30.0", Some(44839), None),

@@ -1,11 +1,11 @@
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::env;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sync::atomic::{self, Ordering};
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys::thread as imp;
 
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub fn min_stack() -> usize {
     static MIN: atomic::AtomicUsize = atomic::AtomicUsize::new(0);
     match MIN.load(Ordering::Relaxed) {
@@ -21,7 +21,7 @@ pub fn min_stack() -> usize {
     amt
 }
 
-#[cfg(target_arch = "bpf")]
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 pub fn min_stack() -> usize {
     0
 }
