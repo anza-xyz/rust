@@ -32,6 +32,7 @@ fn main() {
         || target.contains("solid")
         || target.contains("nintendo-3ds")
         || target.contains("bpf")
+        || target.contains("sbf")
     {
         // These platforms don't have any special requirements.
     } else {

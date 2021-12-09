@@ -2681,6 +2681,7 @@ fn from_target_feature(
                 Some(sym::ermsb_target_feature) => rust_features.ermsb_target_feature,
                 Some(sym::bpf_target_feature) => rust_features.bpf_target_feature,
                 Some(sym::aarch64_ver_target_feature) => rust_features.aarch64_ver_target_feature,
+                Some(sym::sbf_target_feature) => rust_features.sbf_target_feature,
                 Some(name) => bug!("unknown target feature gate {}", name),
                 None => true,
             };

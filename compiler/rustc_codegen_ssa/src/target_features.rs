@@ -290,6 +290,7 @@ pub fn supported_target_features(sess: &Session) -> &'static [(&'static str, Opt
         "riscv32" | "riscv64" => RISCV_ALLOWED_FEATURES,
         "wasm32" | "wasm64" => WASM_ALLOWED_FEATURES,
         "bpf" => BPF_ALLOWED_FEATURES,
+        "sbf" => BPF_ALLOWED_FEATURES,
         _ => &[],
     }
 }

@@ -15,7 +15,7 @@ use crate::alloc::{AllocError, LayoutError};
 use crate::any::Demand;
 #[cfg(bootstrap)]
 use crate::any::{Provider, TypeId};
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::backtrace::Backtrace;
 #[cfg(bootstrap)]
 use crate::borrow::Cow;

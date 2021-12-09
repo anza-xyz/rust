@@ -324,7 +324,7 @@ pub fn std_cargo(builder: &Builder<'_>, target: TargetSelection, stage: u32, car
 
     if builder.no_std(target) == Some(true) {
         let mut features = "compiler-builtins-mem".to_string();
-        if !target.starts_with("bpf") {
+        if !target.starts_with("sbf") && !target.starts_with("bpf") {
             features.push_str(compiler_builtins_c_feature);
         }
 
