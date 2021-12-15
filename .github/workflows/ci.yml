@@ -48,7 +48,7 @@ jobs:
           - name: x86_64-gnu-llvm-13
             os: ubuntu-latest
             env: {}
-          - name: bpfel-unknown-unknown
+          - name: sbf-solana-solana
             os: ubuntu-latest
             env: {}
     timeout-minutes: 600
@@ -163,7 +163,7 @@ jobs:
           - name: x86_64-gnu-llvm-10
             os: ubuntu-latest
             env: {}
-          - name: bpfel-unknown-unknown
+          - name: sbf-solana-solana
             os: ubuntu-latest
             env: {}
     timeout-minutes: 600

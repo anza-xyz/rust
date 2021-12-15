@@ -102,7 +102,7 @@
 #![feature(utf8_chunks)]
 #![deny(unsafe_op_in_unsafe_fn)]
 
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 extern crate test;
 
 mod alloc;
@@ -110,7 +110,7 @@ mod any;
 mod array;
 mod ascii;
 mod asserting;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 mod atomic;
 mod bool;
 mod cell;
