@@ -118,6 +118,7 @@ ENV TARGETS=$TARGETS,aarch64-pc-windows-gnullvm
 ENV TARGETS=$TARGETS,i686-pc-windows-gnullvm
 ENV TARGETS=$TARGETS,x86_64-pc-windows-gnullvm
 ENV TARGETS=$TARGETS,bpfel-unknown-unknown
+ENV TARGETS=$TARGETS,sbf-solana-solana
 
 ENV CFLAGS_armv5te_unknown_linux_musleabi="-march=armv5te -marm -mfloat-abi=soft" \
     CFLAGS_arm_unknown_linux_musleabi="-march=armv6 -marm" \

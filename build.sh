@@ -19,4 +19,4 @@ esac
 if [ "$1" == "--llvm" ]; then
     rm -f build/${HOST_TRIPLE}/llvm/llvm-finished-building;
 fi
-./x.py build --stage 1 --target ${HOST_TRIPLE},bpfel-unknown-unknown
+./x.py build --stage 1 --target ${HOST_TRIPLE},bpfel-unknown-unknown,sbf-solana-solana
