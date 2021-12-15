@@ -104,7 +104,7 @@ ENV TARGETS=$TARGETS,armv7r-none-eabi
 ENV TARGETS=$TARGETS,armv7r-none-eabihf
 ENV TARGETS=$TARGETS,thumbv7neon-unknown-linux-gnueabihf
 ENV TARGETS=$TARGETS,armv7a-none-eabi
-ENV TARGETS=$TARGETS,bpfel-unknown-unknown
+ENV TARGETS=$TARGETS,sbf-solana-solana
 
 # riscv targets currently do not need a C compiler, as compiler_builtins
 # doesn't currently have it enabled, and the riscv gcc compiler is not
