@@ -62,7 +62,7 @@ jobs:
               ENABLE_GCC_CODEGEN: "1"
             os: ubuntu-20.04-16core-64gb
             env: {}
-          - name: bpfel-unknown-unknown
+          - name: sbf-solana-solana
             os: ubuntu-latest
             env: {}
           - name: x86_64-gnu-tools
@@ -195,7 +195,7 @@ jobs:
           - name: x86_64-gnu-llvm-10
             os: ubuntu-latest
             env: {}
-          - name: bpfel-unknown-unknown
+          - name: sbf-solana-solana
             os: ubuntu-latest
             env: {}
     timeout-minutes: 600
