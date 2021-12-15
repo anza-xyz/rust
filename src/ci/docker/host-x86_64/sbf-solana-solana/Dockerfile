@@ -32,7 +32,8 @@ ENV RUST_CONFIGURE_ARGS \
     --set llvm.clang
 
 ENV SCRIPT CARGO_TARGET_BPFEL_UNKNOWN_UNKNOWN_RUNNER=\"cargo-run-bpf-tests --heap-size 104857600\" \
+    CARGO_TARGET_SBF_SOLANA_SOLANA_RUNNER=\"cargo-run-bpf-tests --heap-size 104857600\" \
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
     PATH="${HOME}/.cargo/bin:${PATH}" \
-    python3 /checkout/x.py --stage 1 test --host='' --target bpfel-unknown-unknown \
+    python3 /checkout/x.py --stage 1 test --host='' --target bpfel-unknown-unknown,sbf-solana-solana \
     library/core
