@@ -17,7 +17,6 @@ use core::panic::{Location, PanicPayload};
 use realstd::io::set_output_capture;
 
 use crate::any::Any;
-#[cfg(not(test))]
 use crate::io::try_set_output_capture;
 use crate::mem::{self, ManuallyDrop};
 use crate::panic::{BacktraceStyle, PanicHookInfo};
