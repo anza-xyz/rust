@@ -1052,24 +1052,31 @@ pub struct ThreadId(NonZeroU64);
 impl ThreadId {
     // Generate a new unique thread ID.
     fn new() -> ThreadId {
-        // It is UB to attempt to acquire this mutex reentrantly!
-        static GUARD: mutex::StaticMutex = mutex::StaticMutex::new();
-        static mut COUNTER: u64 = 1;
+        if cfg!(not(any(target_arch = "bpf", target_arch = "sbf"))) {
+            // It is UB to attempt to acquire this mutex reentrantly!
+            static GUARD: mutex::StaticMutex = mutex::StaticMutex::new();
+            static mut COUNTER: u64 = 1;
 
-        unsafe {
-            let guard = GUARD.lock();
+            unsafe {
+                let guard = GUARD.lock();
 
-            // If we somehow use up all our bits, panic so that we're not
-            // covering up subtle bugs of IDs being reused.
-            if COUNTER == u64::MAX {
-                drop(guard); // in case the panic handler ends up calling `ThreadId::new()`, avoid reentrant lock acquire.
-                panic!("failed to generate unique thread ID: bitspace exhausted");
+                // If we somehow use up all our bits, panic so that we're not
+                // covering up subtle bugs of IDs being reused.
+                if COUNTER == u64::MAX {
+                    drop(guard); // in case the panic handler ends up calling `ThreadId::new()`, avoid reentrant lock acquire.
+                    panic!("failed to generate unique thread ID: bitspace exhausted");
+                }
+
+                let id = COUNTER;
+                COUNTER += 1;
+
+                ThreadId(NonZeroU64::new(id).unwrap())
             }
-
-            let id = COUNTER;
-            COUNTER += 1;
-
-            ThreadId(NonZeroU64::new(id).unwrap())
+        } else {
+            // threads are not supported in sbf, so this isn't actually used
+            // anywhere. This branch of the if is only to avoid creating static
+            // mutable data.
+            ThreadId(NonZeroU64::new(1).unwrap())
         }
     }
 
