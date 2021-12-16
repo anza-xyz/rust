@@ -1116,7 +1116,7 @@ impl ThreadId {
                         Err(id) => last = id,
                     }
                 }
-            } else {
+            } else if #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))] {
                 use crate::sys_common::mutex::StaticMutex;
 
                 // It is UB to attempt to acquire this mutex reentrantly!
@@ -1135,6 +1135,11 @@ impl ThreadId {
                     drop(guard);
                     ThreadId(NonZeroU64::new(id).unwrap())
                 }
+            } else {
+                // threads are not supported in sbf, so this isn't actually used
+                // anywhere. This branch of the if is only to avoid creating static
+                // mutable data.
+                ThreadId(NonZeroU64::new(1).unwrap())
             }
         }
     }

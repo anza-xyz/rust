@@ -21,7 +21,8 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN PATH="${HOME}/.cargo/bin:${PATH}" \
     cargo install --git https://github.com/solana-labs/cargo-run-bpf-tests.git \
-                  --bin cargo-run-bpf-tests --root /usr/local
+    --rev 4cae9c0 \
+    --bin cargo-run-bpf-tests --root /usr/local
 
 COPY scripts/sccache.sh /scripts/
 RUN sh /scripts/sccache.sh
@@ -30,7 +31,7 @@ ENV RUST_CONFIGURE_ARGS \
     --set rust.lld \
     --set llvm.clang
 
-ENV SCRIPT CARGO_TARGET_BPFEL_UNKNOWN_UNKNOWN_RUNNER=cargo-run-bpf-tests \
+ENV SCRIPT CARGO_TARGET_BPFEL_UNKNOWN_UNKNOWN_RUNNER=\"cargo-run-bpf-tests --heap-size 104857600\" \
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
     PATH="${HOME}/.cargo/bin:${PATH}" \
     python3 /checkout/x.py --stage 1 test --host='' --target bpfel-unknown-unknown \
