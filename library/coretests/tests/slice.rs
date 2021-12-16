@@ -1558,31 +1558,31 @@ fn test_iter_folds() {
 #[test]
 fn test_rotate_left() {
     const N: usize = 600;
-    let a: &mut [_] = &mut [0; N];
+    let a: &mut [_] = &mut [0u8; N];
     for i in 0..N {
-        a[i] = i;
+        a[i] = i as u8;
     }
 
     a.rotate_left(42);
     let k = N - 42;
 
     for i in 0..N {
-        assert_eq!(a[(i + k) % N], i);
+        assert_eq!(a[(i + k) % N], i as u8);
     }
 }
 
 #[test]
 fn test_rotate_right() {
     const N: usize = 600;
-    let a: &mut [_] = &mut [0; N];
+    let a: &mut [_] = &mut [0u8; N];
     for i in 0..N {
-        a[i] = i;
+        a[i] = i as u8;
     }
 
     a.rotate_right(42);
 
     for i in 0..N {
-        assert_eq!(a[(i + 42) % N], i);
+        assert_eq!(a[(i + 42) % N], i as u8);
     }
 }
 
@@ -1633,9 +1633,9 @@ fn select_nth_unstable() {
     use rand::Rng;
     use rand::seq::IndexedRandom;
 
-    let mut rng = crate::test_rng();
+    let mut rng = StdRng::seed_from_u64(0);
 
-    for len in (2..21).chain(500..501) {
+    for len in (2..21).chain(200..201) {
         let mut orig = vec![0; len];
 
         for &modulus in &[5, 10, 1000] {

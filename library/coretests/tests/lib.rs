@@ -182,24 +182,21 @@ mod const_ptr;
 mod convert;
 mod ffi;
 mod floats;
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_arch = "sbf"))]
 mod fmt;
 mod future;
-#[cfg(not(target_arch = "bpf"))]
 mod hash;
 mod hint;
 mod index;
 mod intrinsics;
 mod io;
 mod iter;
-#[cfg(not(target_arch = "bpf"))]
 mod lazy;
 mod macros;
 mod manually_drop;
 mod mem;
 mod net;
 mod nonzero;
-#[cfg(not(target_arch = "bpf"))]
 mod num;
 mod ops;
 mod option;
@@ -207,11 +204,9 @@ mod panic;
 mod pattern;
 mod pin;
 mod pin_macro;
-#[cfg(not(target_arch = "bpf"))]
 mod ptr;
 mod result;
 mod simd;
-#[cfg(not(target_arch = "bpf"))]
 mod slice;
 mod str;
 mod str_lossy;
