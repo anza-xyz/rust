@@ -480,7 +480,7 @@ impl<'a> GccLinker<'a> {
                     soname.push(name);
                     self.link_arg(soname);
                 }
-            } else if self.sess.target.arch == "bpf" {
+            } else if self.sess.target.arch == "bpf" || self.sess.target.arch == "sbf" {
                 if self.sess.opts.test {
                     self.linker_arg("--entry=main");
                 } else {
