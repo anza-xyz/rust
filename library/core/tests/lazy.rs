@@ -25,7 +25,7 @@ fn once_cell_get_mut() {
 }
 
 // sbf doesn't have mutable static data
-#[cfg(not(any(target_arch = "bpf", target_arg = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 #[test]
 fn once_cell_drop() {
     static DROP_CNT: AtomicUsize = AtomicUsize::new(0);
