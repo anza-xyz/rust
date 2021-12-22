@@ -354,7 +354,7 @@ impl<'a> GccLinker<'a> {
                         self.linker_arg(&format!("--out-implib={}", (*implib).to_str().unwrap()));
                     }
                 }
-            } else if self.sess.target.arch == "bpf" {
+            } else if self.sess.target.arch == "bpf" || self.sess.target.arch == "sbf" {
                 if self.sess.opts.test {
                     self.linker_arg("--entry=main");
                 } else {
