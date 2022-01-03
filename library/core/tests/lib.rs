@@ -110,7 +110,6 @@ mod any;
 mod array;
 mod ascii;
 mod asserting;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 mod atomic;
 mod bool;
 mod cell;
