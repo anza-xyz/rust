@@ -79,7 +79,6 @@ mod alloc;
 mod any;
 mod array;
 mod ascii;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 mod atomic;
 mod bool;
 mod cell;
