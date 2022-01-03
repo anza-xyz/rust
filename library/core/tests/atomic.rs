@@ -212,38 +212,42 @@ fn ptr_bitops_tagging() {
     assert_eq!(atom.load(SeqCst), ptr);
 }
 
-static S_FALSE: AtomicBool = AtomicBool::new(false);
-static S_TRUE: AtomicBool = AtomicBool::new(true);
-static S_INT: AtomicIsize = AtomicIsize::new(0);
-static S_UINT: AtomicUsize = AtomicUsize::new(0);
+// SBF does not support mustable static data
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+mod statik {
+    use super::*;
 
-#[test]
-fn static_init() {
-    // Note that we're not really testing the mutability here but it's important
-    // on Android at the moment (#49775)
-    assert!(!S_FALSE.swap(true, SeqCst));
-    assert!(S_TRUE.swap(false, SeqCst));
-    assert!(S_INT.fetch_add(1, SeqCst) == 0);
-    assert!(S_UINT.fetch_add(1, SeqCst) == 0);
+    static S_FALSE: AtomicBool = AtomicBool::new(false);
+    static S_TRUE: AtomicBool = AtomicBool::new(true);
+    static S_INT: AtomicIsize = AtomicIsize::new(0);
+    static S_UINT: AtomicUsize = AtomicUsize::new(0);
+
+    #[test]
+    fn static_init() {
+        // Note that we're not really testing the mutability here but it's important
+        // on Android at the moment (#49775)
+        assert!(!S_FALSE.swap(true, SeqCst));
+        assert!(S_TRUE.swap(false, SeqCst));
+        assert!(S_INT.fetch_add(1, SeqCst) == 0);
+        assert!(S_UINT.fetch_add(1, SeqCst) == 0);
+    }
 }
 
 #[test]
 fn atomic_access_bool() {
-    static mut ATOMIC: AtomicBool = AtomicBool::new(false);
+    let mut atomic: AtomicBool = AtomicBool::new(false);
 
-    unsafe {
-        assert_eq!(*ATOMIC.get_mut(), false);
-        ATOMIC.store(true, SeqCst);
-        assert_eq!(*ATOMIC.get_mut(), true);
-        ATOMIC.fetch_or(false, SeqCst);
-        assert_eq!(*ATOMIC.get_mut(), true);
-        ATOMIC.fetch_and(false, SeqCst);
-        assert_eq!(*ATOMIC.get_mut(), false);
-        ATOMIC.fetch_nand(true, SeqCst);
-        assert_eq!(*ATOMIC.get_mut(), true);
-        ATOMIC.fetch_xor(true, SeqCst);
-        assert_eq!(*ATOMIC.get_mut(), false);
-    }
+    assert_eq!(*atomic.get_mut(), false);
+    atomic.store(true, SeqCst);
+    assert_eq!(*atomic.get_mut(), true);
+    atomic.fetch_or(false, SeqCst);
+    assert_eq!(*atomic.get_mut(), true);
+    atomic.fetch_and(false, SeqCst);
+    assert_eq!(*atomic.get_mut(), false);
+    atomic.fetch_nand(true, SeqCst);
+    assert_eq!(*atomic.get_mut(), true);
+    atomic.fetch_xor(true, SeqCst);
+    assert_eq!(*atomic.get_mut(), false);
 }
 
 #[test]
@@ -284,26 +288,26 @@ fn atomic_alignment() {
 fn atomic_compare_exchange() {
     use Ordering::*;
 
-    static ATOMIC: AtomicIsize = AtomicIsize::new(0);
+    let atomic: AtomicIsize = AtomicIsize::new(0);
 
-    ATOMIC.compare_exchange(0, 1, Relaxed, Relaxed).ok();
-    ATOMIC.compare_exchange(0, 1, Acquire, Relaxed).ok();
-    ATOMIC.compare_exchange(0, 1, Release, Relaxed).ok();
-    ATOMIC.compare_exchange(0, 1, AcqRel, Relaxed).ok();
-    ATOMIC.compare_exchange(0, 1, SeqCst, Relaxed).ok();
-    ATOMIC.compare_exchange(0, 1, Acquire, Acquire).ok();
-    ATOMIC.compare_exchange(0, 1, AcqRel, Acquire).ok();
-    ATOMIC.compare_exchange(0, 1, SeqCst, Acquire).ok();
-    ATOMIC.compare_exchange(0, 1, SeqCst, SeqCst).ok();
-    ATOMIC.compare_exchange_weak(0, 1, Relaxed, Relaxed).ok();
-    ATOMIC.compare_exchange_weak(0, 1, Acquire, Relaxed).ok();
-    ATOMIC.compare_exchange_weak(0, 1, Release, Relaxed).ok();
-    ATOMIC.compare_exchange_weak(0, 1, AcqRel, Relaxed).ok();
-    ATOMIC.compare_exchange_weak(0, 1, SeqCst, Relaxed).ok();
-    ATOMIC.compare_exchange_weak(0, 1, Acquire, Acquire).ok();
-    ATOMIC.compare_exchange_weak(0, 1, AcqRel, Acquire).ok();
-    ATOMIC.compare_exchange_weak(0, 1, SeqCst, Acquire).ok();
-    ATOMIC.compare_exchange_weak(0, 1, SeqCst, SeqCst).ok();
+    atomic.compare_exchange(0, 1, Relaxed, Relaxed).ok();
+    atomic.compare_exchange(0, 1, Acquire, Relaxed).ok();
+    atomic.compare_exchange(0, 1, Release, Relaxed).ok();
+    atomic.compare_exchange(0, 1, AcqRel, Relaxed).ok();
+    atomic.compare_exchange(0, 1, SeqCst, Relaxed).ok();
+    atomic.compare_exchange(0, 1, Acquire, Acquire).ok();
+    atomic.compare_exchange(0, 1, AcqRel, Acquire).ok();
+    atomic.compare_exchange(0, 1, SeqCst, Acquire).ok();
+    atomic.compare_exchange(0, 1, SeqCst, SeqCst).ok();
+    atomic.compare_exchange_weak(0, 1, Relaxed, Relaxed).ok();
+    atomic.compare_exchange_weak(0, 1, Acquire, Relaxed).ok();
+    atomic.compare_exchange_weak(0, 1, Release, Relaxed).ok();
+    atomic.compare_exchange_weak(0, 1, AcqRel, Relaxed).ok();
+    atomic.compare_exchange_weak(0, 1, SeqCst, Relaxed).ok();
+    atomic.compare_exchange_weak(0, 1, Acquire, Acquire).ok();
+    atomic.compare_exchange_weak(0, 1, AcqRel, Acquire).ok();
+    atomic.compare_exchange_weak(0, 1, SeqCst, Acquire).ok();
+    atomic.compare_exchange_weak(0, 1, SeqCst, SeqCst).ok();
 }
 
 /* FIXME(#110395)
