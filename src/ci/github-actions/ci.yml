@@ -38,6 +38,7 @@ x--expand-yaml-anchors--remove:
   - &public-variables
     SCCACHE_BUCKET: cached-ci-artifacts
     SCCACHE_REGION: us-east-2
+    SCCACHE_S3_NO_CREDENTIALS: 1
     TOOLSTATE_REPO: https://github.com/rust-lang-nursery/rust-toolstate
     CACHE_DOMAIN: cached-ci-artifacts.s3.us-east-2.amazonaws.com
 

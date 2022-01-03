@@ -6,7 +6,7 @@ set -ex
 
 case "$(uname -m)" in
     x86_64)
-        url="https://cached-ci-artifacts.s3.us-east-2.amazonaws.com/sccache-bc014e0-x86_64-unknown-linux-musl"
+        url="https://cached-ci-artifacts.s3.us-east-2.amazonaws.com/sccache-5d2a373-x86_64-unknown-linux-musl"
         ;;
     aarch64)
         url="https://ci-mirrors.rust-lang.org/rustc/2021-08-25-sccache-v0.2.15-aarch64-unknown-linux-musl"
