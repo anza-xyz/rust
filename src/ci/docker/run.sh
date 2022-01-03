@@ -186,6 +186,7 @@ args=
 if [ "$SCCACHE_BUCKET" != "" ]; then
     args="$args --env SCCACHE_BUCKET"
     args="$args --env SCCACHE_REGION"
+    args="$args --env SCCACHE_S3_NO_CREDENTIALS"
     args="$args --env AWS_ACCESS_KEY_ID"
     args="$args --env AWS_SECRET_ACCESS_KEY"
     args="$args --env AWS_REGION"
