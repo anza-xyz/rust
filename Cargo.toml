@@ -103,7 +103,7 @@ cargo-util = { path = "src/tools/cargo/crates/cargo-util" }
 rustfmt-nightly = { path = "src/tools/rustfmt" }
 
 [patch.crates-io]
-compiler_builtins = { git = "https://github.com/solana-labs/compiler-builtins", tag = "bpf-tools-v1.22" }
+compiler_builtins = { git = "https://github.com/solana-labs/compiler-builtins", tag = "bpf-tools-v1.23" }
 # See comments in `src/tools/rustc-workspace-hack/README.md` for what's going on
 # here
 rustc-workspace-hack = { path = 'src/tools/rustc-workspace-hack' }
