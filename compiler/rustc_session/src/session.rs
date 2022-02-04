@@ -982,7 +982,21 @@ impl Session {
         // As a result 16 was chosen here! Mostly because it was a power of 2
         // and most benchmarks agreed it was roughly a local optimum. Not very
         // scientific.
-        16
+
+        if self.target.options.vendor == "solana" {
+            // Default to 1 for SBF programs. It makes a huge difference in
+            // terms of generated code size for us
+            // (https://github.com/rust-lang/rust/issues/47745) and compilation
+            // time isn't a huge concern (programs tend to be small). It's still
+            // possible to override this from the command line or from cargo
+            // profiles.
+            //
+            // Note that we don't set default_codegen_units in the target
+            // definition as that would break incremental compilation.
+            1
+        } else {
+            16
+        }
     }
 
     pub fn teach(&self, code: &DiagnosticId) -> bool {
