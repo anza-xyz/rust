@@ -49,7 +49,7 @@ extern "C" {
     fn sol_log_(message: *const u8, length: u64);
 }
 
-pub fn sol_log(message: &str) {
+pub fn sol_log(message: &[u8]) {
     unsafe {
         sol_log_(message.as_ptr(), message.len() as u64);
     }
