@@ -18,9 +18,7 @@ impl Stdout {
 
 impl io::Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        unsafe {
-            crate::sys::sol_log(core::str::from_utf8_unchecked(buf));
-        }
+        crate::sys::sol_log(buf);
         Ok(buf.len())
     }
 
@@ -34,9 +32,7 @@ impl Stderr {
 
 impl io::Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        unsafe {
-            crate::sys::sol_log(core::str::from_utf8_unchecked(buf));
-        }
+        crate::sys::sol_log(buf);
         Ok(buf.len())
     }
 

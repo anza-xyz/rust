@@ -378,7 +378,7 @@ pub fn rust_oom(_layout: Layout) -> ! {
     }
     #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
     {
-        crate::sys::sol_log("Error: memory allocation failed, out of memory");
+        crate::sys::sol_log(b"Error: memory allocation failed, out of memory");
     }
     crate::process::abort()
 }

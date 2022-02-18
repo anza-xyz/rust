@@ -918,9 +918,7 @@ impl Write for Stdout {
 #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 impl Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        unsafe {
-            crate::sys::sol_log(core::str::from_utf8_unchecked(buf));
-        }
+        crate::sys::sol_log(buf);
         Ok(buf.len())
     }
     fn write_vectored(&mut self, _bufs: &[IoSlice<'_>]) -> io::Result<usize> {
@@ -934,9 +932,7 @@ impl Write for Stdout {
         Ok(())
     }
     fn write_all(&mut self, buf: &[u8]) -> io::Result<()> {
-        unsafe {
-            crate::sys::sol_log(core::str::from_utf8_unchecked(buf));
-        }
+        crate::sys::sol_log(buf);
         Ok(())
     }
     fn write_all_vectored(&mut self, _bufs: &mut [IoSlice<'_>]) -> io::Result<()> {
@@ -1266,9 +1262,7 @@ impl Write for Stderr {
 #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
 impl Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        unsafe {
-            crate::sys::sol_log(core::str::from_utf8_unchecked(buf));
-        }
+        crate::sys::sol_log(buf);
         Ok(buf.len())
     }
     fn write_vectored(&mut self, _bufs: &[IoSlice<'_>]) -> io::Result<usize> {
@@ -1282,9 +1276,7 @@ impl Write for Stderr {
         Ok(())
     }
     fn write_all(&mut self, buf: &[u8]) -> io::Result<()> {
-        unsafe {
-            crate::sys::sol_log(core::str::from_utf8_unchecked(buf));
-        }
+        crate::sys::sol_log(buf);
         Ok(())
     }
     fn write_all_vectored(&mut self, _bufs: &mut [IoSlice<'_>]) -> io::Result<()> {
