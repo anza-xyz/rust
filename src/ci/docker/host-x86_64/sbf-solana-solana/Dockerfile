@@ -21,7 +21,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN PATH="${HOME}/.cargo/bin:${PATH}" \
     cargo install --git https://github.com/solana-labs/cargo-run-bpf-tests.git \
-    --rev 3d628c7 \
+    --rev 5c19a51992e5ed922fbd9f0e97b6d270e153029a \
     --bin cargo-run-bpf-tests --root /usr/local
 
 COPY scripts/sccache.sh /scripts/
