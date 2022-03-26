@@ -559,7 +559,6 @@ pub mod f64;
 #[macro_use]
 pub mod thread;
 pub mod ascii;
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub mod backtrace;
 pub mod collections;
 pub mod env;
