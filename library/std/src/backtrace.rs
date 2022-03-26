@@ -88,6 +88,7 @@ mod tests;
 // `Backtrace`, but that's a relatively small price to pay relative to capturing
 // a backtrace or actually symbolizing it.
 
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::backtrace_rs::{self, BytesOrWideString};
 use crate::cell::UnsafeCell;
 use crate::env;
@@ -95,6 +96,7 @@ use crate::ffi::c_void;
 use crate::fmt;
 use crate::sync::atomic::{AtomicUsize, Ordering::Relaxed};
 use crate::sync::Once;
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::sys_common::backtrace::{lock, output_filename};
 use crate::vec::Vec;
 
@@ -156,6 +158,7 @@ pub struct BacktraceFrame {
 
 #[derive(Debug)]
 enum RawFrame {
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     Actual(backtrace_rs::Frame),
     #[cfg(test)]
     Fake,
@@ -175,6 +178,7 @@ enum BytesOrWide {
 
 #[stable(feature = "backtrace", since = "1.65.0")]
 impl fmt::Debug for Backtrace {
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         let capture = match &self.inner {
             Inner::Unsupported => return fmt.write_str("<unsupported>"),
@@ -198,17 +202,29 @@ impl fmt::Debug for Backtrace {
 
         dbg.finish()
     }
+
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(fmt, "<unsupported>")
+    }
 }
 
 #[unstable(feature = "backtrace_frames", issue = "79676")]
 impl fmt::Debug for BacktraceFrame {
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut dbg = fmt.debug_list();
         dbg.entries(&self.symbols);
         dbg.finish()
     }
+
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(fmt, "<unsupported>")
+    }
 }
 
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 impl fmt::Debug for BacktraceSymbol {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         // FIXME: improve formatting: https://github.com/rust-lang/rust/issues/65280
@@ -235,6 +251,7 @@ impl fmt::Debug for BacktraceSymbol {
     }
 }
 
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 impl fmt::Debug for BytesOrWide {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         output_filename(
@@ -252,6 +269,7 @@ impl fmt::Debug for BytesOrWide {
 impl Backtrace {
     /// Returns whether backtrace captures are enabled through environment
     /// variables.
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     fn enabled() -> bool {
         // Cache the result of reading the environment variables to make
         // backtrace captures speedy, because otherwise reading environment
@@ -271,6 +289,11 @@ impl Backtrace {
         };
         ENABLED.store(enabled as usize + 1, Relaxed);
         enabled
+    }
+
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    fn enabled() -> bool {
+        false
     }
 
     /// Capture a stack backtrace of the current thread.
@@ -324,6 +347,7 @@ impl Backtrace {
 
     // Capture a backtrace which start just before the function addressed by
     // `ip`
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     fn create(ip: usize) -> Backtrace {
         // SAFETY: We don't attempt to lock this reentrantly.
         let _lock = unsafe { lock() };
@@ -358,6 +382,13 @@ impl Backtrace {
         Backtrace { inner }
     }
 
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    fn create(ip: usize) -> Backtrace {
+        Backtrace {
+            inner: Inner::Unsupported
+        }
+    }
+
     /// Returns the status of this backtrace, indicating whether this backtrace
     /// request was unsupported, disabled, or a stack trace was actually
     /// captured.
@@ -383,6 +414,7 @@ impl<'a> Backtrace {
 
 #[stable(feature = "backtrace", since = "1.65.0")]
 impl fmt::Display for Backtrace {
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         let capture = match &self.inner {
             Inner::Unsupported => return fmt.write_str("unsupported backtrace"),
@@ -429,6 +461,11 @@ impl fmt::Display for Backtrace {
         f.finish()?;
         Ok(())
     }
+
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(fmt, "<unsupported>")
+    }
 }
 
 struct LazilyResolvedCapture {
@@ -459,6 +496,7 @@ impl LazilyResolvedCapture {
 unsafe impl Sync for LazilyResolvedCapture where Capture: Sync {}
 
 impl Capture {
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     fn resolve(&mut self) {
         // If we're already resolved, nothing to do!
         if self.resolved {
@@ -493,8 +531,18 @@ impl Capture {
             }
         }
     }
+
+    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    fn resolve(&mut self) {
+        // If we're already resolved, nothing to do!
+        if self.resolved {
+            return;
+        }
+        self.resolved = true;
+    }
 }
 
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 impl RawFrame {
     fn ip(&self) -> *mut c_void {
         match self {
