@@ -175,6 +175,7 @@ use crate::str;
 use crate::sync::Arc;
 use crate::sys::thread as imp;
 use crate::sys_common::thread;
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys_common::thread_info;
 use crate::sys_common::thread_parking::Parker;
 use crate::sys_common::{AsInner, IntoInner};
@@ -586,17 +587,15 @@ impl Builder {
     {
         let Builder { name, stack_size } = self;
         let stack_size = stack_size.unwrap_or_else(thread::min_stack);
-        let my_thread = Thread::new(name);
+        let my_thread = Thread::new(name.map(|name| {
+            CString::new(name).expect("thread name may not contain interior null bytes")
+        }));
         let their_thread = my_thread.clone();
         let my_packet: Arc<UnsafeCell<Option<Result<T>>>> = Arc::new(UnsafeCell::new(None));
         let main = move || {
             if let Some(name) = their_thread.cname() {
                 imp::Thread::set_name(name);
             }
-            // SAFETY: the stack guard passed is the one for the current thread.
-            // This means the current thread's stack and the new thread's stack
-            // are properly set and protected from each other.
-            thread_info::set(unsafe { imp::guard::current() }, their_thread);
         };
 
         Ok(JoinHandle(JoinInner {
@@ -761,11 +760,21 @@ where
 /// ```
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub fn current() -> Thread {
     thread_info::current_thread().expect(
         "use of std::thread::current() is not possible \
          after the thread's local data has been destroyed",
     )
+}
+
+/// SBF dummy version
+///
+#[must_use]
+#[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+pub fn current() -> Thread {
+    Thread::new(None)
 }
 
 /// Cooperatively gives up a timeslice to the OS scheduler.
