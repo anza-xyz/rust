@@ -1,3 +1,4 @@
+#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #![allow(dead_code)] // stack_guard isn't used right now on all platforms
 #![allow(unused_unsafe)] // thread_local with `const {}` triggers this liny
 
