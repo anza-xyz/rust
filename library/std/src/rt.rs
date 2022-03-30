@@ -20,11 +20,12 @@
 pub use crate::panicking::{begin_panic, panic_count};
 pub use core::panicking::{panic_display, panic_fmt};
 
-#[rustfmt::skip]
-use crate::any::Any;
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sync::Once;
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::thread::{self, Thread};
-use crate::{mem, panic, sys};
+use crate::{mem, panic};
+use crate::any::Any;
 
 // Prints to the "panic output", depending on the platform this may be:
 // - the standard error output
@@ -96,10 +97,11 @@ fn handle_rt_panic(e: Box<dyn Any + Send>) {
 // Even though it is an `u8`, it only ever has 4 values. These are documented in
 // `compiler/rustc_session/src/config/sigpipe.rs`.
 #[cfg_attr(test, allow(dead_code))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 unsafe fn init(argc: isize, argv: *const *const u8, sigpipe: u8) {
     #[cfg_attr(target_os = "teeos", allow(unused_unsafe))]
     unsafe {
-        sys::init(argc, argv, sigpipe)
+        crate::sys::init(argc, argv, sigpipe)
     };
 
     // Set up the current thread handle to give it the right name.
@@ -139,13 +141,14 @@ pub(crate) fn thread_cleanup() {
 // One-time runtime cleanup.
 // Runs after `main` or at program exit.
 // NOTE: this is not guaranteed to run, for example when the program aborts.
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub(crate) fn cleanup() {
     static CLEANUP: Once = Once::new();
     CLEANUP.call_once(|| unsafe {
         // Flush stdout and disable buffering.
         crate::io::cleanup();
         // SAFETY: Only called once during runtime cleanup.
-        sys::cleanup();
+        crate::sys::cleanup();
     });
 }
 

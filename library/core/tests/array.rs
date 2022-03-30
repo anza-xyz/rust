@@ -512,6 +512,7 @@ fn array_rsplit_array_mut_out_of_bounds() {
 }
 
 #[test]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 fn array_intoiter_advance_by() {
     use std::cell::Cell;
     struct DropCounter<'a>(usize, &'a Cell<usize>);
@@ -565,6 +566,7 @@ fn array_intoiter_advance_by() {
 }
 
 #[test]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 fn array_intoiter_advance_back_by() {
     use std::cell::Cell;
     struct DropCounter<'a>(usize, &'a Cell<usize>);

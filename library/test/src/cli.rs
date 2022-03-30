@@ -239,6 +239,7 @@ macro_rules! unstable_optflag {
 }
 
 // Gets the option value and checks if unstable features are enabled.
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 macro_rules! unstable_optopt {
     ($matches:ident, $allow_unstable:ident, $option_name:literal) => {{
         let opt = $matches.opt_str($option_name);
@@ -325,6 +326,8 @@ fn parse_opts_impl(_matches: getopts::Matches) -> OptRes {
         nocapture: true,
         color: ColorConfig::NeverColor,
         format: OutputFormat::Pretty,
+        shuffle: false,
+        shuffle_seed: None,
         test_threads: Some(1),
         skip: Vec::new(),
         time_options: None,
@@ -366,6 +369,7 @@ fn get_time_options(
     Ok(options)
 }
 
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 fn get_shuffle(matches: &getopts::Matches, allow_unstable: bool) -> OptPartRes<bool> {
     let mut shuffle = unstable_optflag!(matches, allow_unstable, "shuffle");
     if !shuffle && allow_unstable {
@@ -378,6 +382,7 @@ fn get_shuffle(matches: &getopts::Matches, allow_unstable: bool) -> OptPartRes<b
     Ok(shuffle)
 }
 
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 fn get_shuffle_seed(matches: &getopts::Matches, allow_unstable: bool) -> OptPartRes<Option<u64>> {
     let mut shuffle_seed = match unstable_optopt!(matches, allow_unstable, "shuffle-seed") {
         Some(n_str) => match n_str.parse::<u64>() {
