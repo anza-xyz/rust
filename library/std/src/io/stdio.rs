@@ -585,10 +585,6 @@ impl Read for Stdin {
     fn is_read_vectored(&self) -> bool {
         false
     }
-    #[inline]
-    unsafe fn initializer(&self) -> Initializer {
-        Initializer::nop()
-    }
     fn read_to_end(&mut self, _buf: &mut Vec<u8>) -> io::Result<usize> {
         Ok(0)
     }

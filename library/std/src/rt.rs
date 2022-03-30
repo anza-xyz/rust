@@ -16,15 +16,20 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(unused_macros)]
 
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::ffi::CString;
 
 // Re-export some of our utilities which are expected by other crates.
 pub use crate::panicking::{begin_panic, panic_count};
 pub use core::panicking::{panic_display, panic_fmt};
 
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sync::Once;
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys;
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys_common::thread_info;
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::thread::Thread;
 
 // Prints to the "panic output", depending on the platform this may be:
@@ -92,6 +97,7 @@ macro_rules! rtunwrap {
 // Even though it is an `u8`, it only ever has 4 values. These are documented in
 // `compiler/rustc_session/src/config/sigpipe.rs`.
 #[cfg_attr(test, allow(dead_code))]
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 unsafe fn init(argc: isize, argv: *const *const u8, sigpipe: u8) {
     unsafe {
         sys::init(argc, argv, sigpipe);
@@ -109,6 +115,7 @@ unsafe fn init(argc: isize, argv: *const *const u8, sigpipe: u8) {
 // One-time runtime cleanup.
 // Runs after `main` or at program exit.
 // NOTE: this is not guaranteed to run, for example when the program aborts.
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub(crate) fn cleanup() {
     static CLEANUP: Once = Once::new();
     CLEANUP.call_once(|| unsafe {
