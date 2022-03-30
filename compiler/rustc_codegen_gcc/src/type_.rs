@@ -26,10 +26,6 @@ impl<'gcc, 'tcx> CodegenCx<'gcc, 'tcx> {
         }
     }
 
-    pub fn type_void(&self) -> Type<'gcc> {
-        self.context.new_type::<()>()
-    }
-
     pub fn type_size_t(&self) -> Type<'gcc> {
         self.context.new_type::<usize>()
     }
@@ -134,6 +130,10 @@ impl<'gcc, 'tcx> BaseTypeMethods<'tcx> for CodegenCx<'gcc, 'tcx> {
     
     fn type_f128(&self) -> Type<'gcc> {
         unimplemented!("f16_f128")
+    }
+
+    fn type_void(&self) -> Type<'gcc> {
+        self.context.new_type::<()>()
     }
 
     fn type_func(&self, params: &[Type<'gcc>], return_type: Type<'gcc>) -> Type<'gcc> {
