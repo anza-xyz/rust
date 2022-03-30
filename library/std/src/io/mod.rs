@@ -346,6 +346,7 @@ mod util;
 
 const DEFAULT_BUF_SIZE: usize = crate::sys::io::DEFAULT_BUF_SIZE;
 
+#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 pub(crate) use stdio::cleanup;
 
 struct Guard<'a> {

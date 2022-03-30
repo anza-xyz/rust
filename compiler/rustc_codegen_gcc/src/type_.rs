@@ -33,10 +33,6 @@ impl<'gcc, 'tcx> CodegenCx<'gcc, 'tcx> {
         }
     }
 
-    pub fn type_void(&self) -> Type<'gcc> {
-        self.context.new_type::<()>()
-    }
-
     pub fn type_size_t(&self) -> Type<'gcc> {
         self.context.new_type::<usize>()
     }
@@ -178,6 +174,10 @@ impl<'gcc, 'tcx> BaseTypeCodegenMethods for CodegenCx<'gcc, 'tcx> {
             return self.context.new_c_type(CType::Float128);
         }
         bug!("unsupported float width 128")
+    }
+
+    fn type_void(&self) -> Type<'gcc> {
+        self.context.new_type::<()>()
     }
 
     fn type_func(&self, params: &[Type<'gcc>], return_type: Type<'gcc>) -> Type<'gcc> {
