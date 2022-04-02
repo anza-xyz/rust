@@ -1,3 +1,4 @@
+#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use rand::Rng;
 use test::{black_box, Bencher};
 
