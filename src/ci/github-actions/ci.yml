@@ -227,6 +227,8 @@ x--expand-yaml-anchors--remove:
 
       - name: ensure the stable version number is correct
         run: src/ci/scripts/verify-stable-version-number.sh
+        env:
+          SKIP_JOB: 1
         <<: *step
 
       - name: run the build
