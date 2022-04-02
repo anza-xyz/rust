@@ -1,3 +1,5 @@
+#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+
 use core::num::NonZero;
 use core::sync::atomic::{AtomicUsize, Ordering};
 use core::{array, assert_eq};
