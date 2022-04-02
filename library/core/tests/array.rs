@@ -1,3 +1,4 @@
+#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use core::array;
 use core::convert::TryFrom;
 use core::sync::atomic::{AtomicUsize, Ordering};

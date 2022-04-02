@@ -1,3 +1,4 @@
+#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use std::future::{join, Future};
 use std::pin::Pin;
 use std::sync::Arc;
