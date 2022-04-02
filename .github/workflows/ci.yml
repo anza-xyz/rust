@@ -145,6 +145,9 @@ jobs:
         run: src/ci/scripts/verify-backported-commits.sh
       - name: ensure the stable version number is correct
         run: src/ci/scripts/verify-stable-version-number.sh
+        env:
+          SKIP_JOB: 1
+        if: success() && !env.SKIP_JOB
       - name: run the build
         run: src/ci/scripts/run-build-from-ci.sh 2>&1
         env:
@@ -165,9 +168,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: "${{ env.ARTIFACTS_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}"
-<<<<<<< HEAD
-        if: "success() && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
-=======
           SKIP_JOB: 1
         if: "success() && !env.SKIP_JOB && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
   push:
@@ -235,9 +235,6 @@ jobs:
       - name: install sccache
         run: src/ci/scripts/install-sccache.sh
         if: success() && !env.SKIP_JOB
-      - name: select Xcode
-        run: src/ci/scripts/select-xcode.sh
-        if: success() && !env.SKIP_JOB
       - name: install clang
         run: src/ci/scripts/install-clang.sh
         if: success() && !env.SKIP_JOB
@@ -273,6 +270,11 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: ensure backported commits are in upstream branches
         run: src/ci/scripts/verify-backported-commits.sh
+        if: success() && !env.SKIP_JOB
+      - name: ensure the stable version number is correct
+        run: src/ci/scripts/verify-stable-version-number.sh
+        env:
+          SKIP_JOB: 1
         if: success() && !env.SKIP_JOB
       - name: run the build
         run: src/ci/scripts/run-build-from-ci.sh
@@ -656,6 +658,8 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: ensure the stable version number is correct
         run: src/ci/scripts/verify-stable-version-number.sh
+        env:
+          SKIP_JOB: 1
         if: success() && !env.SKIP_JOB
       - name: run the build
         run: src/ci/scripts/run-build-from-ci.sh
@@ -784,6 +788,8 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: ensure the stable version number is correct
         run: src/ci/scripts/verify-stable-version-number.sh
+        env:
+          SKIP_JOB: 1
         if: success() && !env.SKIP_JOB
       - name: run the build
         run: src/ci/scripts/run-build-from-ci.sh
@@ -810,7 +816,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}"
           SKIP_JOB: 1
         if: "success() && !env.SKIP_JOB && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
->>>>>>> 36a67496bf5 ([SOL] CI: run tests on push and improve run times)
   master:
     name: master
     runs-on: ubuntu-latest
