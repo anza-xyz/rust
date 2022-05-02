@@ -1643,12 +1643,17 @@ fn add_pre_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavor)
     cmd.args(&sess.opts.unstable_opts.pre_link_args);
 }
 
-/// Add a link script embedded in the target, if applicable.
+/// Add a link script embedded in the target, if applicable and not found in the command line.
 fn add_link_script(cmd: &mut dyn Linker, sess: &Session, tmpdir: &Path, crate_type: CrateType) {
     match (crate_type, &sess.target.link_script) {
         (CrateType::Cdylib | CrateType::Executable, Some(script)) => {
             if !sess.target.linker_is_gnu {
                 sess.fatal("can only use link script when linking with GNU-like linker");
+            }
+
+            if sess.opts.cg.link_args.contains(&String::from("--script"))
+                || sess.opts.cg.link_args.contains(&String::from("-T")) {
+                return;
             }
 
             let file_name = ["rustc", &sess.target.llvm_target, "linkfile.ld"].join("-");
