@@ -305,6 +305,10 @@ const WASM_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[
 
 const BPF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[("alu32", Some(sym::bpf_target_feature))];
 
+const SBF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] =
+    &[("alu32", Some(sym::sbf_target_feature)), ("static-syscalls", Some(sym::sbf_target_feature))];
+
+
 const CSKY_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[
     // tidy-alphabetical-start
     ("10e60", Some(sym::csky_target_feature)),
@@ -379,6 +383,7 @@ pub fn all_known_features() -> impl Iterator<Item = (&'static str, Option<Symbol
         .chain(RISCV_ALLOWED_FEATURES.iter())
         .chain(WASM_ALLOWED_FEATURES.iter())
         .chain(BPF_ALLOWED_FEATURES.iter())
+        .chain(SBF_ALLOWED_FEATURES.iter())
         .chain(CSKY_ALLOWED_FEATURES)
         .chain(LOONGARCH_ALLOWED_FEATURES)
         .cloned()
@@ -397,7 +402,7 @@ pub fn supported_target_features(sess: &Session) -> &'static [(&'static str, Opt
         "csky" => CSKY_ALLOWED_FEATURES,
         "loongarch64" => LOONGARCH_ALLOWED_FEATURES,
         "bpf" => BPF_ALLOWED_FEATURES,
-        "sbf" => BPF_ALLOWED_FEATURES,
+        "sbf" => SBF_ALLOWED_FEATURES,
         _ => &[],
     }
 }
