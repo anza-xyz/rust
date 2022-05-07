@@ -432,6 +432,10 @@ const WASM_ALLOWED_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
 const BPF_ALLOWED_FEATURES: &[(&str, Stability, ImpliedFeatures)] =
     &[("alu32", Unstable(sym::bpf_target_feature), &[])];
 
+#[allow(unused)]
+const SBF_ALLOWED_FEATURES: &[(&str, Stability)] =
+    &[("alu32", Unstable(sym::sbf_target_feature)), ("static-syscalls", Unstable(sym::sbf_target_feature))];
+
 const CSKY_ALLOWED_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
     // tidy-alphabetical-start
     ("10e60", Unstable(sym::csky_target_feature), &["7e10"]),
