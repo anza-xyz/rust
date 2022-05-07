@@ -32,6 +32,15 @@ unsafe impl GlobalAlloc for System {
     //     // 0 as *mut u8
     // }
 }
+
+#[cfg(not(target_feature = "static-syscalls"))]
 extern "C" {
     fn sol_alloc_free_(size: u64, ptr: u64) -> *mut u8;
+}
+
+#[cfg(target_feature = "static-syscalls")]
+fn sol_alloc_free_(size: u64, ptr: u64) -> *mut u8 {
+    let syscall: extern "C" fn(u64, u64) -> *mut u8 =
+        unsafe { core::mem::transmute(2213547663u64) }; // murmur32 hash of "sol_alloc_free_"
+    syscall(size, ptr)
 }
