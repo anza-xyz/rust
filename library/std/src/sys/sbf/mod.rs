@@ -29,9 +29,9 @@ pub mod os;
 pub mod path;
 pub mod pipe;
 pub mod process;
+pub mod stdio;
 pub mod thread;
 pub mod time;
-pub mod stdio;
 
 #[path = "../unix/os_str.rs"]
 pub mod os_str;
@@ -42,11 +42,24 @@ pub mod rwlock;
 pub mod thread_local_dtor;
 pub mod thread_local_key;
 
+#[cfg(not(target_feature = "static-syscalls"))]
 extern "C" {
     fn abort() -> !;
     #[allow(improper_ctypes)]
     fn custom_panic(info: &core::panic::PanicInfo<'_>);
     fn sol_log_(message: *const u8, length: u64);
+}
+
+#[cfg(target_feature = "static-syscalls")]
+unsafe extern "C" fn abort() -> ! {
+    let syscall: extern "C" fn() -> ! = core::mem::transmute(3069975057u64); // murmur32 hash of "abort"
+    syscall()
+}
+
+#[cfg(target_feature = "static-syscalls")]
+unsafe extern "C" fn sol_log_(message: *const u8, length: u64) {
+    let syscall: extern "C" fn(*const u8, u64) = core::mem::transmute(544561597u64); // murmur32 hash of "sol_log_"
+    syscall(message, length)
 }
 
 pub fn sol_log(message: &[u8]) {
@@ -56,8 +69,15 @@ pub fn sol_log(message: &[u8]) {
 }
 
 pub fn panic(info: &core::panic::PanicInfo<'_>) -> ! {
-    unsafe { custom_panic(info); }
-    unsafe { abort(); }
+    unsafe {
+        #[cfg(not(target_feature = "static-syscalls"))]
+        custom_panic(info);
+
+        #[cfg(target_feature = "static-syscalls")]
+        sol_log(info.to_string().as_bytes());
+
+        abort();
+    }
 }
 
 pub fn unsupported<T>() -> crate::io::Result<T> {
@@ -65,8 +85,7 @@ pub fn unsupported<T>() -> crate::io::Result<T> {
 }
 
 pub fn unsupported_err() -> crate::io::Error {
-    crate::io::Error::new(crate::io::ErrorKind::Other,
-                   "operation not supported on SBF yet")
+    crate::io::Error::new(crate::io::ErrorKind::Other, "operation not supported on SBF yet")
 }
 
 pub fn decode_error_kind(_code: i32) -> crate::io::ErrorKind {
@@ -84,7 +103,7 @@ pub unsafe fn strlen(mut s: *const c_char) -> usize {
         n += 1;
         s = s.offset(1);
     }
-    return n
+    return n;
 }
 
 pub fn abort_internal() -> ! {
