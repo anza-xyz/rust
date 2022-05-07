@@ -759,7 +759,10 @@ static WASM_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
 const BPF_FEATURES: &[(&str, Stability, ImpliedFeatures)] =
     &[("alu32", Unstable(sym::bpf_target_feature), &[])];
 
-static CSKY_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
+const SBF_ALLOWED_FEATURES: &[(&str, Stability, ImpliedFeatures)] =
+    &[("alu32", Unstable(sym::sbf_target_feature), &[]), ("static-syscalls", Unstable(sym::sbf_target_feature), &[])];
+
+const CSKY_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
     // tidy-alphabetical-start
     ("2e3", Unstable(sym::csky_target_feature), &["e2"]),
     ("3e3r1", Unstable(sym::csky_target_feature), &[]),
