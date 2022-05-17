@@ -194,7 +194,7 @@ jobs:
           - name: mingw-check
             os: ubuntu-latest
             env: {}
-          - name: x86_64-gnu-llvm-10
+          - name: x86_64-gnu-llvm-12
             os: ubuntu-latest
             env: {}
           - name: sbf-solana-solana
