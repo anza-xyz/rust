@@ -364,7 +364,7 @@ jobs:
           - name: mingw-check
             <<: *job-linux-xl
 
-          - name: x86_64-gnu-llvm-10
+          - name: x86_64-gnu-llvm-12
             <<: *job-linux-xl
 
           - name: sbf-solana-solana
