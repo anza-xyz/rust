@@ -1234,8 +1234,27 @@ impl<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>> FunctionCx<'a, 'tcx, Bx> {
         let mut span_to_caller_location = |span: Span| {
             let topmost = span.ctxt().outer_expn().expansion_cause().unwrap_or(span);
             let caller = tcx.sess.source_map().lookup_char_pos(topmost.lo());
+            let mut caller_file_name = Symbol::intern(&caller.file.name.prefer_remapped().to_string_lossy());
+            // remove /Users/username prefix for Solana target to avoid exposing users in on-chain program code
+            if (tcx.sess.target.arch == "bpf" || tcx.sess.target.arch == "sbf") &&
+                (caller_file_name.as_str().starts_with("/Users") ||
+                 caller_file_name.as_str().starts_with("/home")) {
+                    if let Some(index) = caller_file_name.as_str().find('/') {
+                        if let Some(substr) = caller_file_name.as_str().get(index + 1..) {
+                            if let Some(index) = substr.find('/') {
+                                if let Some(substr) = substr.get(index + 1..) {
+                                    if let Some(index) = substr.find('/') {
+                                        if let Some(substr) = substr.get(index + 1..) {
+                                            caller_file_name = Symbol::intern(substr);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             let const_loc = tcx.const_caller_location((
-                Symbol::intern(&caller.file.name.prefer_remapped().to_string_lossy()),
+                caller_file_name,
                 caller.line as u32,
                 caller.col_display as u32 + 1,
             ));
