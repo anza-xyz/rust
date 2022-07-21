@@ -159,14 +159,20 @@ impl ExitStatusError {
 }
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
-pub struct ExitCode(bool);
+pub struct ExitCode(u8);
 
 impl ExitCode {
-    pub const SUCCESS: ExitCode = ExitCode(false);
-    pub const FAILURE: ExitCode = ExitCode(true);
+    pub const SUCCESS: ExitCode = ExitCode(0 as _);
+    pub const FAILURE: ExitCode = ExitCode(1 as _);
 
     pub fn as_i32(&self) -> i32 {
         self.0 as i32
+    }
+}
+
+impl From<u8> for ExitCode {
+    fn from(code: u8) -> Self {
+        Self(code)
     }
 }
 
