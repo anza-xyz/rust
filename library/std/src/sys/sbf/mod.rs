@@ -13,8 +13,6 @@
 //! compiling for SBF. That way it's a compile time error for something that's
 //! guaranteed to be a runtime error!
 
-use crate::os::raw::c_char;
-
 pub mod alloc;
 pub mod args;
 //#[cfg(feature = "backtrace")]
@@ -41,6 +39,12 @@ pub mod mutex;
 pub mod rwlock;
 pub mod thread_local_dtor;
 pub mod thread_local_key;
+
+pub mod locks {
+    pub use super::condvar::*;
+    pub use super::mutex::*;
+    pub use super::rwlock::*;
+}
 
 #[cfg(not(target_feature = "static-syscalls"))]
 extern "C" {
@@ -96,15 +100,6 @@ pub fn decode_error_kind(_code: i32) -> crate::io::ErrorKind {
 // exist.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
 pub enum Void {}
-
-pub unsafe fn strlen(mut s: *const c_char) -> usize {
-    let mut n = 0;
-    while *s != 0 {
-        n += 1;
-        s = s.offset(1);
-    }
-    return n;
-}
 
 pub fn abort_internal() -> ! {
     unsafe { abort() }

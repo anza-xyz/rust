@@ -40,13 +40,3 @@ impl Mutex {
     pub unsafe fn destroy(&self) {
     }
 }
-
-// All empty stubs because SBF has no threads, lock acquisition always
-// succeeds.
-pub struct ReentrantMutex {
-}
-
-impl ReentrantMutex {
-    pub unsafe fn unlock(&self) {}
-    pub unsafe fn destroy(&self) {}
-}

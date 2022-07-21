@@ -9,8 +9,9 @@
 
 #![deny(unsafe_op_in_unsafe_fn)]
 
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::panic::BacktraceStyle;
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use core::panic::BoxMeUp;
 use core::panic::{Location, PanicInfo};
 
@@ -26,13 +27,13 @@ use crate::process;
 use crate::sync::atomic::{AtomicBool, Ordering};
 #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys::stdio::panic_output;
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::sys_common::backtrace;
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::sys_common::rwlock::StaticRwLock;
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::sys_common::thread_info;
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 use crate::thread;
 
 #[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
@@ -90,16 +91,16 @@ enum Hook {
     Custom(*mut (dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send)),
 }
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 impl Hook {
     fn custom(f: impl Fn(&PanicInfo<'_>) + 'static + Sync + Send) -> Self {
         Self::Custom(Box::into_raw(Box::new(f)))
     }
 }
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 static HOOK_LOCK: StaticRwLock = StaticRwLock::new();
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 static mut HOOK: Hook = Hook::Default;
 
 /// Registers a custom panic hook, replacing any that was previously registered.
@@ -196,7 +197,7 @@ pub fn set_hook(_hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
 /// panic!("Normal panic");
 /// ```
 #[must_use]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
 pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
     if thread::panicking() {
@@ -219,6 +220,13 @@ pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
             Hook::Custom(ptr) => Box::from_raw(ptr),
         }
     }
+}
+
+/// Dummy version for satisfying library/test dependencies for BPF target
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[stable(feature = "panic_hooks", since = "1.10.0")]
+pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
+    Box::new(default_hook)
 }
 
 /// Atomic combination of [`take_hook`] and [`set_hook`]. Use this to replace the panic handler with
@@ -252,6 +260,7 @@ pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
 ///
 /// panic!("Custom and then normal");
 /// ```
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 #[unstable(feature = "panic_update_hook", issue = "92649")]
 pub fn update_hook<F>(hook_fn: F)
 where
@@ -284,14 +293,19 @@ where
     }
 }
 
-/// Dummy version for satisfying library/test dependencies for BPF target
-#[cfg(target_os = "solana")]
-#[stable(feature = "panic_hooks", since = "1.10.0")]
-pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
-    Box::new(default_hook)
+/// Dummy version for satisfying library/test dependencies for SBF target
+#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[unstable(feature = "panic_update_hook", issue = "92649")]
+pub fn update_hook<F>(_hook_fn: F)
+where
+    F: Fn(&(dyn Fn(&PanicInfo<'_>) + Send + Sync + 'static), &PanicInfo<'_>)
+        + Sync
+        + Send
+        + 'static,
+{
 }
 
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 fn default_hook(info: &PanicInfo<'_>) {
     // If this is a double panic, make sure that we print a backtrace
     // for this panic. Otherwise only print it if logging is enabled.
@@ -583,7 +597,7 @@ pub fn panicking() -> bool {
 }
 
 /// Entry point of panics from the libcore crate (`panic_impl` lang item).
-#[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(all(not(test), not(any(target_arch = "bpf", target_arch = "sbf"))))]
 #[panic_handler]
 pub fn begin_panic_handler(info: &PanicInfo<'_>) -> ! {
     struct PanicPayload<'a> {
@@ -776,7 +790,7 @@ fn rust_panic_with_hook(
 
 /// This is the entry point for `resume_unwind`.
 /// It just forwards the payload to the panic runtime.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 pub fn rust_panic_without_hook(payload: Box<dyn Any + Send>) -> ! {
     panic_count::increase();
 
@@ -847,6 +861,7 @@ pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
     let info = PanicInfo::internal_constructor(
         None,
         Location::caller(),
+        false,
     );
     crate::sys::panic(&info);
 }
@@ -864,6 +879,7 @@ pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>) -> ! {
     let info = PanicInfo::internal_constructor(
         Some(msg),
         Location::caller(),
+        false,
     );
     crate::sys::panic(&info);
 }

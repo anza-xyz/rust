@@ -318,7 +318,7 @@ macro_rules! __thread_local_inner {
             unsafe fn __getit(
                 init: $crate::option::Option<&mut $crate::option::Option<$t>>,
             ) -> $crate::option::Option<&'static $t> {
-                #[cfg(any(target_os = "solana", all(target_family = "wasm", not(target_feature = "atomics"))))]
+                #[cfg(any(target_arch = "bpf", target_arch = "sbf", all(target_family = "wasm", not(target_feature = "atomics"))))]
                 static __KEY: $crate::thread::__StaticLocalKeyInner<$t> =
                     $crate::thread::__StaticLocalKeyInner::new();
 
