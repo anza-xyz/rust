@@ -30,7 +30,7 @@
 #
 # If `change-id` does not match the version that is currently running,
 # `x.py` will inform you about the changes made on bootstrap.
-#change-id = <latest change id in src/bootstrap/src/utils/change_tracker.rs>
+change-id = 131075
 
 # =============================================================================
 # Tweaking how LLVM is compiled
@@ -115,7 +115,7 @@ targets = "X86"
 # the same format as above, but since these targets are experimental, they are
 # not built by default and the experimental Rust compilation targets that depend
 # on them will not work unless the user opts in to building them.
-experimental-targets = "BPF"
+experimental-targets = "BPF;SBF"
 
 # Cap the number of parallel linker invocations when compiling LLVM.
 # This can be useful when building LLVM with debug info, which significantly
@@ -123,7 +123,7 @@ experimental-targets = "BPF"
 # each linker process.
 # If set to 0, linker invocations are treated like any other job and
 # controlled by bootstrap's -j parameter.
-#link-jobs = 0
+link-jobs = 2
 
 # Whether to build LLVM as a dynamically linked library (as opposed to statically linked).
 # Under the hood, this passes `--shared` to llvm-config.
@@ -160,7 +160,7 @@ link-shared = false
 #polly = false
 
 # Whether to build the clang compiler.
-#clang = false
+clang = true
 
 # Whether to enable llvm compilation warnings.
 #enable-warnings = false

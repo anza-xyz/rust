@@ -1,7 +1,7 @@
 // wasm32 does not support benches (no time).
-#![cfg(not(target_arch = "wasm32"))]
 // Disabling in Miri as these would take too long.
 #![cfg(not(miri))]
+#![cfg(not(any(target_arch = "wasm32", target_arch = "bpf", target_arch = "sbf")))]
 #![feature(flt2dec)]
 #![feature(test)]
 #![feature(trusted_random_access)]
