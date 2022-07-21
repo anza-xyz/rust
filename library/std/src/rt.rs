@@ -115,7 +115,7 @@ unsafe fn init(argc: isize, argv: *const *const u8, sigpipe: u8) {
 // One-time runtime cleanup.
 // Runs after `main` or at program exit.
 // NOTE: this is not guaranteed to run, for example when the program aborts.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 pub(crate) fn cleanup() {
     static CLEANUP: Once = Once::new();
     CLEANUP.call_once(|| unsafe {
@@ -129,7 +129,7 @@ pub(crate) fn cleanup() {
 // To reduce the generated code of the new `lang_start`, this function is doing
 // the real work.
 #[cfg(not(test))]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 fn lang_start_internal(
     main: &(dyn Fn() -> i32 + Sync + crate::panic::RefUnwindSafe),
     argc: isize,
@@ -164,7 +164,7 @@ fn lang_start_internal(
 
 #[cfg(not(test))]
 #[inline(never)]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
 #[lang = "start"]
 fn lang_start<T: crate::process::Termination + 'static>(
     main: fn() -> T,
@@ -189,5 +189,5 @@ fn lang_start<T: crate::process::Termination + 'static>(
     _argc: isize,
     _argv: *const *const u8,
 ) -> isize {
-    main().report() as isize
+    main().report().to_i32() as isize
 }
