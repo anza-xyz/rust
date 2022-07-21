@@ -1,17 +1,17 @@
 use crate::cell::UnsafeCell;
 
-pub struct RWLock {
+pub struct RwLock {
     mode: UnsafeCell<isize>,
 }
 
-pub type MovableRWLock = RWLock;
+pub type MovableRwLock = RwLock;
 
-unsafe impl Send for RWLock {}
-unsafe impl Sync for RWLock {} // no threads on SBF
+unsafe impl Send for RwLock {}
+unsafe impl Sync for RwLock {} // no threads on SBF
 
-impl RWLock {
-    pub const fn new() -> RWLock {
-        RWLock {
+impl RwLock {
+    pub const fn new() -> RwLock {
+        RwLock {
             mode: UnsafeCell::new(0),
         }
     }

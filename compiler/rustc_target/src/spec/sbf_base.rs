@@ -1,6 +1,5 @@
 use crate::abi::Endian;
-use super::{LinkerFlavor, PanicStrategy, TargetOptions, LldFlavor};
-use std::{collections::BTreeMap};
+use super::{LinkArgs, LinkerFlavor, PanicStrategy, TargetOptions, LldFlavor};
 
 pub fn opts() -> TargetOptions {
     let linker_script = r"
@@ -30,38 +29,38 @@ SECTIONS
 }
 ";
     let mut lld_args = Vec::new();
-    lld_args.push("--threads=1".to_string());
-    lld_args.push("-z".to_string());
-    lld_args.push("notext".to_string());
-    let mut pre_link_args = BTreeMap::new();
+    lld_args.push("--threads=1".into());
+    lld_args.push("-z".into());
+    lld_args.push("notext".into());
+    let mut pre_link_args = LinkArgs::new();
     pre_link_args.insert(LinkerFlavor::Lld(LldFlavor::Ld), lld_args);
 
     TargetOptions {
         allow_asm: true,
-        c_int_width: "64".to_string(),
-        dll_prefix: "".to_string(),
+        c_int_width: "64".into(),
+        dll_prefix: "".into(),
         dynamic_linking: true,
         eh_frame_header: false,
         emit_debug_gdb_scripts: false,
         endian: Endian::Little,
-        env: String::new(),
+        env: "".into(),
         executables: true,
-        features: "+solana".to_string(),
-        link_script: Some(linker_script.to_string()),
-        linker: Some("rust-lld".to_owned()),
+        features: "+solana".into(),
+        link_script: Some(linker_script.into()),
+        linker: Some("rust-lld".into()),
         linker_flavor: LinkerFlavor::Lld(LldFlavor::Ld),
         linker_is_gnu: true,
         main_needs_argc_argv: false,
         max_atomic_width: Some(64),
         no_default_libraries: true,
         only_cdylib: true,
-        os: "solana".to_string(),
+        os: "solana".into(),
         panic_strategy: PanicStrategy::Abort,
         position_independent_executables: true,
         pre_link_args,
         requires_lto: false,
         singlethread: true,
-        vendor: "solana".to_string(),
+        vendor: "solana".into(),
         .. Default::default()
     }
 }

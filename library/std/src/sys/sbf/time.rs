@@ -1,5 +1,4 @@
 use crate::time::Duration;
-// use crate::sys::{TimeSysCall, TimeClock};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
 pub struct Instant(Duration);
@@ -12,14 +11,6 @@ pub const UNIX_EPOCH: SystemTime = SystemTime(Duration::from_secs(0));
 impl Instant {
     pub fn now() -> Instant {
         Instant(Duration::from_secs(0))
-    }
-
-    pub const fn zero() -> Instant {
-        Instant(Duration::from_secs(0))
-    }
-
-    pub fn actually_monotonic() -> bool {
-        true
     }
 
     pub fn checked_sub_instant(&self, other: &Instant) -> Option<Duration> {
