@@ -449,7 +449,6 @@ impl Builder {
     ///
     /// [`io::Result`]: crate::io::Result
     #[unstable(feature = "thread_spawn_unchecked", issue = "55132")]
-    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     pub unsafe fn spawn_unchecked<'a, F, T>(self, f: F) -> io::Result<JoinHandle<T>>
     where
         F: FnOnce() -> T,
@@ -459,6 +458,7 @@ impl Builder {
         Ok(JoinHandle(unsafe { self.spawn_unchecked_(f, None) }?))
     }
 
+    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
     unsafe fn spawn_unchecked_<'a, 'scope, F, T>(
         self,
         f: F,
@@ -579,11 +579,16 @@ impl Builder {
     /// SBF version of spawn_unchecked
     #[unstable(feature = "thread_spawn_unchecked", issue = "55132")]
     #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
-    pub unsafe fn spawn_unchecked<'a, F, T>(self, _f: F) -> io::Result<JoinHandle<T>>
+    unsafe fn spawn_unchecked_<'a, 'scope, F, T>(
+        self,
+        _f: F,
+        scope_data: Option<&'scope scoped::ScopeData>,
+    ) -> io::Result<JoinInner<'scope, T>>
     where
         F: FnOnce() -> T,
         F: Send + 'a,
         T: Send + 'a,
+        'scope: 'a,
     {
         let Builder { name, stack_size } = self;
         let stack_size = stack_size.unwrap_or_else(thread::min_stack);
@@ -591,14 +596,19 @@ impl Builder {
             CString::new(name).expect("thread name may not contain interior null bytes")
         }));
         let their_thread = my_thread.clone();
-        let my_packet: Arc<UnsafeCell<Option<Result<T>>>> = Arc::new(UnsafeCell::new(None));
+        let my_packet: Arc<Packet<'scope, T>> =
+            Arc::new(Packet { scope: scope_data, result: UnsafeCell::new(None) });
         let main = move || {
             if let Some(name) = their_thread.cname() {
                 imp::Thread::set_name(name);
             }
         };
 
-        Ok(JoinHandle(JoinInner {
+        if let Some(scope_data) = scope_data {
+            scope_data.increment_num_running_threads();
+        }
+
+        Ok(JoinInner {
             // SAFETY:
             //
             // `imp::Thread::new` takes a closure with a `'static` lifetime, since it's passed
@@ -613,16 +623,16 @@ impl Builder {
             // exist after the thread has terminated, which is signaled by `Thread::join`
             // returning.
             native: unsafe {
-                Some(imp::Thread::new(
+                imp::Thread::new(
                     stack_size,
                     mem::transmute::<Box<dyn FnOnce() + 'a>, Box<dyn FnOnce() + 'static>>(
                         Box::new(main),
                     ),
-                )?)
+                )?
             },
             thread: my_thread,
-            packet: Packet(my_packet),
-        }))
+            packet: my_packet,
+        })
     }
 }
 

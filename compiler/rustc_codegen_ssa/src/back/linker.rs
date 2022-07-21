@@ -360,7 +360,7 @@ impl<'a> GccLinker<'a> {
                 } else {
                     self.linker_arg("--entry=entrypoint");
                 }
-                if self.sess.opts.cg.target_cpu.as_ref().unwrap_or(&self.sess.target.cpu) == "sbfv2"
+                if self.sess.opts.cg.target_cpu.as_ref().unwrap_or(&self.sess.target.cpu.as_ref().to_string()) == "sbfv2"
                 {
                     self.linker_arg("--section-start=.text=0x100000000");
                     self.linker_arg("--pack-dyn-relocs=relr");

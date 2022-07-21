@@ -35,7 +35,7 @@ cfg_if::cfg_if! {
     } else if #[cfg(target_os = "solid_asp3")] {
         mod solid;
         pub use self::solid::*;
-    } else if #[cfg(any(target_arch = "bpf", target_arch = "sbf"))] {
+    } else if #[cfg(target_os = "solana")] {
         mod sbf;
         pub use self::sbf::*;
     } else if #[cfg(target_os = "hermit")] {
