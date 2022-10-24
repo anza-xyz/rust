@@ -169,6 +169,12 @@ extern "C" void LLVMTimeTraceProfilerFinish(const char* FileName) {
 #define SUBTARGET_BPF
 #endif
 
+#ifdef LLVM_COMPONENT_SBF
+#define SUBTARGET_SBF SUBTARGET(SBF)
+#else
+#define SUBTARGET_SBF
+#endif
+
 #define GEN_SUBTARGETS                                                         \
   SUBTARGET_X86                                                                \
   SUBTARGET_ARM                                                                \
@@ -185,6 +191,7 @@ extern "C" void LLVMTimeTraceProfilerFinish(const char* FileName) {
   SUBTARGET_RISCV                                                              \
   SUBTARGET_LOONGARCH                                                          \
   SUBTARGET_BPF                                                                \
+  SUBTARGET_SBF                                                                \
 
 #define SUBTARGET(x)                                                           \
   namespace llvm {                                                             \
