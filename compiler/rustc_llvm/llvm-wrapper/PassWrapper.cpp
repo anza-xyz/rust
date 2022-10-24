@@ -337,6 +337,12 @@ void LLVMRustAddLastExtensionPasses(
 #define SUBTARGET_BPF
 #endif
 
+#ifdef LLVM_COMPONENT_SBF
+#define SUBTARGET_SBF SUBTARGET(SBF)
+#else
+#define SUBTARGET_SBF
+#endif
+
 #define GEN_SUBTARGETS                                                         \
   SUBTARGET_X86                                                                \
   SUBTARGET_ARM                                                                \
@@ -351,6 +357,7 @@ void LLVMRustAddLastExtensionPasses(
   SUBTARGET_HEXAGON                                                            \
   SUBTARGET_RISCV                                                              \
   SUBTARGET_BPF                                                                \
+  SUBTARGET_SBF                                                                \
 
 #define SUBTARGET(x)                                                           \
   namespace llvm {                                                             \
