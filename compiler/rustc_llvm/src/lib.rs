@@ -240,10 +240,10 @@ pub fn initialize_available_targets() {
     );
     init_target!(
         llvm_component = "sbf",
-        LLVMInitializeBPFTargetInfo,
-        LLVMInitializeBPFTarget,
-        LLVMInitializeBPFTargetMC,
-        LLVMInitializeBPFAsmPrinter,
-        LLVMInitializeBPFAsmParser
+        LLVMInitializeSBFTargetInfo,
+        LLVMInitializeSBFTarget,
+        LLVMInitializeSBFTargetMC,
+        LLVMInitializeSBFAsmPrinter,
+        LLVMInitializeSBFAsmParser
     );
 }

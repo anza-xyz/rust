@@ -66,7 +66,7 @@ targets = "AArch64;X86"
 # not built by default and the experimental Rust compilation targets that depend
 # on them will not work unless the user opts in to building them. By default the
 # `WebAssembly`, `RISCV`, and `BPF` targets are enabled when compiling LLVM from scratch.
-experimental-targets = "BPF"
+experimental-targets = "BPF;SBF"
 
 # Cap the number of parallel linker invocations when compiling LLVM.
 # This can be useful when building LLVM with debug info, which significantly
