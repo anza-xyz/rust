@@ -600,7 +600,7 @@ mod imp {
     impl_Exp!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize; as u64 into exp_u64);
 }
 
-#[cfg(not(any(target_pointer_width = "64", target_arch = "wasm32", target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(any(target_pointer_width = "64", target_arch = "wasm32", target_family = "solana")))]
 mod imp {
     use super::*;
     impl_Display!(i8, u8, i16, u16, i32, u32, isize, usize; as u32 into display_u32);

@@ -3479,6 +3479,7 @@ impl Target {
             Arch::Hexagon => (Architecture::Hexagon, None),
             Arch::Xtensa => (Architecture::Xtensa, None),
             Arch::Bpf => (Architecture::Bpf, None),
+            Arch::Sbf => (Architecture::Sbf, None),
             Arch::LoongArch32 => (Architecture::LoongArch32, None),
             Arch::LoongArch64 => (Architecture::LoongArch64, None),
             Arch::CSky => (Architecture::Csky, None),

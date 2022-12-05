@@ -27,7 +27,7 @@ mod const_from;
 mod dec2flt;
 mod float_iter_sum_identity;
 // sbf doesn't support floats
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 mod flt2dec;
 mod ieee754;
 mod int_log;

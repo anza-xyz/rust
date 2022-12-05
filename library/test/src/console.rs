@@ -282,12 +282,12 @@ fn on_test_event(
 }
 
 pub(crate) fn get_formatter(opts: &TestOpts, max_name_len: usize) -> Box<dyn OutputFormatter> {
-    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     let output = match term::stdout() {
         None => OutputLocation::Raw(io::stdout()),
         Some(t) => OutputLocation::Pretty(t),
     };
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    #[cfg(target_family = "solana")]
     let output = OutputLocation::Raw(io::stdout());
 
     let is_multithreaded = opts.test_threads.unwrap_or_else(get_concurrency) > 1;

@@ -1,13 +1,20 @@
 use crate::cell::UnsafeCell;
+use crate::sys_common::lazy_box::{LazyBox, LazyInit};
 
 pub struct Mutex {
     inner: UnsafeCell<bool>,
 }
 
-pub type MovableMutex = Box<Mutex>;
+pub(crate) type MovableMutex = LazyBox<Mutex>;
 
 unsafe impl Send for Mutex {}
 unsafe impl Sync for Mutex {} // no threads on SBF
+
+impl LazyInit for Mutex {
+    fn init() -> Box<Self> {
+        Box::new(Self::new())
+    }
+}
 
 #[allow(dead_code)] // sys isn't exported yet
 impl Mutex {
