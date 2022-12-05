@@ -9,7 +9,6 @@
 //!
 //! [the book]: ../book/ch19-06-macros.html#procedural-macros-for-generating-code-from-attributes
 
-#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 #![stable(feature = "proc_macro_lib", since = "1.15.0")]
 #![deny(missing_docs)]
 #![doc(

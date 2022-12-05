@@ -1,4 +1,4 @@
-#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#![cfg(not(target_family = "solana"))]
 use rand::Rng;
 use test::{black_box, Bencher};
 
