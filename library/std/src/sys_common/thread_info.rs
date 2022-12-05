@@ -1,4 +1,4 @@
-#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#![cfg(not(target_family = "solana"))]
 #![allow(dead_code)] // stack_guard isn't used right now on all platforms
 
 use crate::cell::OnceCell;

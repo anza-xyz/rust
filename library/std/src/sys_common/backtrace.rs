@@ -1,4 +1,4 @@
-#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#![cfg(not(target_family = "solana"))]
 
 use crate::backtrace_rs::{self, BacktraceFmt, BytesOrWideString, PrintFmt};
 use crate::borrow::Cow;

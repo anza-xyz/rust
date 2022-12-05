@@ -3111,7 +3111,7 @@ impl RandomState {
     #[must_use]
     #[stable(feature = "hashmap_build_hasher", since = "1.7.0")]
     pub fn new() -> RandomState {
-        if cfg!(any(target_arch = "bpf", target_arch = "sbf")) {
+        if cfg!(target_family = "solana") {
             // sbf doesn't support thread_local!()
             RandomState { k0: 0, k1: 0 }
         } else {

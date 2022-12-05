@@ -67,8 +67,4 @@ impl RwLock {
     pub unsafe fn write_unlock(&self) {
         *self.mode.get() += 1;
     }
-
-    #[inline]
-    pub unsafe fn destroy(&self) {
-    }
 }

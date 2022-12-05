@@ -1,4 +1,4 @@
-#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#![cfg(not(target_family = "solana"))]
 use std::future::{join, Future};
 use std::pin::Pin;
 use std::sync::Arc;
