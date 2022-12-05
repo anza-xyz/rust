@@ -26,7 +26,7 @@ mod bignum;
 mod const_from;
 mod dec2flt;
 // sbf doesn't support floats
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 mod flt2dec;
 mod int_log;
 mod ops;

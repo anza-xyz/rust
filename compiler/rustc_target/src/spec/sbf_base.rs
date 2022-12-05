@@ -1,5 +1,5 @@
 use crate::abi::Endian;
-use super::{LinkArgs, LinkerFlavor, PanicStrategy, TargetOptions, LldFlavor};
+use super::{cvs, LinkArgs, LinkerFlavor, PanicStrategy, TargetOptions, LldFlavor};
 
 pub fn opts() -> TargetOptions {
     let linker_script = r"
@@ -33,6 +33,7 @@ SECTIONS
     lld_args.push("-z".into());
     lld_args.push("notext".into());
     let mut pre_link_args = LinkArgs::new();
+    pre_link_args.insert(LinkerFlavor::Ld, lld_args.clone());
     pre_link_args.insert(LinkerFlavor::Lld(LldFlavor::Ld), lld_args);
 
     TargetOptions {
@@ -46,6 +47,7 @@ SECTIONS
         env: "".into(),
         executables: true,
         features: "+solana".into(),
+        families: cvs!["solana"],
         link_script: Some(linker_script.into()),
         linker: Some("rust-lld".into()),
         linker_flavor: LinkerFlavor::Lld(LldFlavor::Ld),

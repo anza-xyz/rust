@@ -27,7 +27,8 @@ impl Target {
             matches!(self.linker_flavor, LinkerFlavor::WasmLld(..))
         );
         assert_eq!(self.os == "emscripten", matches!(self.linker_flavor, LinkerFlavor::EmCc));
-        assert_eq!(self.arch == "bpf", matches!(self.linker_flavor, LinkerFlavor::Bpf));
+        assert_eq!(self.arch == "bpf" && self.features != "+solana",
+                   matches!(self.linker_flavor, LinkerFlavor::Bpf));
         assert_eq!(self.arch == "nvptx64", matches!(self.linker_flavor, LinkerFlavor::Ptx));
 
         for args in [
