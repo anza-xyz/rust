@@ -14,5 +14,6 @@ libc = { version = "0.2.150", default-features = false }
 [lints.rust.unexpected_cfgs]
 level = "warn"
 check-cfg = [
-    'cfg(target_arch, values("sbf"))'
+    'cfg(target_arch, values("sbf"))',
+    'cfg(target_family, values("solana"))',
 ]

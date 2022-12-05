@@ -54,6 +54,11 @@ impl RandomState {
     #[must_use]
     #[stable(feature = "hashmap_build_hasher", since = "1.7.0")]
     pub fn new() -> RandomState {
+        if cfg!(target_family = "solana") {
+            // sbf doesn't support thread_local!()
+            return RandomState { k0: 0, k1: 0 };
+        }
+
         // Historically this function did not cache keys from the OS and instead
         // simply always called `rand::thread_rng().gen()` twice. In #31356 it
         // was discovered, however, that because we re-seed the thread-local RNG

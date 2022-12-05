@@ -5,12 +5,12 @@ mod tests;
 
 use crate::io::prelude::*;
 
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::cell::{Cell, RefCell};
 use crate::fmt;
 #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::fs::File;
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_os = "solana"))]
 use crate::io::{
     self, BorrowedCursor, BufReader, IoSlice, IoSliceMut, LineWriter, Lines, SpecReadByte,
 };
@@ -19,21 +19,19 @@ use crate::io::{
     self, BorrowedCursor, IoSlice, IoSliceMut,
 };
 use crate::panic::{RefUnwindSafe, UnwindSafe};
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(target_os = "solana")]
+use crate::io::{self, BufReader, IoSlice, IoSliceMut, LineWriter, Lines};
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicBool, Ordering};
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sync::{Arc, Mutex, MutexGuard};
-#[cfg(all(target_arch = "bpf", target_arch = "sbf"))]
-use crate::sync::{Arc, Mutex};
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sync::{OnceLock, ReentrantLock, ReentrantLockGuard};
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::sys::stdio;
 use crate::thread::AccessError;
 
 type LocalStream = Arc<Mutex<Vec<u8>>>;
 
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 thread_local! {
     /// Used by the test crate to capture the output of the print macros and panics.
     static OUTPUT_CAPTURE: Cell<Option<LocalStream>> = {
@@ -53,7 +51,7 @@ thread_local! {
 /// have a consistent order between set_output_capture and print_to *within
 /// the same thread*. Within the same thread, things always have a perfectly
 /// consistent order. So Ordering::Relaxed is fine.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 static OUTPUT_CAPTURE_USED: AtomicBool = AtomicBool::new(false);
 
 /// A handle to a raw instance of the standard input stream of this process.
@@ -82,7 +80,7 @@ struct StderrRaw(stdio::Stderr);
 ///
 /// The returned handle has no external synchronization or buffering.
 #[unstable(feature = "libstd_sys_internals", issue = "none")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 const fn stdin_raw() -> StdinRaw {
     StdinRaw(stdio::Stdin::new())
 }
@@ -97,7 +95,7 @@ const fn stdin_raw() -> StdinRaw {
 /// The returned handle has no external synchronization or buffering layered on
 /// top.
 #[unstable(feature = "libstd_sys_internals", issue = "none")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 const fn stdout_raw() -> StdoutRaw {
     StdoutRaw(stdio::Stdout::new())
 }
@@ -110,7 +108,7 @@ const fn stdout_raw() -> StdoutRaw {
 /// The returned handle has no external synchronization or buffering layered on
 /// top.
 #[unstable(feature = "libstd_sys_internals", issue = "none")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 const fn stderr_raw() -> StderrRaw {
     StderrRaw(stdio::Stderr::new())
 }
@@ -260,7 +258,7 @@ fn handle_ebadf_lazy<T>(r: io::Result<T>, default: impl FnOnce() -> T) -> io::Re
 /// ```
 #[stable(feature = "rust1", since = "1.0.0")]
 pub struct Stdin {
-    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     inner: &'static Mutex<BufReader<StdinRaw>>,
 }
 
@@ -350,7 +348,7 @@ pub struct StdinLock<'a> {
 /// ```
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn stdin() -> Stdin {
     static INSTANCE: OnceLock<Mutex<BufReader<StdinRaw>>> = OnceLock::new();
     Stdin {
@@ -362,7 +360,7 @@ pub fn stdin() -> Stdin {
 
 /// SBF dummy
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn stdin() -> Stdin {
     Stdin {}
 }
@@ -390,7 +388,7 @@ impl Stdin {
     /// }
     /// ```
     #[stable(feature = "rust1", since = "1.0.0")]
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn lock(&self) -> StdinLock<'static> {
         // Locks this handle with 'static lifetime. This depends on the
         // implementation detail that the underlying `Mutex` is static.
@@ -430,7 +428,7 @@ impl Stdin {
     ///   continuing
     #[stable(feature = "rust1", since = "1.0.0")]
     #[rustc_confusables("get_line")]
-    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn read_line(&self, buf: &mut String) -> io::Result<usize> {
         self.lock().read_line(buf)
     }
@@ -452,7 +450,7 @@ impl Stdin {
     /// ```
     #[must_use = "`self` will be dropped if the result is not used"]
     #[stable(feature = "stdin_forwarders", since = "1.62.0")]
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn lines(self) -> Lines<StdinLock<'static>> {
         self.lock().lines()
     }
@@ -466,7 +464,7 @@ impl fmt::Debug for Stdin {
 }
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Read for Stdin {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         self.lock().read(buf)
@@ -525,7 +523,7 @@ impl Read for &Stdin {
 }
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 impl Read for Stdin {
     fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
         Ok(0)
@@ -652,7 +650,7 @@ pub struct Stdout {
     // FIXME: this should be LineWriter or BufWriter depending on the state of
     //        stdout (tty or not). Note that if this is not line buffered it
     //        should also flush-on-panic or some form of flush-on-abort.
-    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     inner: &'static ReentrantLock<RefCell<LineWriter<StdoutRaw>>>,
 }
 
@@ -674,18 +672,18 @@ pub struct Stdout {
 /// standard library or via raw Windows API calls, will fail.
 #[must_use = "if unused stdout will immediately unlock"]
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub struct StdoutLock<'a> {
     inner: ReentrantLockGuard<'a, RefCell<LineWriter<StdoutRaw>>>,
 }
 
 /// SBF dummy
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub struct StdoutLock {
 }
 
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 static STDOUT: OnceLock<ReentrantLock<RefCell<LineWriter<StdoutRaw>>>> = OnceLock::new();
 
 /// Constructs a new handle to the standard output of the current process.
@@ -737,7 +735,7 @@ static STDOUT: OnceLock<ReentrantLock<RefCell<LineWriter<StdoutRaw>>>> = OnceLoc
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg_attr(not(test), rustc_diagnostic_item = "io_stdout")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn stdout() -> Stdout {
     Stdout {
         inner: STDOUT
@@ -747,7 +745,7 @@ pub fn stdout() -> Stdout {
 
 /// Dummy stdout for SBF target
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn stdout() -> Stdout {
     Stdout {}
 }
@@ -755,7 +753,7 @@ pub fn stdout() -> Stdout {
 // Flush the data and disable buffering during shutdown
 // by replacing the line writer by one with zero
 // buffering capacity.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn cleanup() {
     let mut initialized = false;
     let stdout = STDOUT.get_or_init(|| {
@@ -795,12 +793,22 @@ impl Stdout {
     /// }
     /// ```
     #[stable(feature = "rust1", since = "1.0.0")]
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn lock(&self) -> StdoutLock<'static> {
         // Locks this handle with 'static lifetime. This depends on the
         // implementation detail that the underlying `ReentrantMutex` is
         // static.
         StdoutLock { inner: self.inner.lock() }
+    }
+
+    /// Dummy lock for SBF
+    #[stable(feature = "rust1", since = "1.0.0")]
+    #[cfg(target_family = "solana")]
+    pub fn lock(&self) -> StdoutLock {
+        // Locks this handle with 'static lifetime. This depends on the
+        // implementation detail that the underlying `ReentrantMutex` is
+        // static.
+        StdoutLock { }
     }
 }
 
@@ -818,7 +826,7 @@ impl fmt::Debug for Stdout {
 }
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         (&*self).write(buf)
@@ -845,7 +853,7 @@ impl Write for Stdout {
 }
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 impl Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         crate::sys::sol_log(buf);
@@ -874,7 +882,7 @@ impl Write for Stdout {
 }
 
 #[stable(feature = "write_mt", since = "1.48.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Write for &Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.lock().write(buf)
@@ -907,7 +915,7 @@ impl UnwindSafe for StdoutLock<'_> {}
 impl RefUnwindSafe for StdoutLock<'_> {}
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Write for StdoutLock<'_> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.inner.borrow_mut().write(buf)
@@ -930,8 +938,34 @@ impl Write for StdoutLock<'_> {
     }
 }
 
+#[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(target_family = "solana")]
+impl Write for StdoutLock {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        crate::sys::sol_log(buf);
+        Ok(buf.len())
+    }
+    fn write_vectored(&mut self, _bufs: &[IoSlice<'_>]) -> io::Result<usize> {
+        Ok(0)
+    }
+    #[inline]
+    fn is_write_vectored(&self) -> bool {
+        false
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+    fn write_all(&mut self, buf: &[u8]) -> io::Result<()> {
+        crate::sys::sol_log(buf);
+        Ok(())
+    }
+    fn write_all_vectored(&mut self, _bufs: &mut [IoSlice<'_>]) -> io::Result<()> {
+        Ok(())
+    }
+}
+
 #[stable(feature = "std_debug", since = "1.16.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl fmt::Debug for StdoutLock<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("StdoutLock").finish_non_exhaustive()
@@ -939,7 +973,7 @@ impl fmt::Debug for StdoutLock<'_> {
 }
 
 #[stable(feature = "std_debug", since = "1.16.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 impl fmt::Debug for StdoutLock {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.pad("StdoutLock { .. }")
@@ -965,7 +999,7 @@ impl fmt::Debug for StdoutLock {
 /// standard library or via raw Windows API calls, will fail.
 #[stable(feature = "rust1", since = "1.0.0")]
 pub struct Stderr {
-    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     inner: &'static ReentrantLock<RefCell<StderrRaw>>,
 }
 
@@ -987,14 +1021,14 @@ pub struct Stderr {
 /// standard library or via raw Windows API calls, will fail.
 #[must_use = "if unused stderr will immediately unlock"]
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub struct StderrLock<'a> {
     inner: ReentrantLockGuard<'a, RefCell<StderrRaw>>,
 }
 
 /// SBF dummy
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub struct StderrLock {
 }
 
@@ -1045,7 +1079,7 @@ pub struct StderrLock {
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg_attr(not(test), rustc_diagnostic_item = "io_stderr")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn stderr() -> Stderr {
     // Note that unlike `stdout()` we don't use `at_exit` here to register a
     // destructor. Stderr is not buffered, so there's no need to run a
@@ -1058,7 +1092,7 @@ pub fn stderr() -> Stderr {
 
 /// SBF dummy
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn stderr() -> Stderr {
     Stderr {}
 }
@@ -1085,7 +1119,7 @@ impl Stderr {
     /// }
     /// ```
     #[stable(feature = "rust1", since = "1.0.0")]
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn lock(&self) -> StderrLock<'static> {
         // Locks this handle with 'static lifetime. This depends on the
         // implementation detail that the underlying `ReentrantMutex` is
@@ -1108,7 +1142,7 @@ impl fmt::Debug for Stderr {
 }
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         (&*self).write(buf)
@@ -1135,7 +1169,7 @@ impl Write for Stderr {
 }
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 impl Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         crate::sys::sol_log(buf);
@@ -1164,7 +1198,7 @@ impl Write for Stderr {
 }
 
 #[stable(feature = "write_mt", since = "1.48.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Write for &Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.lock().write(buf)
@@ -1197,7 +1231,7 @@ impl UnwindSafe for StderrLock<'_> {}
 impl RefUnwindSafe for StderrLock<'_> {}
 
 #[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Write for StderrLock<'_> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.inner.borrow_mut().write(buf)
@@ -1221,7 +1255,7 @@ impl Write for StderrLock<'_> {
 }
 
 #[stable(feature = "std_debug", since = "1.16.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl fmt::Debug for StderrLock<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("StderrLock").finish_non_exhaustive()
@@ -1229,7 +1263,7 @@ impl fmt::Debug for StderrLock<'_> {
 }
 
 #[stable(feature = "std_debug", since = "1.16.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 impl fmt::Debug for StderrLock {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.pad("StderrLock { .. }")
@@ -1237,7 +1271,7 @@ impl fmt::Debug for StderrLock {
 }
 
 /// Sets the thread-local output capture buffer and returns the old one.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[unstable(
     feature = "internal_output_capture",
     reason = "this function is meant for use in the test crate \
@@ -1274,7 +1308,7 @@ pub fn try_set_output_capture(
 }
 
 /// Dummy version for satisfying test library dependencies when building the SBF target.
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 #[unstable(
     feature = "internal_output_capture",
     reason = "this function is meant for use in the test crate \
@@ -1299,7 +1333,7 @@ pub fn set_output_capture(_sink: Option<LocalStream>) -> Option<LocalStream> {
 ///
 /// Writing to non-blocking stdout/stderr can cause an error, which will lead
 /// this function to panic.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 fn print_to<T>(args: fmt::Arguments<'_>, global_s: fn() -> T, label: &str)
 where
     T: Write,
@@ -1418,7 +1452,7 @@ impl_is_terminal!(File, Stdin, StdinLock<'_>, Stdout, StdoutLock<'_>, Stderr, St
 )]
 #[doc(hidden)]
 #[cfg(not(test))]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn _print(args: fmt::Arguments<'_>) {
     print_to(args, stdout, "stdout");
 }
@@ -1429,7 +1463,7 @@ pub fn _print(args: fmt::Arguments<'_>) {
     issue = "none")]
 #[doc(hidden)]
 #[cfg(not(test))]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn _print(_args: fmt::Arguments<'_>) {
 }
 
@@ -1440,7 +1474,7 @@ pub fn _print(_args: fmt::Arguments<'_>) {
 )]
 #[doc(hidden)]
 #[cfg(not(test))]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn _eprint(args: fmt::Arguments<'_>) {
     print_to(args, stderr, "stderr");
 }
@@ -1451,7 +1485,7 @@ pub fn _eprint(args: fmt::Arguments<'_>) {
     issue = "none")]
 #[doc(hidden)]
 #[cfg(not(test))]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn _eprint(_args: fmt::Arguments<'_>) {
 }
 

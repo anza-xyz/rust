@@ -53,4 +53,5 @@ check-cfg = [
     # of declared features, we therefor expect any feature cfg
     'cfg(feature, values(any()))',
     'cfg(target_arch, values("sbf"))',
+    'cfg(target_family, values("solana"))',
 ]

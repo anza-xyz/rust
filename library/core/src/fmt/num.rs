@@ -546,7 +546,7 @@ mod imp {
     );
 }
 
-#[cfg(not(any(target_pointer_width = "64", target_arch = "wasm32", target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(any(target_pointer_width = "64", target_arch = "wasm32", target_family = "solana")))]
 mod imp {
     use super::*;
     impl_Display!(
