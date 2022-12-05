@@ -429,10 +429,10 @@ extern crate unwind;
 #[doc(masked)]
 #[allow(unused_extern_crates)]
 #[cfg(all(
-    not(all(windows, target_env = "msvc", not(target_vendor = "uwp"),
-        any(target_arch = "bpf", target_arch = "sbf"))),
+    not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))),
     feature = "miniz_oxide"
 ))]
+#[cfg(all(not(target_family = "solana"), feature = "miniz_oxide"))]
 extern crate miniz_oxide;
 
 // During testing, this crate is not actually the "real" std library, but rather
@@ -641,7 +641,7 @@ pub mod alloc;
 // Private support modules
 mod panicking;
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[path = "../../backtrace/src/lib.rs"]
 #[allow(dead_code, unused_attributes, fuzzy_provenance_casts)]
 mod backtrace_rs;

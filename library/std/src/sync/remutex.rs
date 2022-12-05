@@ -72,7 +72,7 @@ impl<T> !Send for ReentrantMutexGuard<'_, T> {}
 
 impl<T> ReentrantMutex<T> {
     /// Creates a new reentrant mutex in an unlocked state.
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub const fn new(t: T) -> ReentrantMutex<T> {
         ReentrantMutex {
             mutex: sys::Mutex::new(),
@@ -94,7 +94,7 @@ impl<T> ReentrantMutex<T> {
     /// If another user of this mutex panicked while holding the mutex, then
     /// this call will return failure if the mutex would otherwise be
     /// acquired.
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn lock(&self) -> ReentrantMutexGuard<'_, T> {
         let this_thread = current_thread_unique_ptr();
         // Safety: We only touch lock_count when we own the lock.
@@ -123,7 +123,7 @@ impl<T> ReentrantMutex<T> {
     /// If another user of this mutex panicked while holding the mutex, then
     /// this call will return failure if the mutex would otherwise be
     /// acquired.
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     pub fn try_lock(&self) -> Option<ReentrantMutexGuard<'_, T>> {
         let this_thread = current_thread_unique_ptr();
         // Safety: We only touch lock_count when we own the lock.
@@ -142,7 +142,7 @@ impl<T> ReentrantMutex<T> {
         }
     }
 
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     unsafe fn increment_lock_count(&self) {
         *self.lock_count.get() = (*self.lock_count.get())
             .checked_add(1)
@@ -175,7 +175,7 @@ impl<T> Drop for ReentrantMutexGuard<'_, T> {
 /// Get an address that is unique per running thread.
 ///
 /// This can be used as a non-null usize-sized ID.
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn current_thread_unique_ptr() -> usize {
     // Use a non-drop type to make sure it's still available during thread destruction.
     thread_local! { static X: u8 = const { 0 } }

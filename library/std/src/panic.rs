@@ -5,7 +5,7 @@
 use crate::any::Any;
 use crate::collections;
 use crate::panicking;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicUsize, Ordering};
 use crate::sync::{Mutex, RwLock};
 use crate::thread::Result;
@@ -57,7 +57,7 @@ pub use core::panic::{AssertUnwindSafe, RefUnwindSafe, UnwindSafe};
 /// accessed later using [`PanicInfo::payload`].
 ///
 /// See the [`panic!`] macro for more information about panicking.
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[stable(feature = "panic_any", since = "1.51.0")]
 #[inline]
 #[track_caller]
@@ -170,14 +170,14 @@ pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R> {
 /// }
 /// ```
 #[stable(feature = "resume_unwind", since = "1.9.0")]
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn resume_unwind(payload: Box<dyn Any + Send>) -> ! {
     panicking::rust_panic_without_hook(payload)
 }
 
 /// SBF version of resume_unwind
 #[stable(feature = "resume_unwind", since = "1.9.0")]
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn resume_unwind(_payload: Box<dyn Any + Send>) -> ! {
     // Only used by thread, redirect to plain old panic
     panicking::begin_panic_fmt(&format_args!("unwind"))
@@ -221,7 +221,7 @@ pub fn always_abort() {
 
 /// The configuration for whether and how the default panic hook will capture
 /// and display the backtrace.
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[unstable(feature = "panic_backtrace_config", issue = "93346")]
 #[non_exhaustive]
@@ -235,7 +235,7 @@ pub enum BacktraceStyle {
     Off,
 }
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl BacktraceStyle {
     pub(crate) fn full() -> Option<Self> {
         if cfg!(feature = "backtrace") { Some(BacktraceStyle::Full) } else { None }
@@ -264,7 +264,7 @@ impl BacktraceStyle {
 // that backtrace.
 //
 // Internally stores equivalent of an Option<BacktraceStyle>.
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 static SHOULD_CAPTURE: AtomicUsize = AtomicUsize::new(0);
 
 /// Configure whether the default panic hook will capture and display a
@@ -272,7 +272,7 @@ static SHOULD_CAPTURE: AtomicUsize = AtomicUsize::new(0);
 ///
 /// The default value for this setting may be set by the `RUST_BACKTRACE`
 /// environment variable; see the details in [`get_backtrace_style`].
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[unstable(feature = "panic_backtrace_config", issue = "93346")]
 pub fn set_backtrace_style(style: BacktraceStyle) {
     if !cfg!(feature = "backtrace") {
@@ -303,7 +303,7 @@ pub fn set_backtrace_style(style: BacktraceStyle) {
 ///   the future
 ///
 /// Returns `None` if backtraces aren't currently supported.
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[unstable(feature = "panic_backtrace_config", issue = "93346")]
 pub fn get_backtrace_style() -> Option<BacktraceStyle> {
     if !cfg!(feature = "backtrace") {

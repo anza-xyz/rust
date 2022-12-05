@@ -1,4 +1,6 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     g++ \
@@ -26,6 +28,10 @@ RUN PATH="${HOME}/.cargo/bin:${PATH}" \
 
 COPY scripts/sccache.sh /scripts/
 RUN sh /scripts/sccache.sh
+
+# We are disabling CI LLVM since this builder is intentionally using a host
+# LLVM, rather than the typical src/llvm-project LLVM.
+ENV NO_DOWNLOAD_CI_LLVM 1
 
 ENV RUST_CONFIGURE_ARGS \
     --set rust.lld \
