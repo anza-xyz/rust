@@ -1,9 +1,9 @@
 //! Helper module which helps to determine amount of threads to be used
 //! during tests execution.
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use std::{env, num::NonZeroUsize, thread};
 
-#[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub fn get_concurrency() -> usize {
     if let Ok(value) = env::var("RUST_TEST_THREADS") {
         match value.parse::<NonZeroUsize>().ok() {
@@ -15,7 +15,7 @@ pub fn get_concurrency() -> usize {
     }
 }
 
-#[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+#[cfg(target_family = "solana")]
 pub fn get_concurrency() -> usize {
     1
 }

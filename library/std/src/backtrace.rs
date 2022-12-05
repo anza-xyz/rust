@@ -88,16 +88,22 @@ mod tests;
 // `Backtrace`, but that's a relatively small price to pay relative to capturing
 // a backtrace or actually symbolizing it.
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::backtrace_rs::{self, BytesOrWideString};
+#[cfg(not(target_family = "solana"))]
 use crate::cell::UnsafeCell;
+#[cfg(not(target_family = "solana"))]
 use crate::env;
+#[cfg(not(target_family = "solana"))]
 use crate::ffi::c_void;
 use crate::fmt;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicUsize, Ordering::Relaxed};
+#[cfg(not(target_family = "solana"))]
 use crate::sync::Once;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sys_common::backtrace::{lock, output_filename};
+#[cfg(not(target_family = "solana"))]
 use crate::vec::Vec;
 
 /// A captured OS thread stack backtrace.
@@ -135,9 +141,11 @@ pub enum BacktraceStatus {
 enum Inner {
     Unsupported,
     Disabled,
+    #[cfg(not(target_family = "solana"))]
     Captured(LazilyResolvedCapture),
 }
 
+#[cfg(not(target_family = "solana"))]
 struct Capture {
     actual_start: usize,
     resolved: bool,
@@ -152,18 +160,21 @@ fn _assert_send_sync() {
 /// A single frame of a backtrace.
 #[unstable(feature = "backtrace_frames", issue = "79676")]
 pub struct BacktraceFrame {
+    #[cfg(not(target_family = "solana"))]
     frame: RawFrame,
+    #[cfg(not(target_family = "solana"))]
     symbols: Vec<BacktraceSymbol>,
 }
 
 #[derive(Debug)]
 enum RawFrame {
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     Actual(backtrace_rs::Frame),
     #[cfg(test)]
     Fake,
 }
 
+#[cfg(not(target_family = "solana"))]
 struct BacktraceSymbol {
     name: Option<Vec<u8>>,
     filename: Option<BytesOrWide>,
@@ -171,6 +182,7 @@ struct BacktraceSymbol {
     colno: Option<u32>,
 }
 
+#[cfg(not(target_family = "solana"))]
 enum BytesOrWide {
     Bytes(Vec<u8>),
     Wide(Vec<u16>),
@@ -178,7 +190,7 @@ enum BytesOrWide {
 
 #[stable(feature = "backtrace", since = "1.65.0")]
 impl fmt::Debug for Backtrace {
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         let capture = match &self.inner {
             Inner::Unsupported => return fmt.write_str("<unsupported>"),
@@ -203,7 +215,7 @@ impl fmt::Debug for Backtrace {
         dbg.finish()
     }
 
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    #[cfg(target_family = "solana")]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "<unsupported>")
     }
@@ -211,20 +223,20 @@ impl fmt::Debug for Backtrace {
 
 #[unstable(feature = "backtrace_frames", issue = "79676")]
 impl fmt::Debug for BacktraceFrame {
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut dbg = fmt.debug_list();
         dbg.entries(&self.symbols);
         dbg.finish()
     }
 
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    #[cfg(target_family = "solana")]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "<unsupported>")
     }
 }
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl fmt::Debug for BacktraceSymbol {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         // FIXME: improve formatting: https://github.com/rust-lang/rust/issues/65280
@@ -251,7 +263,7 @@ impl fmt::Debug for BacktraceSymbol {
     }
 }
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl fmt::Debug for BytesOrWide {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         output_filename(
@@ -269,7 +281,7 @@ impl fmt::Debug for BytesOrWide {
 impl Backtrace {
     /// Returns whether backtrace captures are enabled through environment
     /// variables.
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     fn enabled() -> bool {
         // Cache the result of reading the environment variables to make
         // backtrace captures speedy, because otherwise reading environment
@@ -291,7 +303,7 @@ impl Backtrace {
         enabled
     }
 
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    #[cfg(target_family = "solana")]
     fn enabled() -> bool {
         false
     }
@@ -347,7 +359,7 @@ impl Backtrace {
 
     // Capture a backtrace which start just before the function addressed by
     // `ip`
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     fn create(ip: usize) -> Backtrace {
         // SAFETY: We don't attempt to lock this reentrantly.
         let _lock = unsafe { lock() };
@@ -382,8 +394,8 @@ impl Backtrace {
         Backtrace { inner }
     }
 
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
-    fn create(ip: usize) -> Backtrace {
+    #[cfg(target_family = "solana")]
+    fn create(_ip: usize) -> Backtrace {
         Backtrace {
             inner: Inner::Unsupported
         }
@@ -398,6 +410,7 @@ impl Backtrace {
         match self.inner {
             Inner::Unsupported => BacktraceStatus::Unsupported,
             Inner::Disabled => BacktraceStatus::Disabled,
+            #[cfg(not(target_family = "solana"))]
             Inner::Captured(_) => BacktraceStatus::Captured,
         }
     }
@@ -407,14 +420,23 @@ impl<'a> Backtrace {
     /// Returns an iterator over the backtrace frames.
     #[must_use]
     #[unstable(feature = "backtrace_frames", issue = "79676")]
+    #[cfg(not(target_family = "solana"))]
     pub fn frames(&'a self) -> &'a [BacktraceFrame] {
         if let Inner::Captured(c) = &self.inner { &c.force().frames } else { &[] }
+    }
+
+    /// Returns an iterator over the backtrace frames.
+    #[must_use]
+    #[unstable(feature = "backtrace_frames", issue = "79676")]
+    #[cfg(target_family = "solana")]
+    pub fn frames(&'a self) -> &'a [BacktraceFrame] {
+        &[]
     }
 }
 
 #[stable(feature = "backtrace", since = "1.65.0")]
 impl fmt::Display for Backtrace {
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         let capture = match &self.inner {
             Inner::Unsupported => return fmt.write_str("unsupported backtrace"),
@@ -462,17 +484,19 @@ impl fmt::Display for Backtrace {
         Ok(())
     }
 
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    #[cfg(target_family = "solana")]
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "<unsupported>")
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 struct LazilyResolvedCapture {
     sync: Once,
     capture: UnsafeCell<Capture>,
 }
 
+#[cfg(not(target_family = "solana"))]
 impl LazilyResolvedCapture {
     fn new(capture: Capture) -> Self {
         LazilyResolvedCapture { sync: Once::new(), capture: UnsafeCell::new(capture) }
@@ -493,10 +517,12 @@ impl LazilyResolvedCapture {
 
 // SAFETY: Access to the inner value is synchronized using a thread-safe `Once`
 // So long as `Capture` is `Sync`, `LazilyResolvedCapture` is too
+#[cfg(not(target_family = "solana"))]
 unsafe impl Sync for LazilyResolvedCapture where Capture: Sync {}
 
+#[cfg(not(target_family = "solana"))]
 impl Capture {
-    #[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+    #[cfg(not(target_family = "solana"))]
     fn resolve(&mut self) {
         // If we're already resolved, nothing to do!
         if self.resolved {
@@ -532,7 +558,7 @@ impl Capture {
         }
     }
 
-    #[cfg(any(target_arch = "bpf", target_arch = "sbf"))]
+    #[cfg(target_family = "solana")]
     fn resolve(&mut self) {
         // If we're already resolved, nothing to do!
         if self.resolved {
@@ -542,7 +568,7 @@ impl Capture {
     }
 }
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl RawFrame {
     fn ip(&self) -> *mut c_void {
         match self {

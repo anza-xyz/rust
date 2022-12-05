@@ -205,11 +205,12 @@ const EXTRA_CHECK_CFGS: &[(Option<Mode>, &'static str, Option<&[&'static str]>)]
     (Some(Mode::Std), "backtrace_in_libstd", None),
     /* Extra values not defined in the built-in targets yet, but used in std */
     (Some(Mode::Std), "target_env", Some(&["libnx"])),
-    (Some(Mode::Std), "target_os", Some(&["watchos"])),
+    (Some(Mode::Std), "target_family", Some(&["solana"])),
+    (Some(Mode::Std), "target_os", Some(&["solana", "watchos"])),
     (
         Some(Mode::Std),
         "target_arch",
-        Some(&["asmjs", "spirv", "nvptx", "nvptx64", "le32", "xtensa"]),
+        Some(&["asmjs", "spirv", "nvptx", "nvptx64", "le32", "sbf", "xtensa"]),
     ),
     /* Extra names used by dependencies */
     // FIXME: Used by rustfmt is their test but is invalid (neither cargo nor bootstrap ever set

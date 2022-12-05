@@ -102,7 +102,7 @@
 #![feature(utf8_chunks)]
 #![deny(unsafe_op_in_unsafe_fn)]
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 extern crate test;
 
 mod alloc;

@@ -6,10 +6,10 @@ use crate::sys::locks as imp;
 ///
 /// This rwlock has a const constructor ([`StaticRwLock::new`]), does not
 /// implement `Drop` to cleanup resources.
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 pub struct StaticRwLock(imp::RwLock);
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl StaticRwLock {
     /// Creates a new rwlock for use.
     #[inline]
@@ -38,11 +38,11 @@ impl StaticRwLock {
     }
 }
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[must_use]
 pub struct StaticRwLockReadGuard(&'static imp::RwLock);
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Drop for StaticRwLockReadGuard {
     #[inline]
     fn drop(&mut self) {
@@ -52,11 +52,11 @@ impl Drop for StaticRwLockReadGuard {
     }
 }
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 #[must_use]
 pub struct StaticRwLockWriteGuard(&'static imp::RwLock);
 
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 impl Drop for StaticRwLockWriteGuard {
     #[inline]
     fn drop(&mut self) {

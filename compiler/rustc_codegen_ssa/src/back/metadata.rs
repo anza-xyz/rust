@@ -121,6 +121,7 @@ pub(crate) fn create_object_file(sess: &Session) -> Option<write::Object<'static
         "msp430" => Architecture::Msp430,
         "hexagon" => Architecture::Hexagon,
         "bpf" => Architecture::Bpf,
+        "sbf" => Architecture::Bpf,
         // Unsupported architecture.
         _ => return None,
     };

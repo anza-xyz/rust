@@ -1,3 +1,3 @@
-#![cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#![cfg(not(target_family = "solana"))]
 
 //! Lazy values and one-time initialization of static data.

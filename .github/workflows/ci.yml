@@ -195,7 +195,7 @@ jobs:
         uses: rust-lang/simpleinfra/github-actions/cancel-outdated-builds@master
         with:
           github_token: "${{ secrets.github_token }}"
-        if: "success() && !env.SKIP_JOB && github.ref != 'refs/heads/try'"
+        if: "success() && !env.SKIP_JOB && github.ref != 'refs/heads/try' && github.ref != 'refs/heads/try-perf'"
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
         if: success() && !env.SKIP_JOB
@@ -213,9 +213,6 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: install WIX
         run: src/ci/scripts/install-wix.sh
-        if: success() && !env.SKIP_JOB
-      - name: ensure the build happens on a partition with enough space
-        run: src/ci/scripts/symlink-build-dir.sh
         if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
@@ -400,7 +397,7 @@ jobs:
           - name: x86_64-gnu-llvm-13
             env:
               RUST_BACKTRACE: 1
-            os: ubuntu-20.04-xl
+            os: ubuntu-latest
           - name: x86_64-gnu-llvm-13-stage1
             env:
               RUST_BACKTRACE: 1
