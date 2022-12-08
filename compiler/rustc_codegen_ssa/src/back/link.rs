@@ -46,7 +46,7 @@ use std::cell::OnceCell;
 use std::collections::BTreeSet;
 use std::ffi::OsString;
 use std::fs::{read, File, OpenOptions};
-use std::io::{BufWriter, Write};
+use std::io::{prelude::*, BufWriter, SeekFrom, Write};
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::process::{ExitStatus, Output, Stdio};
@@ -310,6 +310,9 @@ fn link_rlib<'a>(
             let (metadata, metadata_position) =
                 create_wrapper_file(sess, b".rmeta".to_vec(), codegen_results.metadata.raw_data());
             let metadata = emit_wrapper_file(sess, &metadata, tmpdir, METADATA_FILENAME);
+            if sess.target.arch == "sbf" {
+                patch_synthetic_object_file(sess, &metadata);
+            }
             match metadata_position {
                 MetadataPosition::First => {
                     // Most of the time metadata in rlib files is wrapped in a "dummy" object
@@ -1941,7 +1944,21 @@ fn add_linked_symbol_object(
     if let Err(error) = result {
         sess.emit_fatal(errors::FailedToWrite { path, error });
     }
+    if sess.target.arch == "sbf" {
+        patch_synthetic_object_file(sess, &path);
+    }
     cmd.add_object(&path);
+}
+
+fn patch_synthetic_object_file(sess: &Session, path: &PathBuf) {
+    const EM_SBF: [u8; 2] = [0x07, 0x01];
+    if let Ok(mut sf) = fs::OpenOptions::new().write(true).open(path) {
+        if let Ok(_) = sf.seek(SeekFrom::Start(0x12)) {
+            sf.write(&EM_SBF).unwrap();
+        }
+    } else {
+        sess.fatal(&format!("failed to patch {}", path.display()));
+    }
 }
 
 /// Add object files containing code from the current crate.
