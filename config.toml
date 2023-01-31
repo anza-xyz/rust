@@ -106,7 +106,7 @@ link-shared = false
 #allow-old-toolchain = false
 
 # Which LLVM projects to build along with the LLVM base libraries/tools
-enable-projects = "clang;lld"
+enable-projects = "clang;lld;lldb"
 
 # =============================================================================
 # General build configuration options
@@ -230,7 +230,7 @@ docs = false
 [install]
 
 # Instead of installing to /usr/local, install to this path instead.
-prefix = "opt/bpf-rust"
+prefix = "opt/sbf-rust"
 
 # Where to install system configuration files
 # If this is a relative path, it will get installed in `prefix` above
