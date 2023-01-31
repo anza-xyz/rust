@@ -423,8 +423,8 @@ docs = false
 # =============================================================================
 [install]
 
-# Where to install the generated toolchain. Must be an absolute path.
-#prefix = "/usr/local"
+# Instead of installing to /usr/local, install to this path instead.
+prefix = "opt/sbf-rust"
 
 # Where to install system configuration files.
 # If this is a relative path, it will get installed in `prefix` above
