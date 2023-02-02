@@ -60,7 +60,7 @@ jobs:
       - name: checkout the source code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: configure the PR in which the error message will be posted
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
@@ -177,7 +177,7 @@ jobs:
       - name: checkout the source code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: configure the PR in which the error message will be posted
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
@@ -583,7 +583,7 @@ jobs:
       - name: checkout the source code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: configure the PR in which the error message will be posted
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
@@ -694,7 +694,7 @@ jobs:
       - name: checkout the source code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: configure the PR in which the error message will be posted
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
@@ -795,7 +795,7 @@ jobs:
       - name: checkout the source code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: publish toolstate
         run: src/ci/publish_toolstate.sh
         shell: bash
