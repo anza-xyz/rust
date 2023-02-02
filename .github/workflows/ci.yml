@@ -120,6 +120,7 @@ jobs:
       - name: checkout the source code
         uses: actions/checkout@v5
         with:
+<<<<<<< HEAD
           fetch-depth: 2
 
       # Free up disk space on Linux by removing preinstalled components that
@@ -140,6 +141,9 @@ jobs:
       # Rust Log Analyzer can't currently detect the PR number of a GitHub
       # Actions build on its own, so a hint in the log message is needed to
       # point it in the right direction.
+=======
+          fetch-depth: 0
+>>>>>>> 04bf0475aa2 ([SOL] Fix Ci error caused by insufficient git history fetched)
       - name: configure the PR in which the error message will be posted
         run: echo "[CI_PR_NUMBER=$num]"
         env:
