@@ -310,7 +310,8 @@ fn link_rlib<'a>(
             let (metadata, metadata_position) =
                 create_wrapper_file(sess, b".rmeta".to_vec(), codegen_results.metadata.raw_data());
             let metadata = emit_wrapper_file(sess, &metadata, tmpdir, METADATA_FILENAME);
-            if sess.target.arch == "sbf" {
+            if sess.opts.cg.target_cpu.as_ref().unwrap_or(
+                &sess.target.cpu.as_ref().to_string()) == "sbfv2" {
                 patch_synthetic_object_file(sess, &metadata);
             }
             match metadata_position {
@@ -1944,7 +1945,8 @@ fn add_linked_symbol_object(
     if let Err(error) = result {
         sess.emit_fatal(errors::FailedToWrite { path, error });
     }
-    if sess.target.arch == "sbf" {
+    if sess.opts.cg.target_cpu.as_ref().unwrap_or(
+        &sess.target.cpu.as_ref().to_string()) == "sbfv2" {
         patch_synthetic_object_file(sess, &path);
     }
     cmd.add_object(&path);
