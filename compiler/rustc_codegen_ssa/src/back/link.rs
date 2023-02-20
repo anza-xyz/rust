@@ -272,7 +272,7 @@ fn link_rlib<'a>(
             let (metadata, metadata_position) =
                 create_rmeta_file(sess, codegen_results.metadata.raw_data());
             let metadata = emit_metadata(sess, &metadata, tmpdir);
-            if sess.target.arch == "sbf" {
+            if sess.target.cpu.as_ref().to_string() == "sbfv2" {
                 patch_synthetic_object_file(sess, &metadata);
             }
             match metadata_position {
@@ -1812,7 +1812,7 @@ fn add_linked_symbol_object(
     if let Err(e) = result {
         sess.fatal(&format!("failed to write {}: {}", path.display(), e));
     }
-    if sess.target.arch == "sbf" {
+    if sess.target.cpu.as_ref().to_string() == "sbfv2" {
         patch_synthetic_object_file(sess, &path);
     }
     cmd.add_object(&path);
