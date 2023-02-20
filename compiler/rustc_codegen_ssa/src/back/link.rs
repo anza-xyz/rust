@@ -2075,7 +2075,8 @@ fn add_linked_symbol_object(
     if let Err(error) = result {
         sess.dcx().emit_fatal(errors::FailedToWrite { path, error });
     }
-    if sess.target.arch == "sbf" {
+    if sess.opts.cg.target_cpu.as_ref().unwrap_or(
+        &sess.target.cpu.as_ref().to_string()) == "sbfv2" {
         patch_synthetic_object_file(sess, &path);
     }
     cmd.add_object(&path);
