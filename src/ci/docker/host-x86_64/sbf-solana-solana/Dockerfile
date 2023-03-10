@@ -22,9 +22,9 @@ ENV RUSTUP_INIT_SKIP_PATH_CHECK="yes"
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN PATH="${HOME}/.cargo/bin:${PATH}" \
-    cargo install --git https://github.com/solana-labs/cargo-run-sbf-tests.git \
-    --rev b5500813b130ff7ce2d32e85f4e4e6377fe24cda \
-    --bin cargo-run-sbf-tests --root /usr/local
+    cargo install --git https://github.com/solana-labs/cargo-run-solana-tests.git \
+    --rev 16dc21fbc9d7bfe21d9f82621d71d7d3db3e0e78 \
+    --bin cargo-run-solana-tests --root /usr/local
 
 COPY scripts/sccache.sh /scripts/
 RUN sh /scripts/sccache.sh
@@ -37,9 +37,8 @@ ENV RUST_CONFIGURE_ARGS \
     --set rust.lld \
     --set llvm.clang
 
-ENV SCRIPT CARGO_TARGET_BPFEL_UNKNOWN_UNKNOWN_RUNNER=\"cargo-run-sbf-tests --heap-size 104857600\" \
-    CARGO_TARGET_SBF_SOLANA_SOLANA_RUNNER=\"cargo-run-sbf-tests --heap-size 104857600\" \
+ENV SCRIPT CARGO_TARGET_SBF_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --heap-size 104857600\" \
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
     PATH="${HOME}/.cargo/bin:${PATH}" \
-    python3 /checkout/x.py --stage 1 test --host='' --target bpfel-unknown-unknown,sbf-solana-solana \
+    python3 /checkout/x.py --stage 1 test --host='' --target sbf-solana-solana \
     library/core
