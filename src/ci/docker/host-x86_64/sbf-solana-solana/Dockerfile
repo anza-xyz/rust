@@ -22,9 +22,9 @@ ENV RUSTUP_INIT_SKIP_PATH_CHECK="yes"
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN PATH="${HOME}/.cargo/bin:${PATH}" \
-    cargo install --git https://github.com/solana-labs/cargo-run-sbf-tests.git \
-    --rev b5500813b130ff7ce2d32e85f4e4e6377fe24cda \
-    --bin cargo-run-sbf-tests --root /usr/local
+    cargo install --git https://github.com/solana-labs/cargo-run-solana-tests.git \
+    --rev 12186c99173cc30771897932159b53acca836321 \
+    --bin cargo-run-solana-tests --root /usr/local
 
 COPY scripts/sccache.sh /scripts/
 RUN sh /scripts/sccache.sh

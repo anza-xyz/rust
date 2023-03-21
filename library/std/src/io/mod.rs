@@ -310,6 +310,7 @@ use core::slice::memchr;
 pub use self::buffered::WriterPanicked;
 #[unstable(feature = "raw_os_error_ty", issue = "107792")]
 pub use self::error::RawOsError;
+#[cfg(not(target_family = "solana"))]
 pub(crate) use self::stdio::attempt_print_to_stderr;
 #[stable(feature = "is_terminal", since = "1.70.0")]
 pub use self::stdio::IsTerminal;

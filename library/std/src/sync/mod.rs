@@ -185,6 +185,7 @@ pub use self::lazy_lock::LazyLock;
 pub use self::once_lock::OnceLock;
 
 #[unstable(feature = "reentrant_lock", issue = "121440")]
+#[cfg(not(target_family = "solana"))]
 pub use self::reentrant_lock::{ReentrantLock, ReentrantLockGuard};
 
 pub mod mpsc;

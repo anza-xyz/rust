@@ -108,6 +108,8 @@ link-shared = false
 # Which LLVM projects to build along with the LLVM base libraries/tools
 enable-projects = "clang;lld;lldb"
 
+download-ci-llvm = false
+
 # =============================================================================
 # General build configuration options
 # =============================================================================

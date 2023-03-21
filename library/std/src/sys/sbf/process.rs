@@ -65,6 +65,10 @@ impl Command {
         unsupported()
     }
 
+    pub fn output(&mut self) -> io::Result<(ExitStatus, Vec<u8>, Vec<u8>)> {
+        unsupported()
+    }
+
     pub fn get_args(&self) -> CommandArgs<'_> {
         let mut iter = self.args.iter();
         iter.next();
