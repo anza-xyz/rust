@@ -1809,9 +1809,9 @@ fn select_nth_unstable() {
     use rand::Rng;
     use rand::seq::SliceRandom;
 
-    let mut rng = rand::rngs::SmallRng::seed_from_u64(0);
+    let mut rng = crate::test_rng();
 
-    for len in (2..21).chain(200..201) {
+    for len in (2..21).chain(500..501) {
         let mut orig = vec![0; len];
 
         for &modulus in &[5, 10, 1000] {

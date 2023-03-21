@@ -1,3 +1,4 @@
+#![allow(fuzzy_provenance_casts)]
 use crate::boxed::Box;
 use crate::ptr;
 
@@ -32,9 +33,4 @@ pub unsafe fn destroy(key: Key) {
     if let Some(f) = key.dtor {
         f(key.value);
     }
-}
-
-#[inline]
-pub fn requires_synchronized_create() -> bool {
-    false
 }
