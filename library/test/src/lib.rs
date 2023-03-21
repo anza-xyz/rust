@@ -129,6 +129,7 @@ pub fn test_main_with_exit_callback<F: FnOnce()>(
             process::exit(ERROR_EXIT_CODE);
         }
     } else {
+        #[cfg(not(target_family = "solana"))]
         if !opts.nocapture {
             // If we encounter a non-unwinding panic, flush any captured output from the current test,
             // and stop capturing output to ensure that the non-unwinding panic message is visible.

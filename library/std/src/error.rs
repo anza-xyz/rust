@@ -447,6 +447,7 @@ impl<E> Report<E>
 where
     E: Error,
 {
+    #[cfg(not(target_family = "solana"))]
     fn backtrace(&self) -> Option<&Backtrace> {
         // have to grab the backtrace on the first error directly since that error may not be
         // 'static
@@ -497,6 +498,7 @@ where
             }
         }
 
+        #[cfg(not(target_family = "solana"))]
         if self.show_backtrace {
             if let Some(backtrace) = self.backtrace() {
                 write!(f, "\n\nStack backtrace:\n{}", backtrace.to_string().trim_end())?;

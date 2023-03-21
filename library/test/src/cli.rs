@@ -2,6 +2,7 @@
 
 #[cfg(not(target_family = "solana"))]
 use std::env;
+#[cfg(not(target_family = "solana"))]
 use std::io::{self, IsTerminal, Write};
 use std::path::PathBuf;
 
@@ -35,12 +36,18 @@ pub struct TestOpts {
 }
 
 impl TestOpts {
+    #[cfg(not(target_family = "solana"))]
     pub fn use_color(&self) -> bool {
         match self.color {
             ColorConfig::AutoColor => !self.nocapture && io::stdout().is_terminal(),
             ColorConfig::AlwaysColor => true,
             ColorConfig::NeverColor => false,
         }
+    }
+
+    #[cfg(target_family = "solana")]
+    pub fn use_color(&self) -> bool {
+        false
     }
 }
 
@@ -340,6 +347,7 @@ fn parse_opts_impl(_matches: getopts::Matches) -> OptRes {
         skip: Vec::new(),
         time_options: None,
         options: Options::new(),
+        fail_fast: false,
     };
 
     Ok(test_opts)

@@ -7,6 +7,7 @@ mod tests;
 #[cfg(not(target_family = "solana"))]
 use crate::cell::{Cell, RefCell};
 use crate::fmt;
+#[cfg(not(target_family = "solana"))]
 use crate::fs::File;
 use crate::io::prelude::*;
 use crate::panic::{RefUnwindSafe, UnwindSafe};
@@ -1378,6 +1379,7 @@ where
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 fn print_to_buffer_if_capture_used(args: fmt::Arguments<'_>) -> bool {
     OUTPUT_CAPTURE_USED.load(Ordering::Relaxed)
         && OUTPUT_CAPTURE.try_with(|s| {
@@ -1394,6 +1396,7 @@ fn print_to_buffer_if_capture_used(args: fmt::Arguments<'_>) -> bool {
 /// Used by impl Termination for Result to print error after `main` or a test
 /// has returned. Should avoid panicking, although we can't help it if one of
 /// the Display impls inside args decides to.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn attempt_print_to_stderr(args: fmt::Arguments<'_>) {
     if print_to_buffer_if_capture_used(args) {
         return;
@@ -1459,6 +1462,7 @@ pub trait IsTerminal: crate::sealed::Sealed {
     fn is_terminal(&self) -> bool;
 }
 
+#[cfg(not(target_family = "solana"))]
 macro_rules! impl_is_terminal {
     ($($t:ty),*$(,)?) => {$(
         #[unstable(feature = "sealed", issue = "none")]
@@ -1474,6 +1478,7 @@ macro_rules! impl_is_terminal {
     )*}
 }
 
+#[cfg(not(target_family = "solana"))]
 impl_is_terminal!(File, Stdin, StdinLock<'_>, Stdout, StdoutLock<'_>, Stderr, StderrLock<'_>);
 
 #[unstable(

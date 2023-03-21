@@ -25,7 +25,7 @@ hashbrown = { version = "0.16.1", default-features = false, features = [
 std_detect = { path = "../std_detect", public = true }
 
 # Dependencies of the `backtrace` crate
-[target.'cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))'.dependencies]
+[target.'cfg(not(target_family = "solana"))'.dependencies]
 addr2line = { version = "0.25.0", optional = true, default-features = false }
 rustc-demangle = { version = "0.1.27", features = ['rustc-dep-of-std'] }
 
