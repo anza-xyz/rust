@@ -2361,8 +2361,13 @@ impl<T: Termination, E: fmt::Debug> Termination for Result<T, E> {
     fn report(self) -> ExitCode {
         match self {
             Ok(val) => val.report(),
+            #[cfg(not(target_family = "solana"))]
             Err(err) => {
                 io::attempt_print_to_stderr(format_args_nl!("Error: {err:?}"));
+                ExitCode::FAILURE
+            }
+            #[cfg(target_family = "solana")]
+            Err(_err) => {
                 ExitCode::FAILURE
             }
         }

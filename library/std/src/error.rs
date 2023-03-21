@@ -4,7 +4,7 @@
 #[cfg(test)]
 mod tests;
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 use crate::backtrace::Backtrace;
 use crate::fmt::{self, Write};
 
@@ -458,6 +458,7 @@ impl<E> Report<E>
 where
     E: Error,
 {
+    #[cfg(not(target_family = "solana"))]
     fn backtrace(&self) -> Option<&Backtrace> {
         // have to grab the backtrace on the first error directly since that error may not be
         // 'static
@@ -508,6 +509,7 @@ where
             }
         }
 
+        #[cfg(not(target_family = "solana"))]
         if self.show_backtrace {
             let backtrace = self.backtrace();
 
