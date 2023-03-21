@@ -18,6 +18,10 @@ impl AnonPipe {
         false
     }
 
+    pub fn read_to_end(&self, _buf: &mut Vec<u8>) -> io::Result<usize> {
+        match self.0 {}
+    }
+
     pub fn write(&self, _buf: &[u8]) -> io::Result<usize> {
         match self.0 {}
     }
