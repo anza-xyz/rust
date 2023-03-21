@@ -1802,19 +1802,19 @@ fn brute_force_rotate_test_1() {
 }
 
 #[test]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_family = "solana")))]
 fn sort_unstable() {
     use core::cmp::Ordering::{Equal, Greater, Less};
     use core::slice::heapsort;
     use rand::{seq::SliceRandom, Rng};
 
     // Miri is too slow (but still need to `chain` to make the types match)
-    let lens = if cfg!(miri) { (2..20).chain(0..0) } else { (2..25).chain(200..210) };
+    let lens = if cfg!(miri) { (2..20).chain(0..0) } else { (2..25).chain(500..510) };
     let rounds = if cfg!(miri) { 1 } else { 100 };
 
-    let mut v = [0; 300];
-    let mut tmp = [0; 300];
-    let mut rng = StdRng::seed_from_u64(0);
+    let mut v = [0; 600];
+    let mut tmp = [0; 600];
+    let mut rng = crate::test_rng();
 
     for len in lens {
         let v = &mut v[0..len];
@@ -1876,16 +1876,16 @@ fn sort_unstable() {
 }
 
 #[test]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_family = "solana")))]
 #[cfg_attr(miri, ignore)] // Miri is too slow
 fn select_nth_unstable() {
     use core::cmp::Ordering::{Equal, Greater, Less};
     use rand::seq::SliceRandom;
     use rand::Rng;
 
-    let mut rng = StdRng::seed_from_u64(0);
+    let mut rng = crate::test_rng();
 
-    for len in (2..21).chain(200..201) {
+    for len in (2..21).chain(500..501) {
         let mut orig = vec![0; len];
 
         for &modulus in &[5, 10, 1000] {

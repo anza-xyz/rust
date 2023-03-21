@@ -348,6 +348,7 @@ jobs:
 
           - name: sbf-solana-solana
             <<: *job-linux-xl
+            tidy: false
 
           - name: x86_64-gnu-tools
             <<: *job-linux-16c

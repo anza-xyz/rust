@@ -20,6 +20,7 @@ pub mod args;
 pub mod cmath;
 pub mod env;
 pub mod fs;
+pub mod futex;
 pub mod io;
 pub mod memchr;
 pub mod net;
@@ -34,16 +35,17 @@ pub mod time;
 #[path = "../unix/os_str.rs"]
 pub mod os_str;
 
-pub mod condvar;
-pub mod mutex;
-pub mod rwlock;
 pub mod thread_local_dtor;
 pub mod thread_local_key;
 
+#[path = "../unix/locks"]
 pub mod locks {
-    pub use super::condvar::*;
-    pub use super::mutex::*;
-    pub use super::rwlock::*;
+    mod futex_condvar;
+    mod futex_mutex;
+    mod futex_rwlock;
+    pub(crate) use futex_condvar::Condvar;
+    pub(crate) use futex_mutex::Mutex;
+    pub(crate) use futex_rwlock::RwLock;
 }
 
 #[cfg(not(target_feature = "static-syscalls"))]

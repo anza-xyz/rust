@@ -25,13 +25,12 @@ use crate::mem;
 use crate::process;
 #[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicBool, Ordering};
+#[cfg(not(target_family = "solana"))]
 use crate::sync::{PoisonError, RwLock};
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 use crate::sys::stdio::panic_output;
 #[cfg(not(target_family = "solana"))]
 use crate::sys_common::backtrace;
-#[cfg(not(target_family = "solana"))]
-use crate::sys_common::rwlock::StaticRwLock;
 #[cfg(not(target_family = "solana"))]
 use crate::sys_common::thread_info;
 #[cfg(not(target_family = "solana"))]
@@ -83,7 +82,7 @@ extern "C" fn __rust_foreign_exception() -> ! {
     rtabort!("Rust cannot catch foreign exceptions");
 }
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 enum Hook {
     Default,
     Custom(Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>),
@@ -100,7 +99,7 @@ impl Hook {
     }
 }
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 impl Default for Hook {
     #[inline]
     fn default() -> Hook {
@@ -108,7 +107,7 @@ impl Default for Hook {
     }
 }
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 static HOOK: RwLock<Hook> = RwLock::new(Hook::Default);
 
 /// Registers a custom panic hook, replacing the previously registered hook.
@@ -441,7 +440,7 @@ pub mod panic_count {
     //
     // This also updates thread-local state to keep track of whether a panic
     // hook is currently executing.
-    #[cfg(not(target_os = "solana"))]
+    #[cfg(not(target_family = "solana"))]
     pub fn increase(run_panic_hook: bool) -> Option<MustAbort> {
         let global_count = GLOBAL_PANIC_COUNT.fetch_add(1, Ordering::Relaxed);
         if global_count & ALWAYS_ABORT_FLAG != 0 {
@@ -508,7 +507,7 @@ pub mod panic_count {
 
     // Slow path is in a separate function to reduce the amount of code
     // inlined from `count_is_zero`.
-    #[cfg(not(target_os = "solana"))]
+    #[cfg(not(target_family = "solana"))]
     #[inline(never)]
     #[cold]
     fn is_zero_slow_path() -> bool {
@@ -661,7 +660,7 @@ pub fn panicking() -> bool {
 }
 
 /// Entry point of panics from the core crate (`panic_impl` lang item).
-#[cfg(not(any(test, target_os = "solana")))]
+#[cfg(not(any(test, target_family = "solana")))]
 #[panic_handler]
 pub fn begin_panic_handler(info: &PanicInfo<'_>) -> ! {
     struct FormatStringPayload<'a> {

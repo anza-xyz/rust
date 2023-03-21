@@ -1270,7 +1270,7 @@ impl ThreadId {
                         Err(id) => last = id,
                     }
                 }
-            } else if #[cfg(not(target_os = "solana"))] {
+            } else if #[cfg(not(target_family = "solana"))] {
                 use crate::sync::{Mutex, PoisonError};
 
                 static COUNTER: Mutex<u64> = Mutex::new(0);
