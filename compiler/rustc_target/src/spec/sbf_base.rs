@@ -36,6 +36,7 @@ SECTIONS
     TargetOptions {
         allow_asm: true,
         c_int_width: "64".into(),
+        default_hidden_visibility: true,
         dll_prefix: "".into(),
         dynamic_linking: true,
         eh_frame_header: false,
