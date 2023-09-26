@@ -43,7 +43,9 @@ jobs:
       CI_JOB_NAME: "${{ matrix.name }}"
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
-      SCCACHE_BUCKET: rust-lang-ci-sccache2
+      SCCACHE_BUCKET: cached-ci-artifacts
+      SCCACHE_REGION: us-east-2
+      SCCACHE_S3_NO_CREDENTIALS: 1
       TOOLSTATE_REPO: "https://github.com/rust-lang-nursery/rust-toolstate"
       CACHE_DOMAIN: cached-ci-artifacts.s3.us-east-2.amazonaws.com
     if: "github.event_name == 'pull_request'"
@@ -64,7 +66,7 @@ jobs:
             env: {}
           - name: sbf-solana-solana
             tidy: false
-            os: ubuntu-latest
+            os: ubuntu-20.04-16core-64gb
             env: {}
           - name: x86_64-gnu-tools
             os: ubuntu-20.04-16core-64gb
@@ -90,9 +92,6 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: decide whether to skip this job
         run: src/ci/scripts/should-skip-this.sh
-        if: success() && !env.SKIP_JOB
-      - name: ensure the channel matches the target branch
-        run: src/ci/scripts/verify-channel.sh
         if: success() && !env.SKIP_JOB
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
@@ -179,6 +178,8 @@ jobs:
     name: push
     env:
       CI_JOB_NAME: "${{ matrix.name }}"
+      CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+      HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
       SCCACHE_BUCKET: cached-ci-artifacts
       SCCACHE_REGION: us-east-2
       DEPLOY_BUCKET: rust-lang-ci2
@@ -187,19 +188,20 @@ jobs:
       TOOLSTATE_PUBLISH: 0
       CACHES_AWS_ACCESS_KEY_ID: AKIASSXOBJJGY5HRQO4U
       ARTIFACTS_AWS_ACCESS_KEY_ID: AKIA46X5W6CZN24CBO55
-      CACHE_DOMAIN: cached-ci-artifacts.s3.us-east-2.amazonaws.com
+      AWS_REGION: us-west-1
+      CACHE_DOMAIN: ci-caches.rust-lang.org
     if: "github.event_name == 'push' && startsWith(github.ref, 'refs/heads/solana-') && github.repository == 'solana-labs/rust'"
     strategy:
       matrix:
         include:
           - name: mingw-check
-            os: ubuntu-latest
+            os: ubuntu-20.04-16core-64gb
             env: {}
           - name: x86_64-gnu-llvm-12
-            os: ubuntu-latest
+            os: ubuntu-20.04-16core-64gb
             env: {}
           - name: sbf-solana-solana
-            os: ubuntu-latest
+            os: ubuntu-20.04-16core-64gb
             env: {}
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
@@ -223,19 +225,11 @@ jobs:
       - name: decide whether to skip this job
         run: src/ci/scripts/should-skip-this.sh
         if: success() && !env.SKIP_JOB
-      - name: configure GitHub Actions to kill the build when outdated
-        uses: rust-lang/simpleinfra/github-actions/cancel-outdated-builds@master
-        with:
-          github_token: "${{ secrets.github_token }}"
-        if: "success() && !env.SKIP_JOB && github.ref != 'refs/heads/try' && github.ref != 'refs/heads/try-perf'"
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
         if: success() && !env.SKIP_JOB
       - name: show the current environment
         run: src/ci/scripts/dump-environment.sh
-        if: success() && !env.SKIP_JOB
-      - name: install awscli
-        run: src/ci/scripts/install-awscli.sh
         if: success() && !env.SKIP_JOB
       - name: install sccache
         run: src/ci/scripts/install-sccache.sh
@@ -288,6 +282,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.CACHES_AWS_ACCESS_KEY_ID)] }}"
           TOOLSTATE_REPO_ACCESS_TOKEN: "${{ secrets.TOOLSTATE_REPO_ACCESS_TOKEN }}"
         if: success() && !env.SKIP_JOB
+      - name: create github artifacts
+        run: src/ci/scripts/create-doc-artifacts.sh
+        if: success() && !env.SKIP_JOB
+      - name: upload artifacts to github
+        uses: actions/upload-artifact@v3
+        with:
+          name: "${{ env.DOC_ARTIFACT_NAME }}"
+          path: obj/artifacts/doc
+          if-no-files-found: ignore
+          retention-days: 5
+        if: success() && !env.SKIP_JOB
       - name: upload artifacts to S3
         run: src/ci/scripts/upload-artifacts.sh
         env:
@@ -301,7 +306,8 @@ jobs:
       CI_JOB_NAME: "${{ matrix.name }}"
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
-      SCCACHE_BUCKET: rust-lang-ci-sccache2
+      SCCACHE_BUCKET: cached-ci-artifacts
+      SCCACHE_REGION: us-east-2
       DEPLOY_BUCKET: rust-lang-ci2
       TOOLSTATE_REPO: "https://github.com/rust-lang-nursery/rust-toolstate"
       TOOLSTATE_ISSUES_API_URL: "https://api.github.com/repos/rust-lang/rust/issues"
@@ -607,9 +613,6 @@ jobs:
       - name: decide whether to skip this job
         run: src/ci/scripts/should-skip-this.sh
         if: success() && !env.SKIP_JOB
-      - name: ensure the channel matches the target branch
-        run: src/ci/scripts/verify-channel.sh
-        if: success() && !env.SKIP_JOB
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
         if: success() && !env.SKIP_JOB
@@ -698,7 +701,8 @@ jobs:
       CI_JOB_NAME: "${{ matrix.name }}"
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
-      SCCACHE_BUCKET: rust-lang-ci-sccache2
+      SCCACHE_BUCKET: cached-ci-artifacts
+      SCCACHE_REGION: us-east-2
       DEPLOY_BUCKET: rust-lang-ci2
       TOOLSTATE_REPO: "https://github.com/rust-lang-nursery/rust-toolstate"
       TOOLSTATE_ISSUES_API_URL: "https://api.github.com/repos/rust-lang/rust/issues"
@@ -736,9 +740,6 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: decide whether to skip this job
         run: src/ci/scripts/should-skip-this.sh
-        if: success() && !env.SKIP_JOB
-      - name: ensure the channel matches the target branch
-        run: src/ci/scripts/verify-channel.sh
         if: success() && !env.SKIP_JOB
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
