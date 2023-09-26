@@ -26,17 +26,22 @@ pub mod memchr;
 pub mod net;
 pub mod os;
 pub mod path;
+#[path = "../unsupported/pipe.rs"]
 pub mod pipe;
+#[path = "../unsupported/process.rs"]
 pub mod process;
 pub mod stdio;
 pub mod thread;
+#[path = "../unsupported/thread_local_dtor.rs"]
+pub mod thread_local_dtor;
+#[path = "../unsupported/thread_local_key.rs"]
+pub mod thread_local_key;
+#[path = "../unsupported/thread_parking.rs"]
+pub mod thread_parking;
 pub mod time;
 
 #[path = "../unix/os_str.rs"]
 pub mod os_str;
-
-pub mod thread_local_dtor;
-pub mod thread_local_key;
 
 #[path = "../unix/locks"]
 pub mod locks {

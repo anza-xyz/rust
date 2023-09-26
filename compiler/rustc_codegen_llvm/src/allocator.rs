@@ -85,14 +85,16 @@ pub(crate) unsafe fn codegen(
         let llval = llvm::LLVMConstInt(i8, val as u64, False);
         llvm::LLVMSetInitializer(ll_g, llval);
 
-        let name = NO_ALLOC_SHIM_IS_UNSTABLE;
-        let ll_g = llvm::LLVMRustGetOrInsertGlobal(llmod, name.as_ptr().cast(), name.len(), i8);
-        llvm::LLVMRustSetVisibility(
-            ll_g,
-            llvm::Visibility::from_generic(tcx.sess.default_visibility()),
-        );
-        let llval = llvm::LLVMConstInt(i8, 0, False);
-        llvm::LLVMSetInitializer(ll_g, llval);
+        if tcx.sess.target.arch != "sbf" {
+            let name = NO_ALLOC_SHIM_IS_UNSTABLE;
+            let ll_g = llvm::LLVMRustGetOrInsertGlobal(llmod, name.as_ptr().cast(), name.len(), i8);
+            llvm::LLVMRustSetVisibility(
+                ll_g,
+                llvm::Visibility::from_generic(tcx.sess.default_visibility()),
+            );
+            let llval = llvm::LLVMConstInt(i8, 0, False);
+            llvm::LLVMSetInitializer(ll_g, llval);
+        }
     }
 
     if tcx.sess.opts.debuginfo != DebugInfo::None {

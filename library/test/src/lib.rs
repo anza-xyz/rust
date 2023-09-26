@@ -596,6 +596,7 @@ pub fn run_test(
             // level.
             let supports_threads = !cfg!(target_os = "emscripten")
                 && !cfg!(target_family = "wasm")
+                && !cfg!(target_family = "solana")
                 && !cfg!(target_os = "zkvm");
             if supports_threads {
                 let cfg = thread::Builder::new().name(name.as_slice().to_owned());
