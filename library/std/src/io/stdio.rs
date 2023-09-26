@@ -525,6 +525,9 @@ impl Read for Stdin {
     fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
         Ok(0)
     }
+    fn read_buf(&mut self, _buf: BorrowedCursor<'_>) -> io::Result<()> {
+        Ok(())
+    }
     fn read_vectored(&mut self, _bufs: &mut [IoSliceMut<'_>]) -> io::Result<usize> {
         Ok(0)
     }

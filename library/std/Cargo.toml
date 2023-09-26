@@ -16,6 +16,7 @@ crate-type = ["dylib", "rlib"]
 alloc = { path = "../alloc", public = true }
 # std no longer uses cfg-if directly, but the included copy of backtrace does.
 cfg-if = { version = "1.0", features = ['rustc-dep-of-std'] }
+panic_unwind = { path = "../panic_unwind", optional = true }
 panic_abort = { path = "../panic_abort" }
 core = { path = "../core", public = true }
 unwind = { path = "../unwind" }

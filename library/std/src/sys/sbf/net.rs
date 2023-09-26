@@ -1,5 +1,5 @@
 use crate::fmt;
-use crate::io::{self, IoSlice, IoSliceMut};
+use crate::io::{self, BorrowedCursor, IoSlice, IoSliceMut};
 use crate::net::{SocketAddr, Shutdown, Ipv4Addr, Ipv6Addr};
 use crate::time::Duration;
 use crate::sys::{unsupported, Void};
@@ -42,6 +42,10 @@ impl TcpStream {
     }
 
     pub fn read(&self, _: &mut [u8]) -> io::Result<usize> {
+        match self.0 {}
+    }
+
+    pub fn read_buf(&self, _: BorrowedCursor<'_>) -> io::Result<()> {
         match self.0 {}
     }
 
