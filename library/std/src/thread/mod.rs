@@ -1277,12 +1277,13 @@ impl ThreadId {
     // Generate a new unique thread ID.
     fn new() -> ThreadId {
         #[cold]
+        #[cfg(not(target_family = "solana"))]
         fn exhausted() -> ! {
             panic!("failed to generate unique thread ID: bitspace exhausted")
         }
 
         cfg_if::cfg_if! {
-            if #[cfg(target_has_atomic = "64")] {
+            if #[cfg(all(target_has_atomic = "64", not(target_family = "solana")))]  {
                 use crate::sync::atomic::AtomicU64;
 
                 static COUNTER: AtomicU64 = AtomicU64::new(0);

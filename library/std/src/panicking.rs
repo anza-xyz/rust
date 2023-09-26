@@ -465,6 +465,7 @@ pub mod panic_count {
         })
     }
 
+    #[cfg(not(target_family = "solana"))]
     pub fn finished_panic_hook() {
         LOCAL_PANIC_COUNT.with(|c| {
             let (count, _) = c.get();

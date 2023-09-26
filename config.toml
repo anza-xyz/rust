@@ -74,7 +74,7 @@ experimental-targets = "BPF;SBF"
 # each linker process.
 # If absent or 0, linker invocations are treated like any other job and
 # controlled by rustbuild's -j parameter.
-#link-jobs = 0
+link-jobs = 2
 
 # When invoking `llvm-config` this configures whether the `--shared` argument is
 # passed to prefer linking to shared libraries.
