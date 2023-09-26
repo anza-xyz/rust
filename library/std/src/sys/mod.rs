@@ -63,8 +63,9 @@ cfg_if::cfg_if! {
 }
 
 cfg_if::cfg_if! {
+    if #[cfg(target_family = "solana")] {
     // Fuchsia components default to full backtrace.
-    if #[cfg(target_os = "fuchsia")] {
+    } else if #[cfg(target_os = "fuchsia")] {
         pub const FULL_BACKTRACE_DEFAULT: bool = true;
     } else {
         pub const FULL_BACKTRACE_DEFAULT: bool = false;

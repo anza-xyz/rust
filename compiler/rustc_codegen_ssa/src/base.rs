@@ -420,7 +420,6 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         rust_main_def_id: DefId,
         entry_type: EntryFnType,
     ) -> Bx::Function {
-<<<<<<< HEAD
         // The entry function is either `int main(void)` or `int main(int argc, char **argv)`, or
         // `usize efi_main(void *handle, void *system_table)` depending on the target.
         let is_bpf = cx.sess().target.arch == "bpf" && cx.sess().opts.test;
@@ -428,12 +427,6 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
             cx.type_func(&[cx.type_ptr(), cx.type_ptr()], cx.type_isize())
         } else if cx.sess().target.main_needs_argc_argv {
             cx.type_func(&[cx.type_int(), cx.type_ptr()], cx.type_int())
-=======
-        // The entry function is either `int main(void)` or `int main(int argc, char **argv)`,
-        // depending on whether the target needs `argc` and `argv` to be passed in.
-        let llfty = if cx.sess().target.main_needs_argc_argv {
-            cx.type_func(&[cx.type_int(), cx.type_ptr_to(cx.type_i8p())], cx.type_int())
->>>>>>> e5c32090239 ([SOL] rework test harness codegen a bit)
         } else {
             cx.type_func(&[], cx.type_int())
         };

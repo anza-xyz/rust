@@ -253,10 +253,6 @@ impl File {
     pub fn set_times(&self, _times: FileTimes) -> io::Result<()> {
         match self.0 {}
     }
-
-    pub fn diverge(&self) -> ! {
-        match self.0 {}
-    }
 }
 
 impl DirBuilder {
