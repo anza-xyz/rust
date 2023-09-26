@@ -2031,7 +2031,7 @@ fn patch_synthetic_object_file(sess: &Session, path: &PathBuf) {
             sf.write(&EM_SBF).unwrap();
         }
     } else {
-        sess.fatal(&format!("failed to patch {}", path.display()));
+        sess.fatal(format!("failed to patch {}", path.display()));
     }
 }
 
