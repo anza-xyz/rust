@@ -13,10 +13,12 @@ Files: compiler/*
        tests/*
        src/*
        .github/*
+       build.sh
        Cargo.lock
        Cargo.toml
        CODE_OF_CONDUCT.md
        config.example.toml
+       config.toml
        configure
        CONTRIBUTING.md
        COPYRIGHT
