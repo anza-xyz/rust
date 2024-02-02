@@ -95,22 +95,14 @@ use crate::env;
 #[cfg(not(target_family = "solana"))]
 use crate::ffi::c_void;
 use crate::fmt;
-<<<<<<< HEAD
+#[cfg(not(target_family = "solana"))]
 use crate::panic::UnwindSafe;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicU8, Ordering::Relaxed};
+#[cfg(not(target_family = "solana"))]
 use crate::sync::LazyLock;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sys_common::backtrace::{lock, output_filename, set_image_base};
-=======
-#[cfg(not(target_family = "solana"))]
-use crate::sync::atomic::{AtomicUsize, Ordering::Relaxed};
-#[cfg(not(target_family = "solana"))]
-use crate::sync::LazyLock;
-#[cfg(not(target_family = "solana"))]
-use crate::sys_common::backtrace::{lock, output_filename};
-#[cfg(not(target_family = "solana"))]
-use crate::vec::Vec;
->>>>>>> 2a5aa6a151d ([SOL] Adjust SBF customization after upgrading to rust 1.65.0)
 
 /// A captured OS thread stack backtrace.
 ///
@@ -494,8 +486,10 @@ impl fmt::Display for Backtrace {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 type LazyResolve = impl (FnOnce() -> Capture) + Send + Sync + UnwindSafe;
 
+#[cfg(not(target_family = "solana"))]
 fn lazy_resolve(mut capture: Capture) -> LazyResolve {
     move || {
         // Use the global backtrace lock to synchronize this as it's a

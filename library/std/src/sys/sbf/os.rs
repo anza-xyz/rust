@@ -61,12 +61,19 @@ pub fn current_exe() -> io::Result<PathBuf> {
     unsupported()
 }
 
+#[derive(Debug)]
 pub struct Env(Void);
 
 impl Iterator for Env {
     type Item = (OsString, OsString);
     fn next(&mut self) -> Option<(OsString, OsString)> {
         match self.0 {}
+    }
+}
+
+impl Env {
+    pub fn str_debug(&self) -> impl fmt::Debug + '_ {
+        [OsString::new(), OsString::new()]
     }
 }
 
