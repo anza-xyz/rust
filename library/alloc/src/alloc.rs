@@ -430,7 +430,7 @@ pub mod __alloc_error_handler {
     pub unsafe fn __rdl_oom(size: usize, _align: usize) -> ! {
         core::panicking::panic_nounwind_fmt(format_args!(
             "memory allocation of {size} bytes failed"
-        ))
+        ), /* force_no_backtrace */ false)
     }
 }
 

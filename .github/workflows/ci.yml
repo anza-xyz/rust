@@ -208,7 +208,7 @@ jobs:
       - name: disable git crlf conversion
         run: git config --global core.autocrlf false
       - name: checkout the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: configure the PR in which the error message will be posted
@@ -230,6 +230,9 @@ jobs:
       - name: show the current environment
         run: src/ci/scripts/dump-environment.sh
         if: success() && !env.SKIP_JOB
+      - name: install awscli
+        run: src/ci/scripts/install-awscli.sh
+        if: success() && !env.SKIP_JOB
       - name: install sccache
         run: src/ci/scripts/install-sccache.sh
         if: success() && !env.SKIP_JOB
@@ -238,6 +241,9 @@ jobs:
         if: success() && !env.SKIP_JOB
       - name: install clang
         run: src/ci/scripts/install-clang.sh
+        if: success() && !env.SKIP_JOB
+      - name: install tidy
+        run: src/ci/scripts/install-tidy.sh
         if: success() && !env.SKIP_JOB
       - name: install WIX
         run: src/ci/scripts/install-wix.sh
@@ -431,7 +437,7 @@ jobs:
           - name: x86_64-gnu-llvm-17
             env:
               RUST_BACKTRACE: 1
-            os: ubuntu-20.04-8core-32gb
+            os: ubuntu-latest
           - name: x86_64-gnu-llvm-16
             env:
               RUST_BACKTRACE: 1

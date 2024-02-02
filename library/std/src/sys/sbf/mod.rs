@@ -120,3 +120,8 @@ pub fn abort_internal() -> ! {
 pub fn hashmap_random_keys() -> (u64, u64) {
     (1, 2)
 }
+
+#[inline]
+pub fn is_interrupted(_errno: i32) -> bool {
+    false
+}

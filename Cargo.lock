@@ -723,8 +723,7 @@ checksum = "55b672471b4e9f9e95499ea597ff64941a309b2cdbffcc46f2cc5e2d971fd335"
 [[package]]
 name = "compiler_builtins"
 version = "0.1.103"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3b73c3443a5fd2438d7ba4853c64e4c8efc2404a9e28a9234cc2d5eebc6c242"
+source = "git+https://github.com/solana-labs/compiler-builtins?tag=solana-tools-v1.40#81ef46f3fe1357095acdd089a700890fe4e13974"
 dependencies = [
  "cc",
  "rustc-std-workspace-core",
@@ -781,8 +780,8 @@ checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 name = "core"
 version = "0.0.0"
 dependencies = [
- "getrandom 0.1.14",
- "rand 0.7.3",
+ "getrandom 0.1.16",
+ "rand",
  "rand_xorshift",
 ]
 
@@ -1594,13 +1593,24 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
+version = "0.1.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi 0.9.0+wasi-snapshot-preview1",
+]
+
+[[package]]
+name = "getrandom"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be4136b2a15dd319360be1c07d9933517ccf0be8f16bf62a3bee4f0d618df427"
 dependencies = [
  "cfg-if",
  "libc",
- "wasi",
+ "wasi 0.11.0+wasi-snapshot-preview1",
 ]
 
 [[package]]
@@ -2524,7 +2534,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "927a765cd3fc26206e66b296465fa9d3e5ab003e651c1b3c060e7956d96b19d2"
 dependencies = [
  "libc",
- "wasi",
+ "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.48.0",
 ]
 
@@ -2545,7 +2555,7 @@ dependencies = [
  "colored",
  "ctrlc",
  "env_logger 0.10.0",
- "getrandom",
+ "getrandom 0.2.10",
  "lazy_static",
  "libc",
  "libffi",
@@ -3176,7 +3186,7 @@ version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.10",
 ]
 
 [[package]]
@@ -3241,7 +3251,7 @@ version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b033d837a7cf162d7993aded9304e30a83213c648b6e389db233191f891e5c2b"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.10",
  "redox_syscall 0.2.16",
  "thiserror",
 ]
@@ -5138,7 +5148,7 @@ dependencies = [
  "rustc-demangle",
  "std_detect",
  "unwind",
- "wasi",
+ "wasi 0.11.0+wasi-snapshot-preview1",
 ]
 
 [[package]]
@@ -5964,7 +5974,7 @@ version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d023da39d1fde5a8a3fe1f3e01ca9632ada0a63e9797de55a879d6e2236277be"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.10",
 ]
 
 [[package]]
@@ -6003,6 +6013,12 @@ checksum = "bfa7760aed19e106de2c7c0b581b509f2f25d3dacaf737cb82ac61bc6d760b0e"
 dependencies = [
  "try-lock",
 ]
+
+[[package]]
+name = "wasi"
+version = "0.9.0+wasi-snapshot-preview1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
 name = "wasi"
@@ -6439,8 +6455,3 @@ dependencies = [
  "crossbeam-utils",
  "flate2",
 ]
-
-[[patch.unused]]
-name = "compiler_builtins"
-version = "0.1.76"
-source = "git+https://github.com/solana-labs/compiler-builtins#2044d7e16a99d951853ce362e384027dec4c5b92"

@@ -96,6 +96,8 @@ use crate::env;
 use crate::ffi::c_void;
 use crate::fmt;
 #[cfg(not(target_family = "solana"))]
+use crate::panic::UnwindSafe;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicUsize, Ordering::Relaxed};
 #[cfg(not(target_family = "solana"))]
 use crate::sync::LazyLock;
@@ -485,9 +487,10 @@ impl fmt::Display for Backtrace {
     }
 }
 
-
+#[cfg(not(target_family = "solana"))]
 type LazyResolve = impl (FnOnce() -> Capture) + Send + Sync + UnwindSafe;
 
+#[cfg(not(target_family = "solana"))]
 fn lazy_resolve(mut capture: Capture) -> LazyResolve {
     move || {
         // Use the global backtrace lock to synchronize this as it's a
