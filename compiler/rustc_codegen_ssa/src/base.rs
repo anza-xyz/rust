@@ -451,7 +451,6 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
     ) -> Bx::Function {
         // The entry function is either `int main(void)` or `int main(int argc, char **argv)`, or
         // `usize efi_main(void *handle, void *system_table)` depending on the target.
-        let is_bpf = cx.sess().target.arch == "bpf" && cx.sess().opts.test;
         let llfty = if cx.sess().target.os.contains("uefi") {
             cx.type_func(&[cx.type_ptr(), cx.type_ptr()], cx.type_isize())
         } else if cx.sess().target.main_needs_argc_argv {
@@ -490,7 +489,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         let ptr_ty = cx.type_ptr();
         let (arg_argc, arg_argv) = get_argc_argv(&mut bx);
 
-        let (start_fn, start_ty, args, instance) = if !is_bpf && let EntryFnType::Main { sigpipe } = entry_type
+        let (start_fn, start_ty, args, instance) = if let EntryFnType::Main { sigpipe } = entry_type
         {
             let start_def_id = cx.tcx().require_lang_item(LangItem::Start, None);
             let start_instance = ty::Instance::expect_resolve(

@@ -9,12 +9,18 @@
 
 #![deny(unsafe_op_in_unsafe_fn)]
 
-use core::panic::{Location, PanicPayload};
+#[cfg(not(target_family = "solana"))]
+use crate::panic::BacktraceStyle;
+#[cfg(not(target_family = "solana"))]
+#[cfg(target_family = "solana")]
+use core::panic::PanicInfo;
+use core::panic::PanicPayload;
+use core::panic::Location;
 
 use crate::any::Any;
 use crate::io::try_set_output_capture;
 use crate::mem::{self, ManuallyDrop};
-use crate::panic::{BacktraceStyle, PanicHookInfo};
+use crate::panic::PanicHookInfo;
 use crate::sync::atomic::{AtomicBool, Ordering};
 #[cfg(not(target_family = "solana"))]
 use crate::sync::{PoisonError, RwLock};
@@ -508,14 +514,12 @@ pub use realstd::rt::panic_count;
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
 #[cfg(feature = "panic_immediate_abort")]
-#[cfg(not(target_arch = "bpf"))]
 pub unsafe fn r#try<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
     Ok(f())
 }
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
 #[cfg(not(feature = "panic_immediate_abort"))]
-#[cfg(not(target_arch = "bpf"))]
 pub unsafe fn r#try<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
     union Data<F, R> {
         f: ManuallyDrop<F>,
@@ -971,6 +975,7 @@ pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
         None,
         Location::caller(),
         false,
+        false,
     );
     crate::sys::panic(&info);
 }
@@ -988,6 +993,7 @@ pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>) -> ! {
     let info = PanicInfo::internal_constructor(
         Some(msg),
         Location::caller(),
+        false,
         false,
     );
     crate::sys::panic(&info);

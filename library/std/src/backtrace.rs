@@ -94,11 +94,13 @@ use crate::backtrace_rs::{self, BytesOrWideString};
 use crate::env;
 #[cfg(not(target_family = "solana"))]
 use crate::ffi::c_void;
-use crate::panic::UnwindSafe;
-use crate::sync::LazyLock;
-use crate::sync::atomic::AtomicU8;
-use crate::sync::atomic::Ordering::Relaxed;
 use crate::fmt;
+#[cfg(not(target_family = "solana"))]
+use crate::panic::UnwindSafe;
+#[cfg(not(target_family = "solana"))]
+use crate::sync::atomic::{AtomicU8, Ordering::Relaxed};
+#[cfg(not(target_family = "solana"))]
+use crate::sync::LazyLock;
 #[cfg(not(target_family = "solana"))]
 use crate::sys::backtrace::{lock, output_filename, set_image_base};
 
