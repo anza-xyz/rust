@@ -550,14 +550,14 @@ pub use realstd::rt::panic_count;
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
 #[cfg(panic = "immediate-abort")]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_arch = "sbf"))]
 pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
     Ok(f())
 }
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
 #[cfg(not(panic = "immediate-abort"))]
-#[cfg(not(target_arch = "bpf"))]
+#[cfg(not(target_arch = "sbf"))]
 pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
     union Data<F, R> {
         f: ManuallyDrop<F>,
@@ -1011,6 +1011,7 @@ pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
         None,
         Location::caller(),
         false,
+        false,
     );
     crate::sys::panic(&info);
 }
@@ -1028,6 +1029,7 @@ pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>) -> ! {
     let info = PanicInfo::internal_constructor(
         Some(msg),
         Location::caller(),
+        false,
         false,
     );
     crate::sys::panic(&info);

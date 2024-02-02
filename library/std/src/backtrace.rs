@@ -92,15 +92,14 @@ mod tests;
 use crate::backtrace_rs::{self, BytesOrWideString};
 use crate::ffi::c_void;
 use crate::panic::UnwindSafe;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sync::LazyLock;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::Ordering::Relaxed;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicU8};
 use crate::sys::backtrace::{lock, output_filename, set_image_base};
 use crate::{env, fmt};
-
 
 /// A captured OS thread stack backtrace.
 ///
@@ -485,6 +484,7 @@ impl fmt::Display for Backtrace {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 mod helper {
     use super::*;
     pub(super) type LazyResolve = impl (FnOnce() -> Capture) + Send + Sync + UnwindSafe;

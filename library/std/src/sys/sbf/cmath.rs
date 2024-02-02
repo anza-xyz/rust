@@ -26,4 +26,8 @@ extern {
     pub fn tanf(n: f32) -> f32;
     pub fn tanh(n: f64) -> f64;
     pub fn tanhf(n: f32) -> f32;
+    pub fn tgamma(n: f64) -> f64;
+    pub fn tgammaf(n: f32) -> f32;
+    pub fn lgamma_r(n: f64, s: &mut i32) -> f64;
+    pub fn lgammaf_r(n: f32, s: &mut i32) -> f32;
 }

@@ -25,7 +25,7 @@ test = false
 
 [[bin]]
 name = "rustdoc"
-path = "bin/rustdoc.rs"
+path = "src/bin/rustdoc.rs"
 test = false
 
 [dependencies]
