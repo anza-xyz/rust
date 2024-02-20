@@ -1,5 +1,5 @@
 use crate::abi::Endian;
-use super::{LinkerFlavor, Cc, Lld, PanicStrategy, TargetOptions};
+use crate::spec::{LinkerFlavor, Cc, Lld, PanicStrategy, TargetOptions};
 
 pub(crate) fn opts() -> TargetOptions {
   let linker_script = r"

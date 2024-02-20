@@ -59,7 +59,6 @@ pub mod abi;
 pub mod crt_objects;
 
 mod base;
-mod sbf_base;
 
 pub use base::apple::{
     deployment_target_for_target as current_apple_deployment_target,

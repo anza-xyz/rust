@@ -1,5 +1,5 @@
 use crate::spec::Target;
-use crate::spec::sbf_base;
+use crate::spec::base::sbf_base;
 
 pub(crate) fn target() -> Target {
   Target {
