@@ -2,13 +2,13 @@
 
 This fork of Rust contains changes that enable rustc to build BPF
 modules.  It depends on a customized
-[fork](https://github.com/solana-labs/llvm-project) of Rust's LLVM
+[fork](https://github.com/anza-xyz/llvm-project) of Rust's LLVM
 fork.
 
-Solana SDK does not depend directly on this repo.  Instead [bpf-tools]
+Solana SDK does not depend directly on this repo.  Instead [platform-tools]
 builds and releases binary packages that the Solana SDK pulls in.
 
-[bpf-tools]: https://github.com/solana-labs/bpf-tools
+[platform-tools]: https://github.com/anza-xyz/platform-tools
 
 BPF modules are built using target triple `bpfel-unknown-unknown`
 which represents the little endian version of BPF.  There is no
@@ -40,8 +40,8 @@ After this repository is tagged for a new release, update the
 version of the rust repository and make a new release tag in
 [bpf-tools] repository.
 
-[compiler-builtins]: https://github.com/solana-labs/compiler-builtins
-[llvm-project]: https://github.com/solana-labs/llvm-project
+[compiler-builtins]: https://github.com/anza-xyz/compiler-builtins
+[llvm-project]: https://github.com/anza-xyz/llvm-project
 
 ---
 
