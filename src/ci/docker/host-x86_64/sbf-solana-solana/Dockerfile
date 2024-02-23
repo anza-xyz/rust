@@ -22,7 +22,7 @@ ENV RUSTUP_INIT_SKIP_PATH_CHECK="yes"
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN PATH="${HOME}/.cargo/bin:${PATH}" \
-    cargo install --git https://github.com/solana-labs/cargo-run-solana-tests.git \
+    cargo install --git https://github.com/anza-xyz/cargo-run-solana-tests.git \
     --rev f7c1d109367c0ab4167d2eb41712777bcc66c9a4 \
     --bin cargo-run-solana-tests --root /usr/local
 
