@@ -191,7 +191,7 @@ jobs:
       ARTIFACTS_AWS_ACCESS_KEY_ID: AKIA46X5W6CZN24CBO55
       AWS_REGION: us-west-1
       CACHE_DOMAIN: ci-caches.rust-lang.org
-    if: "github.event_name == 'push' && startsWith(github.ref, 'refs/heads/solana-') && github.repository == 'solana-labs/rust'"
+    if: "github.event_name == 'push' && startsWith(github.ref, 'refs/heads/anza-') && github.repository == 'anza-xyz/rust'"
     strategy:
       matrix:
         include:
