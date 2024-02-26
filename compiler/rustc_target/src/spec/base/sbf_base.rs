@@ -1,52 +1,65 @@
 use crate::abi::Endian;
-use crate::spec::{LinkerFlavor, Cc, Lld, PanicStrategy, TargetOptions};
+use crate::spec::{LinkerFlavor, cvs, Cc, Lld, PanicStrategy, TargetOptions};
 
 pub(crate) fn opts() -> TargetOptions {
-  let linker_script = r"
-  PHDRS
-  {
-    text PT_LOAD ;
-    rodata PT_LOAD ;
-    dynamic PT_DYNAMIC ;
-  }
-  
-  SECTIONS
-  {
-    . = SIZEOF_HEADERS;
-    .text : { *(.text*) } :text
-    .rodata : { *(.rodata*) } :rodata
-    .data.rel.ro : { *(.data.rel.ro*) } :rodata
-    .dynamic : { *(.dynamic) } :dynamic
-  }
-  ";
-  let pre_link_args = TargetOptions::link_args(
-      LinkerFlavor::Gnu(Cc::No, Lld::No),
-      &["--threads=1", "-z", "notext"],
-  );
-  TargetOptions {
-      allow_asm: true,
-      endian: Endian::Little,
-      c_int_width: "64".into(),
-      env: "".into(),
-      features: "+solana".into(),
-      vendor: "solana".into(),
-      linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
-      linker: Some("rust-lld".into()),
-      link_script: Some(linker_script.into()),
-      pre_link_args,
-      executables: true,
-      dll_prefix: "".into(),
-      dynamic_linking: true,
-      only_cdylib: true,
-      no_default_libraries: true,
-      panic_strategy: PanicStrategy::Abort,
-      position_independent_executables: true,
-      requires_lto: false,
-      singlethread: true,
-      max_atomic_width: Some(64),
-      eh_frame_header: false,
-      main_needs_argc_argv: false,
-      emit_debug_gdb_scripts: false,
-      .. Default::default()
-  }
+    let linker_script = r"
+PHDRS
+{
+  text PT_LOAD ;
+  rodata PT_LOAD ;
+  data PT_LOAD ;
+  dynamic PT_DYNAMIC ;
+}
+
+SECTIONS
+{
+  . = SIZEOF_HEADERS;
+  .text : { *(.text*) } :text
+  .rodata : { *(.rodata*) } :rodata
+  .data.rel.ro : { *(.data.rel.ro*) } :rodata
+  .dynamic : { *(.dynamic) } :dynamic
+  .dynsym : { *(.dynsym) } :data
+  .dynstr : { *(.dynstr) } :data
+  .rel.dyn : { *(.rel.dyn) } :data
+  /DISCARD/ : {
+      *(.eh_frame*)
+      *(.gnu.hash*)
+      *(.hash*)
+    }
+}
+";
+    let pre_link_args = TargetOptions::link_args(
+        LinkerFlavor::Gnu(Cc::No, Lld::No),
+        &["--threads=1", "-z", "notext"],
+    );
+
+    TargetOptions {
+        allow_asm: true,
+        c_int_width: "64".into(),
+        dll_prefix: "".into(),
+        dynamic_linking: true,
+        eh_frame_header: false,
+        emit_debug_gdb_scripts: false,
+        endian: Endian::Little,
+        env: "".into(),
+        executables: true,
+        features: "+solana".into(),
+        families: cvs!["solana"],
+        link_script: Some(linker_script.into()),
+        linker: Some("rust-lld".into()),
+        linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
+        main_needs_argc_argv: false,
+        max_atomic_width: Some(64),
+        no_default_libraries: true,
+        only_cdylib: true,
+        os: "solana".into(),
+        panic_strategy: PanicStrategy::Abort,
+        position_independent_executables: true,
+        pre_link_args,
+        requires_lto: false,
+        singlethread: true,
+        vendor: "solana".into(),
+        c_enum_min_bits: Some(32),
+        .. Default::default()
+    }
 }
