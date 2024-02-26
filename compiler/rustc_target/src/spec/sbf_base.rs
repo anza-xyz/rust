@@ -60,6 +60,7 @@ SECTIONS
         requires_lto: false,
         singlethread: true,
         vendor: "solana".into(),
+        c_enum_min_bits: Some(32),
         .. Default::default()
     }
 }
