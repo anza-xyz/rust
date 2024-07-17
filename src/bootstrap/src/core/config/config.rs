@@ -19,7 +19,6 @@ use std::process::Command;
 use std::str::FromStr;
 
 use crate::core::build_steps::compile::CODEGEN_BACKEND_PREFIX;
-use crate::core::build_steps::llvm;
 use crate::core::config::flags::{Color, Flags, Warnings};
 use crate::utils::cache::{Interned, INTERNER};
 use crate::utils::channel::{self, GitInfo};
@@ -2110,34 +2109,35 @@ impl Config {
 
     fn parse_download_ci_llvm(
         &self,
-        download_ci_llvm: Option<StringOrBool>,
-        asserts: bool,
+        _download_ci_llvm: Option<StringOrBool>,
+        _asserts: bool,
     ) -> bool {
-        match download_ci_llvm {
-            None => self.channel == "dev" && llvm::is_ci_llvm_available(&self, asserts),
-            Some(StringOrBool::Bool(b)) => b,
-            Some(StringOrBool::String(s)) if s == "if-available" => {
-                llvm::is_ci_llvm_available(&self, asserts)
-            }
-            Some(StringOrBool::String(s)) if s == "if-unchanged" => {
-                // Git is needed to track modifications here, but tarball source is not available.
-                // If not modified here or built through tarball source, we maintain consistency
-                // with '"if available"'.
-                if !self.rust_info.is_from_tarball()
-                    && self
-                        .last_modified_commit(&["src/llvm-project"], "download-ci-llvm", true)
-                        .is_none()
-                {
-                    // there are some untracked changes in the the given paths.
-                    false
-                } else {
-                    llvm::is_ci_llvm_available(&self, asserts)
-                }
-            }
-            Some(StringOrBool::String(other)) => {
-                panic!("unrecognized option for download-ci-llvm: {:?}", other)
-            }
-        }
+        // match download_ci_llvm {
+        //     None => self.channel == "dev" && llvm::is_ci_llvm_available(&self, asserts),
+        //     Some(StringOrBool::Bool(b)) => b,
+        //     Some(StringOrBool::String(s)) if s == "if-available" => {
+        //         llvm::is_ci_llvm_available(&self, asserts)
+        //     }
+        //     Some(StringOrBool::String(s)) if s == "if-unchanged" => {
+        //         // Git is needed to track modifications here, but tarball source is not available.
+        //         // If not modified here or built through tarball source, we maintain consistency
+        //         // with '"if available"'.
+        //         if !self.rust_info.is_from_tarball()
+        //             && self
+        //                 .last_modified_commit(&["src/llvm-project"], "download-ci-llvm", true)
+        //                 .is_none()
+        //         {
+        //             // there are some untracked changes in the the given paths.
+        //             false
+        //         } else {
+        //             llvm::is_ci_llvm_available(&self, asserts)
+        //         }
+        //     }
+        //     Some(StringOrBool::String(other)) => {
+        //         panic!("unrecognized option for download-ci-llvm: {:?}", other)
+        //     }
+        // }
+        false
     }
 
     /// Returns the last commit in which any of `modified_paths` were changed,
