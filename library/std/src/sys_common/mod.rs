@@ -20,7 +20,7 @@
 #[cfg(test)]
 mod tests;
 
-#[cfg(feature = "backtrace")]
+#[cfg(not(target_family = "solana"))]
 pub mod backtrace;
 pub mod fs;
 pub mod io;

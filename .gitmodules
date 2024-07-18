@@ -33,7 +33,7 @@
 [submodule "src/llvm-project"]
 	path = src/llvm-project
 	url = https://github.com/anza-xyz/llvm-project.git
-	branch = solana-rustc/17.0-2023-12-14
+	branch = solana-rustc/18.1-2024-05-19
 	shallow = true
 [submodule "src/doc/embedded-book"]
 	path = src/doc/embedded-book

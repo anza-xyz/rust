@@ -45,7 +45,7 @@ fn main() {
         || target_os == "teeos"
         || target_os == "zkvm"
         || target_os == "bpf"
-        || target_os == "sbf"
+        || target_os == "solana"
 
         // See src/bootstrap/src/core/build_steps/synthetic_targets.rs
         || env::var("RUSTC_BOOTSTRAP_SYNTHETIC_TARGET").is_ok()

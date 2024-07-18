@@ -1781,6 +1781,7 @@ impl Config {
                 enable_warnings,
                 download_ci_llvm,
                 build_config,
+                enable_projects,
             } = llvm;
             match ccache {
                 Some(StringOrBool::String(ref s)) => config.ccache = Some(s.to_string()),
@@ -1806,7 +1807,7 @@ impl Config {
             config.llvm_link_jobs = link_jobs;
             config.llvm_version_suffix.clone_from(&version_suffix);
             config.llvm_clang_cl.clone_from(&clang_cl);
-            config.llvm_enable_projects.clone_from(&llvm.enable_projects);
+            config.llvm_enable_projects.clone_from(&enable_projects);
 
             config.llvm_cflags.clone_from(&cflags);
             config.llvm_cxxflags.clone_from(&cxxflags);

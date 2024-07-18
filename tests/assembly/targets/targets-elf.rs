@@ -570,6 +570,9 @@
 //@ revisions: x86_64_wrs_vxworks
 //@ [x86_64_wrs_vxworks] compile-flags: --target x86_64-wrs-vxworks
 //@ [x86_64_wrs_vxworks] needs-llvm-components: x86
+//@ revisions: sbf_solana_solana
+//@ [sbf_solana_solana] compile-flags: --target sbf-solana-solana
+//@ [sbf_solana_solana] needs-llvm-components: sbf
 
 // Sanity-check that each target can produce assembly code.
 

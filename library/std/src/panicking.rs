@@ -32,16 +32,14 @@ use crate::sys::stdio::panic_output;
 #[cfg(not(target_family = "solana"))]
 use crate::sys_common::backtrace;
 #[cfg(not(target_family = "solana"))]
-use crate::sys_common::thread_info;
-#[cfg(not(target_family = "solana"))]
 use crate::thread;
 
 #[cfg(all(not(test), not(target_family = "solana")))]
-use crate::io::set_output_capture;
+use crate::io::try_set_output_capture;
 // make sure to use the stderr output configured
 // by libtest in the real copy of std
-#[cfg(all(test, not(target_family = "solana")))]
-use realstd::io::set_output_capture;
+#[cfg(test)]
+use realstd::io::try_set_output_capture;
 
 // Binary interface to the panic runtime that the standard library depends on.
 //
@@ -667,7 +665,7 @@ pub fn panicking() -> bool {
 }
 
 /// Entry point of panics from the core crate (`panic_impl` lang item).
-#[cfg(not(any(test, doctest, target_os = "solana")))]
+#[cfg(not(any(test, doctest, target_family = "solana")))]
 #[panic_handler]
 pub fn begin_panic_handler(info: &PanicInfo<'_>) -> ! {
     struct FormatStringPayload<'a> {
