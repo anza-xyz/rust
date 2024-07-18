@@ -7,7 +7,7 @@ IFS=$'\n\t'
 
 source "$(cd "$(dirname "$0")" && pwd)/../shared.sh"
 
-export CI="true"
+#export CI="true"
 export SRC=.
 
 echo "::add-matcher::src/ci/github-actions/problem_matchers.json"
