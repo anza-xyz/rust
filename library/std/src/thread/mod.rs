@@ -155,11 +155,15 @@
 // Under `test`, `__FastLocalKeyInner` seems unused.
 #![cfg_attr(test, allow(dead_code))]
 
-#[cfg(all(test, not(target_os = "emscripten")))]
+#[cfg(all(test, not(target_os = "emscripten"), not(target_family = "solana")))]
 mod tests;
 
 use crate::any::Any;
+#[cfg(not(target_family = "solana"))]
 use crate::cell::{OnceCell, UnsafeCell};
+#[cfg(target_family = "solana")]
+use crate::cell::UnsafeCell;
+#[cfg(not(target_family = "solana"))]
 use crate::env;
 use crate::ffi::{CStr, CString};
 use crate::fmt;
@@ -172,10 +176,10 @@ use crate::panicking;
 use crate::pin::Pin;
 use crate::ptr::addr_of_mut;
 use crate::str;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{AtomicUsize, Ordering};
 use crate::sync::Arc;
 use crate::sys::thread as imp;
-use crate::sys_common::thread;
 use crate::sys_common::thread_parking::Parker;
 use crate::sys_common::{AsInner, IntoInner};
 use crate::time::{Duration, Instant};
@@ -599,10 +603,12 @@ impl Builder {
         'scope: 'a,
     {
         let Builder { name, stack_size } = self;
-        let stack_size = stack_size.unwrap_or_else(thread::min_stack);
-        let my_thread = Thread::new(name.map(|name| {
-            CString::new(name).expect("thread name may not contain interior null bytes")
-        }));
+        let stack_size = stack_size.unwrap_or_default();
+        let my_thread = name.map_or_else(Thread::new_unnamed, |name| unsafe {
+            Thread::new(
+                CString::new(name).expect("thread name may not contain interior null bytes"),
+            )
+        });
         let their_thread = my_thread.clone();
         let my_packet: Arc<Packet<'scope, T>> = Arc::new(Packet {
             scope: scope_data,
@@ -761,12 +767,14 @@ where
 }
 
 thread_local! {
+    #[cfg(not(target_family = "solana"))]
     static CURRENT: OnceCell<Thread> = const { OnceCell::new() };
 }
 
 /// Sets the thread handle for the current thread.
 ///
 /// Panics if the handle has been set already or when called from a TLS destructor.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn set_current(thread: Thread) {
     CURRENT.with(|current| current.set(thread).unwrap());
 }
@@ -775,6 +783,7 @@ pub(crate) fn set_current(thread: Thread) {
 ///
 /// In contrast to the public `current` function, this will not panic if called
 /// from inside a TLS destructor.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn try_current() -> Option<Thread> {
     CURRENT.try_with(|current| current.get_or_init(|| Thread::new_unnamed()).clone()).ok()
 }
@@ -814,7 +823,7 @@ pub fn current() -> Thread {
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg(target_family = "solana")]
 pub fn current() -> Thread {
-    Thread::new(None)
+    Thread::new_unnamed()
 }
 
 /// Cooperatively gives up a timeslice to the OS scheduler.
@@ -1345,6 +1354,7 @@ impl ThreadId {
 
 /// The internal representation of a `Thread`'s name.
 enum ThreadName {
+    #[cfg(not(target_family = "solana"))]
     Main,
     Other(CString),
     Unnamed,
@@ -1401,6 +1411,7 @@ impl Thread {
     }
 
     // Used in runtime to construct main thread
+    #[cfg(not(target_family = "solana"))]
     pub(crate) fn new_main() -> Thread {
         unsafe { Self::new_inner(ThreadName::Main) }
     }
@@ -1535,6 +1546,7 @@ impl Thread {
 
     fn cname(&self) -> Option<&CStr> {
         match &self.inner.name {
+            #[cfg(not(target_family = "solana"))]
             ThreadName::Main => Some(c"main"),
             ThreadName::Other(other) => Some(&other),
             ThreadName::Unnamed => None,

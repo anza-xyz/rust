@@ -216,8 +216,8 @@ fn default_compiler(
             }
         }
 
-        "bpfel-unknown-unknown" | "sbf-solana-solana" => {
-            Some(PathBuf::from(build.llvm_bin(target).join(compiler.clang())))
+        "sbf-solana-solana" => {
+            Some(build.llvm_bin(target).join(compiler.clang()))
         }
 
         t if t.contains("musl") && compiler == Language::C => {

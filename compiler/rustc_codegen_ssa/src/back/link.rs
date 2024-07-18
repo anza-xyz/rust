@@ -2028,10 +2028,10 @@ fn patch_synthetic_object_file(sess: &Session, path: &PathBuf) {
     const EM_SBF: [u8; 2] = [0x07, 0x01];
     if let Ok(mut sf) = fs::OpenOptions::new().write(true).open(path) {
         if let Ok(_) = sf.seek(SeekFrom::Start(0x12)) {
-            sf.write(&EM_SBF).unwrap();
+            sf.write_all(&EM_SBF).unwrap();
         }
     } else {
-        sess.fatal(format!("failed to patch {}", path.display()));
+        sess.psess.dcx.fatal(format!("failed to patch {}", path.display()));
     }
 }
 

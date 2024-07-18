@@ -327,7 +327,7 @@ const WASM_ALLOWED_FEATURES: &[(&str, Stability)] = &[
 
 const BPF_ALLOWED_FEATURES: &[(&str, Stability)] = &[("alu32", Unstable(sym::bpf_target_feature))];
 
-const SBF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] =
+const SBF_ALLOWED_FEATURES: &[(&str, Stability)] =
     &[("alu32", Unstable(sym::sbf_target_feature)), ("static-syscalls", Unstable(sym::sbf_target_feature))];
 
 const CSKY_ALLOWED_FEATURES: &[(&str, Stability)] = &[
@@ -406,6 +406,7 @@ pub fn all_known_features() -> impl Iterator<Item = (&'static str, Stability)> {
         .chain(RISCV_ALLOWED_FEATURES.iter())
         .chain(WASM_ALLOWED_FEATURES.iter())
         .chain(BPF_ALLOWED_FEATURES.iter())
+        .chain(SBF_ALLOWED_FEATURES.iter())
         .chain(CSKY_ALLOWED_FEATURES)
         .chain(LOONGARCH_ALLOWED_FEATURES)
         .cloned()
@@ -424,6 +425,7 @@ impl super::spec::Target {
             "wasm32" | "wasm64" => WASM_ALLOWED_FEATURES,
             "bpf" => BPF_ALLOWED_FEATURES,
             "csky" => CSKY_ALLOWED_FEATURES,
+            "sbf" => SBF_ALLOWED_FEATURES,
             "loongarch64" => LOONGARCH_ALLOWED_FEATURES,
             _ => &[],
         }

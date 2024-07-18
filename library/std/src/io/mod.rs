@@ -326,9 +326,12 @@ pub use self::{
     copy::copy,
     cursor::Cursor,
     error::{Error, ErrorKind, Result},
-    stdio::{stderr, stdin, stdout, Stderr, StderrLock, Stdin, StdinLock, Stdout, StdoutLock},
+    stdio::{stderr, stdin, stdout, Stderr, StderrLock, Stdin, Stdout, StdoutLock},
     util::{empty, repeat, sink, Empty, Repeat, Sink},
 };
+#[cfg(not(target_family = "solana"))]
+#[stable(feature = "rust1", since = "1.0.0")]
+pub use self::stdio::StdinLock;
 
 #[unstable(feature = "read_buf", issue = "78485")]
 pub use core::io::{BorrowedBuf, BorrowedCursor};

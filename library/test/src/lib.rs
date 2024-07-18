@@ -61,7 +61,6 @@ pub mod test {
 use std::{
     collections::VecDeque,
     env, io,
-    io::prelude::Write,
     panic::{self, catch_unwind, AssertUnwindSafe, PanicInfo},
     process::{self, Command, Termination},
     sync::mpsc::{channel, Sender},
@@ -70,7 +69,10 @@ use std::{
     time::{Duration, Instant},
 };
 #[cfg(not(target_family = "solana"))]
-use std::mem::ManuallyDrop;
+use std::{
+    mem::ManuallyDrop,
+    io::prelude::Write,
+};
 
 pub mod bench;
 mod cli;

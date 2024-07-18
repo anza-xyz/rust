@@ -739,8 +739,8 @@ checksum = "55b672471b4e9f9e95499ea597ff64941a309b2cdbffcc46f2cc5e2d971fd335"
 
 [[package]]
 name = "compiler_builtins"
-version = "0.1.103"
-source = "git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.40#81ef46f3fe1357095acdd089a700890fe4e13974"
+version = "0.1.112"
+source = "git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.43#8e7bd0b5b32d58c96aca7c6d45d3989211e1a378"
 dependencies = [
  "cc",
  "rustc-std-workspace-core",
@@ -1549,6 +1549,17 @@ dependencies = [
  "rustc-std-workspace-core",
  "rustc-std-workspace-std",
  "unicode-width",
+]
+
+[[package]]
+name = "getrandom"
+version = "0.1.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi 0.9.0+wasi-snapshot-preview1",
 ]
 
 [[package]]
@@ -2489,7 +2500,7 @@ dependencies = [
  "colored",
  "ctrlc",
  "directories",
- "getrandom",
+ "getrandom 0.2.13",
  "jemalloc-sys",
  "lazy_static",
  "libc",
@@ -3148,7 +3159,7 @@ version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
- "getrandom 0.2.10",
+ "getrandom 0.2.13",
 ]
 
 [[package]]
@@ -3204,7 +3215,7 @@ version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd283d9651eeda4b2a83a43c1c91b266c40fd76ecd39a50a8c630ae69dc72891"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.13",
  "libredox",
  "thiserror",
 ]
@@ -3360,9 +3371,8 @@ dependencies = [
 
 [[package]]
 name = "rustc-build-sysroot"
-version = "0.4.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9bf37423495cd3a6a9ef8c75fc4566de0d26de0ab75f36f67a426e58df5768c"
+version = "0.5.3"
+source = "git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.43#54b64222f01199bfc1fc7ac36f244cef4f573c7e"
 dependencies = [
  "anyhow",
  "rustc_version",
@@ -6145,7 +6155,7 @@ version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a183cf7feeba97b4dd1c0d46788634f6221d87fa961b305bed08c851829efcc0"
 dependencies = [
- "getrandom 0.2.10",
+ "getrandom 0.2.13",
 ]
 
 [[package]]

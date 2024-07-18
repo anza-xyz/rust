@@ -368,13 +368,13 @@ fn default_alloc_error_hook(layout: Layout) {
 #[doc(hidden)]
 #[alloc_error_handler]
 #[unstable(feature = "alloc_internals", issue = "none")]
-pub fn rust_oom(layout: Layout) -> ! {
+pub fn rust_oom(_layout: Layout) -> ! {
     #[cfg(not(target_family = "solana"))]
     {
         let hook = HOOK.load(Ordering::SeqCst);
         let hook: fn(Layout) =
             if hook.is_null() { default_alloc_error_hook } else { unsafe { mem::transmute(hook) } };
-        hook(layout);
+        hook(_layout);
     }
     #[cfg(target_family = "solana")]
     {
