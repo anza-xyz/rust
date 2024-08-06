@@ -162,10 +162,6 @@ x--expand-yaml-anchors--remove:
           # which then uses log commands to actually set them.
           EXTRA_VARIABLES: ${{ toJson(matrix.env) }}
 
-      - name: decide whether to skip this job
-        run: src/ci/scripts/should-skip-this.sh
-        <<: *step
-
       #      - name: ensure the channel matches the target branch
       #        run: src/ci/scripts/verify-channel.sh
       #        <<: *step
@@ -234,12 +230,6 @@ x--expand-yaml-anchors--remove:
 
       - name: ensure backported commits are in upstream branches
         run: src/ci/scripts/verify-backported-commits.sh
-
-      - name: ensure the stable version number is correct
-        run: src/ci/scripts/verify-stable-version-number.sh
-        env:
-          SKIP_JOB: 1
-        <<: *step
 
       - name: run the build
         # Redirect stderr to stdout to avoid reordering the two streams in the GHA logs.
@@ -351,7 +341,8 @@ jobs:
     name: ${{ matrix.name }}
     needs: [ calculate_matrix ]
     env:
-      CI_JOB_NAME: ${{ matrix.image }}
+      CI_JOB_NAME: ${{ matrix.name }}
+      PR_CI_JOB: 1
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       # commit of PR sha or commit sha. `GITHUB_SHA` is not accurate for PRs.
       HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -369,7 +360,7 @@ jobs:
           - name: mingw-check-tidy
             <<: *job-linux-4c
 
-          - name: x86_64-gnu-llvm-15
+          - name: x86_64-gnu-llvm-18
             env:
               ENABLE_GCC_CODEGEN: "1"
             <<: *job-linux-16c
@@ -393,7 +384,7 @@ jobs:
           - name: mingw-check
             <<: *job-linux-16c
 
-          - name: x86_64-gnu-llvm-12
+          - name: x86_64-gnu-llvm-18
             <<: *job-linux-16c
 
           - name: sbf-solana-solana
@@ -534,16 +525,6 @@ jobs:
             <<: *job-linux-8c
 
           - name: x86_64-gnu-llvm-17
-            env:
-              RUST_BACKTRACE: 1
-            <<: *job-linux-8c
-
-          - name: x86_64-gnu-llvm-16
-            env:
-              RUST_BACKTRACE: 1
-            <<: *job-linux-8c
-
-          - name: x86_64-gnu-llvm-15
             env:
               RUST_BACKTRACE: 1
             <<: *job-linux-8c

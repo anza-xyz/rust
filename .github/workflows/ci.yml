@@ -53,14 +53,14 @@ jobs:
     needs:
       - calculate_matrix
     env:
-      CI_JOB_NAME: "${{ matrix.image }}"
+      CI_JOB_NAME: "${{ matrix.name }}"
+      PR_CI_JOB: 1
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
-      SCCACHE_BUCKET: cached-ci-artifacts
-      SCCACHE_REGION: us-east-2
-      SCCACHE_S3_NO_CREDENTIALS: 1
+      DOCKER_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      SCCACHE_BUCKET: rust-lang-ci-sccache2
       TOOLSTATE_REPO: "https://github.com/rust-lang-nursery/rust-toolstate"
-      CACHE_DOMAIN: cached-ci-artifacts.s3.us-east-2.amazonaws.com
+      CACHE_DOMAIN: ci-caches.rust-lang.org
     continue-on-error: "${{ matrix.continue_on_error || false }}"
     strategy:
       matrix:
@@ -71,7 +71,7 @@ jobs:
           - name: mingw-check-tidy
             os: ubuntu-latest
             env: {}
-          - name: x86_64-gnu-llvm-15
+          - name: x86_64-gnu-llvm-18
             env:
               ENABLE_GCC_CODEGEN: "1"
             os: ubuntu-latest
@@ -82,6 +82,9 @@ jobs:
           - name: x86_64-gnu-tools
             os: ubuntu-latest
             env: {}
+    defaults:
+      run:
+        shell: "${{ contains(matrix.os, 'windows') && 'msys2 {0}' || 'bash' }}"
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
@@ -108,10 +111,6 @@ jobs:
         run: src/ci/scripts/setup-environment.sh
         env:
           EXTRA_VARIABLES: "${{ toJson(matrix.env) }}"
-        if: success() && !env.SKIP_JOB
-      - name: decide whether to skip this job
-        run: src/ci/scripts/should-skip-this.sh
-        if: success() && !env.SKIP_JOB
       - name: free up space in github runner
         run: "sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true\nsudo rm -rf \\\n /usr/share/dotnet /usr/local/lib/android /opt/ghc \\\n /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup \\\n /usr/lib/jvm || true\necho \"some directories deleted\"\n"
       - name: collect CPU statistics
@@ -148,11 +147,6 @@ jobs:
         run: src/ci/scripts/verify-line-endings.sh
       - name: ensure backported commits are in upstream branches
         run: src/ci/scripts/verify-backported-commits.sh
-      - name: ensure the stable version number is correct
-        run: src/ci/scripts/verify-stable-version-number.sh
-        env:
-          SKIP_JOB: 1
-        if: success() && !env.SKIP_JOB
       - name: run the build
         run: src/ci/scripts/run-build-from-ci.sh 2>&1
         env:
@@ -174,13 +168,14 @@ jobs:
           AWS_ACCESS_KEY_ID: "${{ env.ARTIFACTS_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}"
           SKIP_JOB: 1
-        if: "success() && !env.SKIP_JOB && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
+        if: "success() && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
   push:
     name: push
     env:
       CI_JOB_NAME: "${{ matrix.name }}"
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
+      DOCKER_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       SCCACHE_BUCKET: cached-ci-artifacts
       SCCACHE_REGION: us-east-2
       DEPLOY_BUCKET: rust-lang-ci2
@@ -198,15 +193,26 @@ jobs:
           - name: mingw-check
             os: ubuntu-latest
             env: {}
-          - name: x86_64-gnu-llvm-12
+          - name: x86_64-gnu-llvm-18
             os: ubuntu-latest
             env: {}
           - name: sbf-solana-solana
             os: ubuntu-latest
             env: {}
+    defaults:
+      run:
+        shell: "${{ contains(matrix.os, 'windows') && 'msys2 {0}' || 'bash' }}"
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
+      - if: "contains(matrix.os, 'windows')"
+        uses: msys2/setup-msys2@v2.22.0
+        with:
+          msystem: "${{ contains(matrix.name, 'i686') && 'mingw32' || 'mingw64' }}"
+          update: false
+          release: true
+          path-type: inherit
+          install: "make dos2unix diffutils\n"
       - name: disable git crlf conversion
         run: git config --global core.autocrlf false
       - name: checkout the source code
@@ -217,104 +223,76 @@ jobs:
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
           num: "${{ github.event.number }}"
-        if: "success() && !env.SKIP_JOB && github.event_name == 'pull_request'"
+        if: "success() && github.event_name == 'pull_request'"
       - name: add extra environment variables
         run: src/ci/scripts/setup-environment.sh
         env:
           EXTRA_VARIABLES: "${{ toJson(matrix.env) }}"
-        if: success() && !env.SKIP_JOB
-      - name: decide whether to skip this job
-        run: src/ci/scripts/should-skip-this.sh
-        if: success() && !env.SKIP_JOB
       - name: free up space in github runner
         run: "sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true\nsudo rm -rf \\\n /usr/share/dotnet /usr/local/lib/android /opt/ghc \\\n /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup \\\n /usr/lib/jvm || true\necho \"some directories deleted\"\n"
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
-        if: success() && !env.SKIP_JOB
       - name: show the current environment
         run: src/ci/scripts/dump-environment.sh
-        if: success() && !env.SKIP_JOB
       - name: install awscli
         run: src/ci/scripts/install-awscli.sh
-        if: success() && !env.SKIP_JOB
       - name: install sccache
         run: src/ci/scripts/install-sccache.sh
-        if: success() && !env.SKIP_JOB
       - name: select Xcode
         run: src/ci/scripts/select-xcode.sh
-        if: success() && !env.SKIP_JOB
       - name: install clang
         run: src/ci/scripts/install-clang.sh
-        if: success() && !env.SKIP_JOB
       - name: install tidy
         run: src/ci/scripts/install-tidy.sh
-        if: success() && !env.SKIP_JOB
       - name: install WIX
         run: src/ci/scripts/install-wix.sh
-        if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
-        if: success() && !env.SKIP_JOB
       - name: checkout submodules
         run: src/ci/scripts/checkout-submodules.sh
-        if: success() && !env.SKIP_JOB
       - name: install MSYS2
         run: src/ci/scripts/install-msys2.sh
-        if: success() && !env.SKIP_JOB
       - name: install MinGW
         run: src/ci/scripts/install-mingw.sh
-        if: success() && !env.SKIP_JOB
       - name: install ninja
         run: src/ci/scripts/install-ninja.sh
-        if: success() && !env.SKIP_JOB
       - name: enable ipv6 on Docker
         run: src/ci/scripts/enable-docker-ipv6.sh
-        if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
-        if: success() && !env.SKIP_JOB
       - name: ensure line endings are correct
         run: src/ci/scripts/verify-line-endings.sh
-        if: success() && !env.SKIP_JOB
       - name: ensure backported commits are in upstream branches
         run: src/ci/scripts/verify-backported-commits.sh
-        if: success() && !env.SKIP_JOB
-      - name: ensure the stable version number is correct
-        run: src/ci/scripts/verify-stable-version-number.sh
-        env:
-          SKIP_JOB: 1
-        if: success() && !env.SKIP_JOB
       - name: run the build
-        run: src/ci/scripts/run-build-from-ci.sh
+        run: src/ci/scripts/run-build-from-ci.sh 2>&1
         env:
           AWS_ACCESS_KEY_ID: "${{ env.CACHES_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.CACHES_AWS_ACCESS_KEY_ID)] }}"
           TOOLSTATE_REPO_ACCESS_TOKEN: "${{ secrets.TOOLSTATE_REPO_ACCESS_TOKEN }}"
-        if: success() && !env.SKIP_JOB
       - name: create github artifacts
         run: src/ci/scripts/create-doc-artifacts.sh
-        if: success() && !env.SKIP_JOB
       - name: upload artifacts to github
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.DOC_ARTIFACT_NAME }}"
           path: obj/artifacts/doc
           if-no-files-found: ignore
           retention-days: 5
-        if: success() && !env.SKIP_JOB
       - name: upload artifacts to S3
         run: src/ci/scripts/upload-artifacts.sh
         env:
           AWS_ACCESS_KEY_ID: "${{ env.ARTIFACTS_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}"
           SKIP_JOB: 1
-        if: "success() && !env.SKIP_JOB && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
+        if: "success() && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
   auto:
     name: "auto - ${{ matrix.name }}"
     env:
       CI_JOB_NAME: "${{ matrix.name }}"
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
+      DOCKER_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       SCCACHE_BUCKET: cached-ci-artifacts
       SCCACHE_REGION: us-east-2
       DEPLOY_BUCKET: rust-lang-ci2
@@ -442,14 +420,6 @@ jobs:
             env:
               RUST_BACKTRACE: 1
             os: ubuntu-latest
-          - name: x86_64-gnu-llvm-16
-            env:
-              RUST_BACKTRACE: 1
-            os: ubuntu-latest
-          - name: x86_64-gnu-llvm-15
-            env:
-              RUST_BACKTRACE: 1
-            os: ubuntu-latest
           - name: x86_64-gnu-nopt
             os: ubuntu-latest
             env: {}
@@ -516,7 +486,7 @@ jobs:
               NO_DEBUG_ASSERTIONS: 1
               NO_OVERFLOW_CHECKS: 1
               DIST_REQUIRE_ALL_TOOLS: 1
-            os: macos-13-xlarge
+            os: macos-14
           - name: aarch64-apple
             env:
               SCRIPT: "./x.py --stage 2 test --host=aarch64-apple-darwin --target=aarch64-apple-darwin"
@@ -529,7 +499,7 @@ jobs:
               NO_LLVM_ASSERTIONS: 1
               NO_DEBUG_ASSERTIONS: 1
               NO_OVERFLOW_CHECKS: 1
-            os: macos-13-xlarge
+            os: macos-14
           - name: x86_64-msvc
             env:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --enable-profiler"
@@ -600,9 +570,20 @@ jobs:
               RUST_CONFIGURE_ARGS: "--build=x86_64-pc-windows-msvc --enable-extended --enable-profiler"
               SCRIPT: python x.py dist bootstrap --include-default-paths
             os: windows-2019-8core-32gb
+    defaults:
+      run:
+        shell: "${{ contains(matrix.os, 'windows') && 'msys2 {0}' || 'bash' }}"
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
+      - if: "contains(matrix.os, 'windows')"
+        uses: msys2/setup-msys2@v2.22.0
+        with:
+          msystem: "${{ contains(matrix.name, 'i686') && 'mingw32' || 'mingw64' }}"
+          update: false
+          release: true
+          path-type: inherit
+          install: "make dos2unix diffutils\n"
       - name: disable git crlf conversion
         run: git config --global core.autocrlf false
       - name: checkout the source code
@@ -613,98 +594,69 @@ jobs:
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
           num: "${{ github.event.number }}"
-        if: "success() && !env.SKIP_JOB && github.event_name == 'pull_request'"
+        if: "success() && github.event_name == 'pull_request'"
       - name: add extra environment variables
         run: src/ci/scripts/setup-environment.sh
         env:
           EXTRA_VARIABLES: "${{ toJson(matrix.env) }}"
-        if: success() && !env.SKIP_JOB
-      - name: decide whether to skip this job
-        run: src/ci/scripts/should-skip-this.sh
-        if: success() && !env.SKIP_JOB
       - name: free up space in github runner
         run: "sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true\nsudo rm -rf \\\n /usr/share/dotnet /usr/local/lib/android /opt/ghc \\\n /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup \\\n /usr/lib/jvm || true\necho \"some directories deleted\"\n"
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
-        if: success() && !env.SKIP_JOB
       - name: show the current environment
         run: src/ci/scripts/dump-environment.sh
-        if: success() && !env.SKIP_JOB
       - name: install awscli
         run: src/ci/scripts/install-awscli.sh
-        if: success() && !env.SKIP_JOB
       - name: install sccache
         run: src/ci/scripts/install-sccache.sh
-        if: success() && !env.SKIP_JOB
       - name: select Xcode
         run: src/ci/scripts/select-xcode.sh
-        if: success() && !env.SKIP_JOB
       - name: install clang
         run: src/ci/scripts/install-clang.sh
-        if: success() && !env.SKIP_JOB
       - name: install tidy
         run: src/ci/scripts/install-tidy.sh
-        if: success() && !env.SKIP_JOB
       - name: install WIX
         run: src/ci/scripts/install-wix.sh
-        if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
-        if: success() && !env.SKIP_JOB
       - name: checkout submodules
         run: src/ci/scripts/checkout-submodules.sh
-        if: success() && !env.SKIP_JOB
       - name: install MSYS2
         run: src/ci/scripts/install-msys2.sh
-        if: success() && !env.SKIP_JOB
       - name: install MinGW
         run: src/ci/scripts/install-mingw.sh
-        if: success() && !env.SKIP_JOB
       - name: install ninja
         run: src/ci/scripts/install-ninja.sh
-        if: success() && !env.SKIP_JOB
       - name: enable ipv6 on Docker
         run: src/ci/scripts/enable-docker-ipv6.sh
-        if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
-        if: success() && !env.SKIP_JOB
       - name: ensure line endings are correct
         run: src/ci/scripts/verify-line-endings.sh
-        if: success() && !env.SKIP_JOB
       - name: ensure backported commits are in upstream branches
         run: src/ci/scripts/verify-backported-commits.sh
-        if: success() && !env.SKIP_JOB
-      - name: ensure the stable version number is correct
-        run: src/ci/scripts/verify-stable-version-number.sh
-        env:
-          SKIP_JOB: 1
-        if: success() && !env.SKIP_JOB
       - name: run the build
-        run: src/ci/scripts/run-build-from-ci.sh
+        run: src/ci/scripts/run-build-from-ci.sh 2>&1
         env:
           AWS_ACCESS_KEY_ID: "${{ env.CACHES_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.CACHES_AWS_ACCESS_KEY_ID)] }}"
           TOOLSTATE_REPO_ACCESS_TOKEN: "${{ secrets.TOOLSTATE_REPO_ACCESS_TOKEN }}"
-        if: success() && !env.SKIP_JOB
       - name: create github artifacts
         run: src/ci/scripts/create-doc-artifacts.sh
-        if: success() && !env.SKIP_JOB
       - name: upload artifacts to github
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.DOC_ARTIFACT_NAME }}"
           path: obj/artifacts/doc
           if-no-files-found: ignore
           retention-days: 5
-        if: success() && !env.SKIP_JOB
       - name: upload artifacts to S3
         run: src/ci/scripts/upload-artifacts.sh
         env:
           AWS_ACCESS_KEY_ID: "${{ env.ARTIFACTS_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}"
           SKIP_JOB: 1
-        if: "success() && !env.SKIP_JOB && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
+        if: "success() && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
   try:
     name: "try - ${{ matrix.name }}"
     env:
@@ -712,6 +664,7 @@ jobs:
       CI_JOB_NAME: "${{ matrix.name }}"
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
+      DOCKER_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       SCCACHE_BUCKET: cached-ci-artifacts
       SCCACHE_REGION: us-east-2
       DEPLOY_BUCKET: rust-lang-ci2
@@ -730,9 +683,20 @@ jobs:
             env:
               CODEGEN_BACKENDS: "llvm,cranelift"
             os: ubuntu-latest
+    defaults:
+      run:
+        shell: "${{ contains(matrix.os, 'windows') && 'msys2 {0}' || 'bash' }}"
     timeout-minutes: 600
     runs-on: "${{ matrix.os }}"
     steps:
+      - if: "contains(matrix.os, 'windows')"
+        uses: msys2/setup-msys2@v2.22.0
+        with:
+          msystem: "${{ contains(matrix.name, 'i686') && 'mingw32' || 'mingw64' }}"
+          update: false
+          release: true
+          path-type: inherit
+          install: "make dos2unix diffutils\n"
       - name: disable git crlf conversion
         run: git config --global core.autocrlf false
       - name: checkout the source code
@@ -743,98 +707,69 @@ jobs:
         run: "echo \"[CI_PR_NUMBER=$num]\""
         env:
           num: "${{ github.event.number }}"
-        if: "success() && !env.SKIP_JOB && github.event_name == 'pull_request'"
+        if: "success() && github.event_name == 'pull_request'"
       - name: add extra environment variables
         run: src/ci/scripts/setup-environment.sh
         env:
           EXTRA_VARIABLES: "${{ toJson(matrix.env) }}"
-        if: success() && !env.SKIP_JOB
-      - name: decide whether to skip this job
-        run: src/ci/scripts/should-skip-this.sh
-        if: success() && !env.SKIP_JOB
       - name: free up space in github runner
         run: "sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true\nsudo rm -rf \\\n /usr/share/dotnet /usr/local/lib/android /opt/ghc \\\n /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup \\\n /usr/lib/jvm || true\necho \"some directories deleted\"\n"
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
-        if: success() && !env.SKIP_JOB
       - name: show the current environment
         run: src/ci/scripts/dump-environment.sh
-        if: success() && !env.SKIP_JOB
       - name: install awscli
         run: src/ci/scripts/install-awscli.sh
-        if: success() && !env.SKIP_JOB
       - name: install sccache
         run: src/ci/scripts/install-sccache.sh
-        if: success() && !env.SKIP_JOB
       - name: select Xcode
         run: src/ci/scripts/select-xcode.sh
-        if: success() && !env.SKIP_JOB
       - name: install clang
         run: src/ci/scripts/install-clang.sh
-        if: success() && !env.SKIP_JOB
       - name: install tidy
         run: src/ci/scripts/install-tidy.sh
-        if: success() && !env.SKIP_JOB
       - name: install WIX
         run: src/ci/scripts/install-wix.sh
-        if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
-        if: success() && !env.SKIP_JOB
       - name: checkout submodules
         run: src/ci/scripts/checkout-submodules.sh
-        if: success() && !env.SKIP_JOB
       - name: install MSYS2
         run: src/ci/scripts/install-msys2.sh
-        if: success() && !env.SKIP_JOB
       - name: install MinGW
         run: src/ci/scripts/install-mingw.sh
-        if: success() && !env.SKIP_JOB
       - name: install ninja
         run: src/ci/scripts/install-ninja.sh
-        if: success() && !env.SKIP_JOB
       - name: enable ipv6 on Docker
         run: src/ci/scripts/enable-docker-ipv6.sh
-        if: success() && !env.SKIP_JOB
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
-        if: success() && !env.SKIP_JOB
       - name: ensure line endings are correct
         run: src/ci/scripts/verify-line-endings.sh
-        if: success() && !env.SKIP_JOB
       - name: ensure backported commits are in upstream branches
         run: src/ci/scripts/verify-backported-commits.sh
-        if: success() && !env.SKIP_JOB
-      - name: ensure the stable version number is correct
-        run: src/ci/scripts/verify-stable-version-number.sh
-        env:
-          SKIP_JOB: 1
-        if: success() && !env.SKIP_JOB
       - name: run the build
-        run: src/ci/scripts/run-build-from-ci.sh
+        run: src/ci/scripts/run-build-from-ci.sh 2>&1
         env:
           AWS_ACCESS_KEY_ID: "${{ env.CACHES_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.CACHES_AWS_ACCESS_KEY_ID)] }}"
           TOOLSTATE_REPO_ACCESS_TOKEN: "${{ secrets.TOOLSTATE_REPO_ACCESS_TOKEN }}"
-        if: success() && !env.SKIP_JOB
       - name: create github artifacts
         run: src/ci/scripts/create-doc-artifacts.sh
-        if: success() && !env.SKIP_JOB
       - name: upload artifacts to github
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.DOC_ARTIFACT_NAME }}"
           path: obj/artifacts/doc
           if-no-files-found: ignore
           retention-days: 5
-        if: success() && !env.SKIP_JOB
       - name: upload artifacts to S3
         run: src/ci/scripts/upload-artifacts.sh
         env:
           AWS_ACCESS_KEY_ID: "${{ env.ARTIFACTS_AWS_ACCESS_KEY_ID }}"
           AWS_SECRET_ACCESS_KEY: "${{ secrets[format('AWS_SECRET_ACCESS_KEY_{0}', env.ARTIFACTS_AWS_ACCESS_KEY_ID)] }}"
           SKIP_JOB: 1
-        if: "success() && !env.SKIP_JOB && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
+        if: "success() && (github.event_name == 'push' || env.DEPLOY == '1' || env.DEPLOY_ALT == '1')"
   master:
     name: master
     runs-on: ubuntu-latest
