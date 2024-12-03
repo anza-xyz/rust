@@ -16,7 +16,10 @@ use crate::panic::BacktraceStyle;
 use core::panic::PanicInfo;
 use core::panic::PanicPayload;
 use core::panic::Location;
+use core::fmt;
 
+use crate::intrinsics;
+use crate::process;
 use crate::any::Any;
 use crate::io::try_set_output_capture;
 use crate::mem::{self, ManuallyDrop};
@@ -26,7 +29,8 @@ use crate::sync::atomic::{AtomicBool, Ordering};
 use crate::sync::{PoisonError, RwLock};
 use crate::sys::backtrace;
 use crate::sys::stdio::panic_output;
-use crate::{fmt, intrinsics, process, thread};
+#[cfg(not(target_family = "solana"))]
+use crate::thread;
 
 // Binary interface to the panic runtime that the standard library depends on.
 //
@@ -653,7 +657,7 @@ pub fn panicking() -> bool {
 }
 
 /// Entry point of panics from the core crate (`panic_impl` lang item).
-#[cfg(not(any(test, doctest, target_os = "solana")))]
+#[cfg(not(any(test, doctest, target_family = "solana")))]
 #[panic_handler]
 pub fn begin_panic_handler(info: &core::panic::PanicInfo<'_>) -> ! {
     struct FormatStringPayload<'a> {

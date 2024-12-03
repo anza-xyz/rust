@@ -55,3 +55,6 @@ check-cfg = [
     'cfg(randomized_layouts)',
     'cfg(target_family, values("solana"))',
 ]
+
+[patch.crates-io]
+compiler_builtins = { git = "https://github.com/anza-xyz/compiler-builtins", tag = "solana-tools-v1.43" }

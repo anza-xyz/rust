@@ -1,4 +1,4 @@
-// only-sbf
+//@ only-sbf
 #![crate_type = "lib"]
 #![feature(sbf_target_feature)]
 #![no_std]

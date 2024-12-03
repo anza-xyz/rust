@@ -3138,9 +3138,8 @@ dependencies = [
 
 [[package]]
 name = "rustc-build-sysroot"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6d984a9db43148467059309bd1e5ad577085162f695d9fe2cf3543aeb25cd38"
+version = "0.5.3"
+source = "git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.43#54b64222f01199bfc1fc7ac36f244cef4f573c7e"
 dependencies = [
  "anyhow",
  "rustc_version",

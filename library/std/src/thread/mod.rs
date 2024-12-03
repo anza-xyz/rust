@@ -597,10 +597,12 @@ impl Builder {
         'scope: 'a,
     {
         let Builder { name, stack_size } = self;
-        let stack_size = stack_size.unwrap_or_else(thread::min_stack);
-        let my_thread = Thread::new(name.map(|name| {
-            CString::new(name).expect("thread name may not contain interior null bytes")
-        }));
+        let stack_size = stack_size.unwrap_or_default();
+        let my_thread = name.map_or_else(Thread::new_unnamed, |name| unsafe {
+            Thread::new(
+                CString::new(name).expect("thread name may not contain interior null bytes"),
+            )
+        });
         let their_thread = my_thread.clone();
         let my_packet: Arc<Packet<'scope, T>> = Arc::new(Packet {
             scope: scope_data,
@@ -1304,6 +1306,7 @@ impl ThreadId {
 
 /// The internal representation of a `Thread`'s name.
 enum ThreadName {
+    #[cfg(not(target_family = "solana"))]
     Main,
     Other(ThreadNameString),
     Unnamed,
@@ -1398,7 +1401,8 @@ impl Thread {
         Self::new_inner(id, ThreadName::Unnamed)
     }
 
-    /// Constructs the thread handle for the main thread.
+    // Used in runtime to construct main thread
+    #[cfg(not(target_family = "solana"))]
     pub(crate) fn new_main(id: ThreadId) -> Thread {
         Self::new_inner(id, ThreadName::Main)
     }
@@ -1578,7 +1582,12 @@ impl Thread {
     }
 
     fn cname(&self) -> Option<&CStr> {
-        self.inner.name.as_cstr()
+        match &self.inner.name {
+            #[cfg(not(target_family = "solana"))]
+            ThreadName::Main => Some(c"main"),
+            ThreadName::Other(other) => Some(&other),
+            ThreadName::Unnamed => None,
+        }
     }
 }
 

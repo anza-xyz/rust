@@ -56,15 +56,21 @@ pub mod test {
     pub use crate::{assert_test_result, filter_tests, run_test, test_main, test_main_static};
 }
 
-use std::collections::VecDeque;
-use std::io::prelude::Write;
-use std::mem::ManuallyDrop;
-use std::panic::{self, AssertUnwindSafe, PanicHookInfo, catch_unwind};
-use std::process::{self, Command, Termination};
-use std::sync::mpsc::{Sender, channel};
-use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
-use std::{env, io, thread};
+use std::{
+    collections::VecDeque,
+    env, io,
+    panic::{self, catch_unwind, AssertUnwindSafe, PanicHookInfo},
+    process::{self, Command, Termination},
+    sync::mpsc::{channel, Sender},
+    sync::{Arc, Mutex},
+    thread,
+    time::{Duration, Instant},
+};
+#[cfg(not(target_family = "solana"))]
+use std::{
+    mem::ManuallyDrop,
+    io::prelude::Write,
+};
 
 pub mod bench;
 mod cli;

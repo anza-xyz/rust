@@ -10,7 +10,7 @@ fn classify_ret<Ty>(ret: &mut ArgAbi<'_, Ty>) {
     }
 
     if bits <= 128 {
-        ret.cast_to(Uniform {unit: Reg::i64(), total: size});
+        ret.cast_to(Uniform::new(Reg::i64(), size));
     } else {
         ret.make_indirect();
     }
@@ -25,7 +25,7 @@ fn classify_arg<Ty>(arg: &mut ArgAbi<'_, Ty>) {
     }
 
     if bits <= 128 {
-        arg.cast_to(Uniform {unit: Reg::i64(), total: size});
+        arg.cast_to(Uniform::new(Reg::i64(), size))
     } else {
         arg.make_indirect();
     }

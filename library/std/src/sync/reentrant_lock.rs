@@ -250,6 +250,7 @@ impl<T> ReentrantLock<T> {
     /// let lock = ReentrantLock::new(0);
     /// assert_eq!(lock.into_inner(), 0);
     /// ```
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     pub fn into_inner(self) -> T {
         self.data
     }
@@ -316,6 +317,7 @@ impl<T: ?Sized> ReentrantLock<T> {
     /// *lock.get_mut() = 10;
     /// assert_eq!(*lock.lock(), 10);
     /// ```
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     pub fn get_mut(&mut self) -> &mut T {
         &mut self.data
     }
@@ -347,6 +349,7 @@ impl<T: ?Sized> ReentrantLock<T> {
         }
     }
 
+    #[cfg(all(not(target_arch = "bpf"), not(target_arch = "sbf")))]
     unsafe fn increment_lock_count(&self) -> Option<()> {
         unsafe {
             *self.lock_count.get() = (*self.lock_count.get()).checked_add(1)?;
@@ -359,6 +362,7 @@ impl<T: ?Sized> ReentrantLock<T> {
 impl<T: fmt::Debug + ?Sized> fmt::Debug for ReentrantLock<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut d = f.debug_struct("ReentrantLock");
+        #[cfg(not(target_family = "solana"))]
         match self.try_lock() {
             Some(v) => d.field("data", &&*v),
             None => d.field("data", &format_args!("<locked>")),
@@ -368,6 +372,7 @@ impl<T: fmt::Debug + ?Sized> fmt::Debug for ReentrantLock<T> {
 }
 
 #[unstable(feature = "reentrant_lock", issue = "121440")]
+#[cfg(not(target_family = "solana"))]
 impl<T: Default> Default for ReentrantLock<T> {
     fn default() -> Self {
         Self::new(T::default())
@@ -375,6 +380,7 @@ impl<T: Default> Default for ReentrantLock<T> {
 }
 
 #[unstable(feature = "reentrant_lock", issue = "121440")]
+#[cfg(not(target_family = "solana"))]
 impl<T> From<T> for ReentrantLock<T> {
     fn from(t: T) -> Self {
         Self::new(t)

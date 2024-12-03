@@ -550,7 +550,8 @@ impl<'tcx> TyCtxt<'tcx> {
                     .file
                     .name
                     .for_scope(self.sess, RemapPathScopeComponents::MACRO)
-                    .to_string_lossy()),
+                    .to_string_lossy()
+            ),
             caller.line as u32,
             caller.col_display as u32 + 1,
         )

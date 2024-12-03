@@ -18,7 +18,6 @@ cfg_if::cfg_if! {
         target_os = "dragonfly",
         target_os = "fuchsia",
         target_os = "hermit",
-        target_os = "solana",
     ))] {
         mod futex;
         pub use futex::{Once, OnceState};
