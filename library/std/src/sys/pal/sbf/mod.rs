@@ -47,13 +47,13 @@ extern "C" {
 
 #[cfg(target_feature = "static-syscalls")]
 unsafe extern "C" fn abort() -> ! {
-    let syscall: extern "C" fn() -> ! = core::mem::transmute(3069975057u64); // murmur32 hash of "abort"
+    let syscall: extern "C" fn() -> ! = core::mem::transmute(1usize); // 1 is the code for "abort"
     syscall()
 }
 
 #[cfg(target_feature = "static-syscalls")]
 unsafe extern "C" fn sol_log_(message: *const u8, length: u64) {
-    let syscall: extern "C" fn(*const u8, u64) = core::mem::transmute(544561597u64); // murmur32 hash of "sol_log_"
+    let syscall: extern "C" fn(*const u8, u64) = core::mem::transmute(7usize); // 7 is the code for "sol_log_"
     syscall(message, length)
 }
 
@@ -68,6 +68,8 @@ pub fn panic(info: &core::panic::PanicInfo<'_>) -> ! {
         #[cfg(not(target_feature = "static-syscalls"))]
         custom_panic(info);
 
+        // FIXME: This implementation needs a revision in tandem with
+        // https://github.com/anza-xyz/agave/pull/3951
         #[cfg(target_feature = "static-syscalls")]
         sol_log(info.to_string().as_bytes());
 
