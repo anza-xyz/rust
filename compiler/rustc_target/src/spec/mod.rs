@@ -2307,6 +2307,9 @@ pub struct TargetOptions {
 
     /// Whether the target supports XRay instrumentation.
     pub supports_xray: bool,
+
+    /// Contains SBFv3 linker scripts for release (.0) and for debug mode (.1)
+    pub sbf_linker_scripts: Option<(StaticCow<str>, StaticCow<str>)>,
 }
 
 /// Add arguments for the given flavor and also for its "twin" flavors
@@ -2524,6 +2527,7 @@ impl Default for TargetOptions {
             entry_name: "main".into(),
             entry_abi: Conv::C,
             supports_xray: false,
+            sbf_linker_scripts: None,
         }
     }
 }

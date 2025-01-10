@@ -740,7 +740,7 @@ checksum = "55b672471b4e9f9e95499ea597ff64941a309b2cdbffcc46f2cc5e2d971fd335"
 [[package]]
 name = "compiler_builtins"
 version = "0.1.112"
-source = "git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.43#8e7bd0b5b32d58c96aca7c6d45d3989211e1a378"
+source = "git+https://github.com/anza-xyz/compiler-builtins?rev=8e355a96707fd38c430259f18541c210c3495f19#8e355a96707fd38c430259f18541c210c3495f19"
 dependencies = [
  "cc",
  "rustc-std-workspace-core",
