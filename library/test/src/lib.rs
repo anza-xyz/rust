@@ -352,11 +352,13 @@ where
     let mut pending = 0;
 
     let (tx, rx) = channel::<CompletedTest>();
-    let run_strategy = if opts.options.panic_abort && !opts.force_run_in_process {
-        RunStrategy::SpawnPrimary
-    } else {
-        RunStrategy::InProcess
-    };
+    // let run_strategy = if opts.options.panic_abort && !opts.force_run_in_process {
+    //     RunStrategy::SpawnPrimary
+    // } else {
+    //     RunStrategy::InProcess
+    // };
+
+    let run_strategy = RunStrategy::InProcess;
 
     let mut running_tests: TestMap = HashMap::default();
     let mut timeout_queue: VecDeque<TimeoutEntry> = VecDeque::new();
@@ -575,10 +577,31 @@ pub fn run_test(
             let name = desc.name.clone();
             let nocapture = opts.nocapture;
             let time_options = opts.time_options;
-            let bench_benchmarks = opts.bench_benchmarks;
+            //let bench_benchmarks = opts.bench_benchmarks;
 
-            let runtest = move || match strategy {
-                RunStrategy::InProcess => run_test_in_process(
+            let runtest = move || {
+                // match strategy {
+                //     RunStrategy::InProcess => run_test_in_process(
+                //         id,
+                //         desc,
+                //         nocapture,
+                //         time_options.is_some(),
+                //         runnable_test,
+                //         monitor_ch,
+                //         time_options,
+                //     ),
+                //     RunStrategy::SpawnPrimary => spawn_test_subprocess(
+                //         id,
+                //         desc,
+                //         nocapture,
+                //         time_options.is_some(),
+                //         monitor_ch,
+                //         time_options,
+                //         bench_benchmarks,
+                //     ),
+                // };
+
+                run_test_in_process(
                     id,
                     desc,
                     nocapture,
@@ -586,16 +609,7 @@ pub fn run_test(
                     runnable_test,
                     monitor_ch,
                     time_options,
-                ),
-                RunStrategy::SpawnPrimary => spawn_test_subprocess(
-                    id,
-                    desc,
-                    nocapture,
-                    time_options.is_some(),
-                    monitor_ch,
-                    time_options,
-                    bench_benchmarks,
-                ),
+                );
             };
 
             // If the platform is single-threaded we're just going to run
@@ -685,6 +699,7 @@ where
     }
 }
 
+#[allow(unused)]
 fn spawn_test_subprocess(
     id: TestId,
     desc: TestDesc,

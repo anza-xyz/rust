@@ -43,10 +43,10 @@ extern "C" {
     fn sol_log_(message: *const u8, length: u64);
 }
 
-extern "C" {
-    #[allow(improper_ctypes)]
-    fn custom_panic(info: &core::panic::PanicInfo<'_>);
-}
+// extern "C" {
+//     #[allow(improper_ctypes)]
+//     fn custom_panic(info: &core::panic::PanicInfo<'_>);
+// }
 
 #[cfg(target_feature = "static-syscalls")]
 unsafe extern "C" fn abort() -> ! {
@@ -66,10 +66,10 @@ pub fn sol_log(message: &[u8]) {
     }
 }
 
-pub fn panic(info: &core::panic::PanicInfo<'_>) -> ! {
+pub fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
     unsafe {
-        #[cfg(not(target_feature = "static-syscalls"))]
-        custom_panic(info);
+        // #[cfg(not(target_feature = "static-syscalls"))]
+        // custom_panic(info);
         abort();
     }
 }

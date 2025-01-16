@@ -170,6 +170,7 @@ pub fn opts() -> TargetOptions {
         vendor: "solana".into(),
         c_enum_min_bits: Some(32),
         sbf_linker_scripts: Some((V3_RELEASE_LINKER_SCRIPT.into(), V3_DEBUG_LINKER_SCRIPT.into())),
+        cpu: "v3".into(),
         .. Default::default()
     }
 }
