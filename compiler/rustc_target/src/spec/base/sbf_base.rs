@@ -139,7 +139,7 @@ PHDRS
 pub fn opts() -> TargetOptions {
     let pre_link_args = TargetOptions::link_args(
         LinkerFlavor::Gnu(Cc::No, Lld::No),
-        &["--threads=1", "-z", "notext"],
+        &["--threads=1", "-z", "notext", "--export-dynamic", "-Bdynamic"],
     );
 
     TargetOptions {
