@@ -2075,22 +2075,7 @@ fn add_linked_symbol_object(
     if let Err(error) = result {
         sess.dcx().emit_fatal(errors::FailedToWrite { path, error });
     }
-    if sess.opts.cg.target_cpu.as_ref().unwrap_or(
-        &sess.target.cpu.as_ref().to_string()) == "sbfv2" {
-        patch_synthetic_object_file(sess, &path);
-    }
     cmd.add_object(&path);
-}
-
-fn patch_synthetic_object_file(sess: &Session, path: &PathBuf) {
-    const EM_SBF: [u8; 2] = [0x07, 0x01];
-    if let Ok(mut sf) = fs::OpenOptions::new().write(true).open(path) {
-        if let Ok(_) = sf.seek(SeekFrom::Start(0x12)) {
-            sf.write(&EM_SBF).unwrap();
-        }
-    } else {
-        sess.fatal(format!("failed to patch {}", path.display()));
-    }
 }
 
 /// Add object files containing code from the current crate.
