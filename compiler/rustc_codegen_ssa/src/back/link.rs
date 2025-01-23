@@ -46,7 +46,7 @@ use itertools::Itertools;
 use std::collections::BTreeSet;
 use std::ffi::{OsStr, OsString};
 use std::fs::{read, File, OpenOptions};
-use std::io::{prelude::*, BufWriter, SeekFrom, Write};
+use std::io::{BufWriter, Write};
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::process::{ExitStatus, Output, Stdio};
@@ -311,10 +311,6 @@ fn link_rlib<'a>(
                 codegen_results.metadata.raw_data(),
             );
             let metadata = emit_wrapper_file(sess, &metadata, tmpdir, METADATA_FILENAME);
-            if sess.opts.cg.target_cpu.as_ref().unwrap_or(
-                &sess.target.cpu.as_ref().to_string()) == "sbfv2" {
-                patch_synthetic_object_file(sess, &metadata);
-            }
             match metadata_position {
                 MetadataPosition::First => {
                     // Most of the time metadata in rlib files is wrapped in a "dummy" object
@@ -2017,22 +2013,7 @@ fn add_linked_symbol_object(
     if let Err(error) = result {
         sess.dcx().emit_fatal(errors::FailedToWrite { path, error });
     }
-    if sess.opts.cg.target_cpu.as_ref().unwrap_or(
-        &sess.target.cpu.as_ref().to_string()) == "sbfv2" {
-        patch_synthetic_object_file(sess, &path);
-    }
     cmd.add_object(&path);
-}
-
-fn patch_synthetic_object_file(sess: &Session, path: &PathBuf) {
-    const EM_SBF: [u8; 2] = [0x07, 0x01];
-    if let Ok(mut sf) = fs::OpenOptions::new().write(true).open(path) {
-        if let Ok(_) = sf.seek(SeekFrom::Start(0x12)) {
-            sf.write_all(&EM_SBF).unwrap();
-        }
-    } else {
-        sess.psess.dcx.fatal(format!("failed to patch {}", path.display()));
-    }
 }
 
 /// Add object files containing code from the current crate.
