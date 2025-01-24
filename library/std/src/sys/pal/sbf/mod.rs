@@ -68,6 +68,8 @@ pub fn panic(info: &core::panic::PanicInfo<'_>) -> ! {
         #[cfg(not(target_feature = "static-syscalls"))]
         custom_panic(info);
 
+        // FIXME: This implementation needs a revision in tandem with
+        // https://github.com/anza-xyz/agave/pull/3951
         #[cfg(target_feature = "static-syscalls")]
         sol_log(info.to_string().as_bytes());
 
