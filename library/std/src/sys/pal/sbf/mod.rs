@@ -40,9 +40,12 @@ pub mod time;
 #[cfg(not(target_feature = "static-syscalls"))]
 extern "C" {
     fn abort() -> !;
+    fn sol_log_(message: *const u8, length: u64);
+}
+
+extern "C" {
     #[allow(improper_ctypes)]
     fn custom_panic(info: &core::panic::PanicInfo<'_>);
-    fn sol_log_(message: *const u8, length: u64);
 }
 
 #[cfg(target_feature = "static-syscalls")]
@@ -65,14 +68,7 @@ pub fn sol_log(message: &[u8]) {
 
 pub fn panic(info: &core::panic::PanicInfo<'_>) -> ! {
     unsafe {
-        #[cfg(not(target_feature = "static-syscalls"))]
         custom_panic(info);
-
-        // FIXME: This implementation needs a revision in tandem with
-        // https://github.com/anza-xyz/agave/pull/3951
-        #[cfg(target_feature = "static-syscalls")]
-        sol_log(info.to_string().as_bytes());
-
         abort();
     }
 }
