@@ -44,7 +44,6 @@ SECTIONS
         endian: Endian::Little,
         env: "".into(),
         executables: true,
-        features: "+solana".into(),
         families: cvs!["solana"],
         link_script: Some(linker_script.into()),
         linker: Some("rust-lld".into()),
