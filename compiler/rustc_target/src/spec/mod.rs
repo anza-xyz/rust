@@ -2307,6 +2307,9 @@ pub struct TargetOptions {
 
     /// Whether the target supports XRay instrumentation.
     pub supports_xray: bool,
+
+    /// SBFv3 linker script
+    pub sbf_v3_link_script: Option<StaticCow<str>>,
 }
 
 /// Add arguments for the given flavor and also for its "twin" flavors
@@ -2524,6 +2527,7 @@ impl Default for TargetOptions {
             entry_name: "main".into(),
             entry_abi: Conv::C,
             supports_xray: false,
+            sbf_v3_link_script: None,
         }
     }
 }
@@ -3255,6 +3259,7 @@ impl Target {
         key!(entry_name);
         key!(entry_abi, Conv)?;
         key!(supports_xray, bool);
+        key!(sbf_v3_link_script, optional);
 
         if base.is_builtin {
             // This can cause unfortunate ICEs later down the line.
@@ -3512,6 +3517,7 @@ impl ToJson for Target {
         target_option_val!(entry_name);
         target_option_val!(entry_abi);
         target_option_val!(supports_xray);
+        target_option_val!(sbf_v3_link_script);
 
         // Serializing `-Clink-self-contained` needs a dynamic key to support the
         // backwards-compatible variants.
