@@ -2611,6 +2611,9 @@ pub struct TargetOptions {
 
     /// Whether the targets supports -Z small-data-threshold
     small_data_threshold_support: SmallDataThresholdSupport,
+
+    /// SBFv3 linker script
+    pub sbf_v3_link_script: Option<StaticCow<str>>,
 }
 
 /// Add arguments for the given flavor and also for its "twin" flavors
@@ -2846,6 +2849,7 @@ impl Default for TargetOptions {
             supports_xray: false,
             default_address_space: rustc_abi::AddressSpace::ZERO,
             small_data_threshold_support: SmallDataThresholdSupport::DefaultForArch,
+            sbf_v3_link_script: None,
         }
     }
 }
