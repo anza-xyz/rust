@@ -79,6 +79,14 @@ jobs:
             tidy: false
             os: ubuntu-latest
             env: {}
+          - name: sbf-solana-solana-v1
+            tidy: false
+            os: ubuntu-latest
+            env: {}
+          - name: sbf-solana-solana-v2
+            tidy: false
+            os: ubuntu-latest
+            env: {}
           - name: x86_64-gnu-tools
             os: ubuntu-latest
             env: {}
@@ -197,6 +205,12 @@ jobs:
             os: ubuntu-latest
             env: {}
           - name: sbf-solana-solana
+            os: ubuntu-latest
+            env: {}
+          - name: sbf-solana-solana-v1
+            os: ubuntu-latest
+            env: {}
+          - name: sbf-solana-solana-v2
             os: ubuntu-latest
             env: {}
     defaults:
