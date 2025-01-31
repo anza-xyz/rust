@@ -377,6 +377,10 @@ jobs:
             <<: *job-linux-16c
             tidy: false
 
+          - name: sbf-solana-solana-v3
+            <<: *job-linux-16c
+            tidy: false
+
           - name: x86_64-gnu-tools
             <<: *job-linux-16c
 
@@ -404,6 +408,8 @@ jobs:
           - name: sbf-solana-solana-v2
             <<: *job-linux-16c
 
+          - name: sbf-solana-solana-v3
+            <<: *job-linux-16c
 
   auto:
     <<: *base-ci-job
