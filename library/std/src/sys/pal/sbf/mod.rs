@@ -43,10 +43,10 @@ extern "C" {
     fn sol_log_(message: *const u8, length: u64);
 }
 
-extern "C" {
-    #[allow(improper_ctypes)]
-    fn custom_panic(info: &core::panic::PanicInfo<'_>);
-}
+#[no_mangle]
+#[allow(improper_ctypes)]
+#[linkage = "weak"]
+extern "C" fn custom_panic(_info: &core::panic::PanicInfo<'_>) {}
 
 #[cfg(target_feature = "static-syscalls")]
 unsafe extern "C" fn abort() -> ! {
