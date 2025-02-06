@@ -33,7 +33,7 @@ SECTIONS
 {
   .text 0x000000000 : {
     . = 0x00;
-    KEEP(*(.text.abort_v3))
+    KEEP(*(.text.abort))
      *(.text*)
   } :text
   .rodata 0x100000000 : {
