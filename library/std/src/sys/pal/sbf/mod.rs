@@ -51,7 +51,7 @@ extern "C" fn custom_panic(_info: &core::panic::PanicInfo<'_>) {}
 #[cfg(target_feature = "static-syscalls")]
 #[inline(never)]
 #[no_mangle]
-#[link_section = ".text.abort_v3"]
+#[link_section = ".text.abort"]
 #[linkage = "external"]
 pub unsafe extern "C" fn abort() -> ! {
     let syscall: extern "C" fn() -> ! = core::mem::transmute(3069975057u64); // murmur32 hash of "abort"
