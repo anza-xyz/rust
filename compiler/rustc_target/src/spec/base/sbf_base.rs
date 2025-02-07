@@ -99,6 +99,7 @@ pub fn opts() -> TargetOptions {
         env: "".into(),
         executables: true,
         families: cvs!["solana"],
+        features: "+store-imm,+jmp-ext".into(),
         link_script: Some(V0_LINKER_SCRIPT.into()),
         linker: Some("rust-lld".into()),
         linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
