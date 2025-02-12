@@ -3,7 +3,7 @@
 This fork of Rust contains changes that enable rustc to build BPF
 modules.  It depends on a customized
 [fork](https://github.com/anza-xyz/llvm-project) of Rust's LLVM
-fork.
+fork. S
 
 Solana SDK does not depend directly on this repo.  Instead [platform-tools]
 builds and releases binary packages that the Solana SDK pulls in.
