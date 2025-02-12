@@ -5,7 +5,7 @@ use std::path::Path;
 
 /// List of allowed sources for packages.
 const ALLOWED_SOURCES: &[&str] = &["\"registry+https://github.com/rust-lang/crates.io-index\"",
-"\"git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.44#4abd7f45fc621344e4b9d1df37a45b7445f03c71\"",
+"\"git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.44#5380e204aab5be48c798679cc52b1f871c8ad4bc\"",
 "\"git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.44#4f19dfe109fc80efbe62b6de9781125bc7ce7485\""];
 
 /// Checks for external package sources. `root` is the path to the directory that contains the
