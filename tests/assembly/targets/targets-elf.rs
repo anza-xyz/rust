@@ -573,6 +573,18 @@
 //@ revisions: sbf_solana_solana
 //@ [sbf_solana_solana] compile-flags: --target sbf-solana-solana
 //@ [sbf_solana_solana] needs-llvm-components: sbf
+//@ revisions: sbpf_solana_solana
+//@ [sbpf_solana_solana] compile-flags: --target sbpf-solana-solana
+//@ [sbpf_solana_solana] needs-llvm-components: sbf
+//@ revisions: sbpfv1_solana_solana
+//@ [sbpfv1_solana_solana] compile-flags: --target sbpfv1-solana-solana
+//@ [sbpfv1_solana_solana] needs-llvm-components: sbf
+//@ revisions: sbpfv2_solana_solana
+//@ [sbpfv2_solana_solana] compile-flags: --target sbpfv2-solana-solana
+//@ [sbpfv2_solana_solana] needs-llvm-components: sbf
+//@ revisions: sbpfv3_solana_solana
+//@ [sbpfv3_solana_solana] compile-flags: --target sbpfv3-solana-solana
+//@ [sbpfv3_solana_solana] needs-llvm-components: sbf
 
 // Sanity-check that each target can produce assembly code.
 

@@ -216,7 +216,11 @@ fn default_compiler(
             }
         }
 
-        "sbf-solana-solana" => {
+        "sbf-solana-solana"
+        | "sbpf-solana-solana"
+        | "sbpfv1-solana-solana"
+        | "sbpfv2-solana-solana"
+        | "sbpfv3-solana-solana" => {
             Some(build.llvm_bin(target).join(compiler.clang()))
         }
 

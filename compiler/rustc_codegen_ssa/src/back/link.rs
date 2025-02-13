@@ -1887,14 +1887,6 @@ fn add_link_script(cmd: &mut dyn Linker, sess: &Session, tmpdir: &Path, crate_ty
 
             let path = tmpdir.join(file_name);
 
-            let script = if sess.target.arch == "sbf" &&
-                sess.opts.cg.target_cpu.as_ref()
-                    .unwrap_or(&sess.target.cpu.as_ref().to_string()) == "v3" {
-                &sess.target.sbf_v3_link_script.as_ref().unwrap()
-            } else {
-                script
-            };
-
             if let Err(error) = fs::write(&path, script.as_ref()) {
                 sess.dcx().emit_fatal(errors::LinkScriptWriteFailure { path, error });
             }
