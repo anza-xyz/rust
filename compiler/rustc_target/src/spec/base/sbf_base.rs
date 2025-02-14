@@ -1,5 +1,5 @@
 use crate::abi::Endian;
-use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, TargetOptions};
+use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, Target, TargetOptions};
 
 const V0_LINKER_SCRIPT: &str = r"
 PHDRS
@@ -81,11 +81,30 @@ PHDRS
 }
 ";
 
-pub fn opts() -> TargetOptions {
+pub fn opts(version: &'static str) -> TargetOptions {
     let pre_link_args = TargetOptions::link_args(
         LinkerFlavor::Gnu(Cc::No, Lld::No),
         &["--threads=1", "-z", "notext", "--Bdynamic"],
     );
+
+    let linker_script = if version == "v3" {
+        V3_LINKER_SCRIPT
+    } else {
+        V0_LINKER_SCRIPT
+    };
+    let cpu = if version == "v0" {
+        "generic"
+    } else {
+        version
+    };
+
+    let features = if version == "v3" {
+        "+static-syscalls"
+    } else if version == "v0" {
+        "+store-imm,+jmp-ext"
+    } else {
+        ""
+    };
 
     TargetOptions {
         allow_asm: true,
@@ -99,8 +118,7 @@ pub fn opts() -> TargetOptions {
         env: "".into(),
         executables: true,
         families: cvs!["solana"],
-        features: "+store-imm,+jmp-ext".into(),
-        link_script: Some(V0_LINKER_SCRIPT.into()),
+        link_script: Some(linker_script.into()),
         linker: Some("rust-lld".into()),
         linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
         main_needs_argc_argv: false,
@@ -115,7 +133,24 @@ pub fn opts() -> TargetOptions {
         singlethread: true,
         vendor: "solana".into(),
         c_enum_min_bits: Some(32),
-        sbf_v3_link_script: Some(V3_LINKER_SCRIPT.into()),
+        cpu: cpu.into(),
+        features: features.into(),
         .. Default::default()
+    }
+}
+
+pub fn sbf_target(version: &'static str) -> Target {
+    Target {
+        llvm_target: "sbf".into(),
+        pointer_width: 64,
+        arch: "sbf".into(),
+        data_layout: "e-m:e-p:64:64-i64:64-n32:64-S128".into(),
+        options: opts(version),
+        metadata: crate::spec::TargetMetadata {
+            description: None,
+            tier: None,
+            host_tools: None,
+            std: None,
+        },
     }
 }

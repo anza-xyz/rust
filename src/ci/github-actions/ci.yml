@@ -369,15 +369,19 @@ jobs:
             <<: *job-linux-16c
             tidy: false
 
-          - name: sbf-solana-solana-v1
+          - name: sbpf-solana-solana
             <<: *job-linux-16c
             tidy: false
 
-          - name: sbf-solana-solana-v2
+          - name: sbpfv1-solana-solana
             <<: *job-linux-16c
             tidy: false
 
-          - name: sbf-solana-solana-v3
+          - name: sbpfv2-solana-solana
+            <<: *job-linux-16c
+            tidy: false
+
+          - name: sbpfv3-solana-solana
             <<: *job-linux-16c
             tidy: false
 
@@ -402,13 +406,16 @@ jobs:
           - name: sbf-solana-solana
             <<: *job-linux-16c
 
-          - name: sbf-solana-solana-v1
+          - name: sbpf-solana-solana
             <<: *job-linux-16c
 
-          - name: sbf-solana-solana-v2
+          - name: sbpfv1-solana-solana
             <<: *job-linux-16c
 
-          - name: sbf-solana-solana-v3
+          - name: sbpfv2-solana-solana
+            <<: *job-linux-16c
+
+          - name: sbpfv3-solana-solana
             <<: *job-linux-16c
 
   auto:

@@ -79,15 +79,19 @@ jobs:
             tidy: false
             os: ubuntu-latest
             env: {}
-          - name: sbf-solana-solana-v1
+          - name: sbpf-solana-solana
             tidy: false
             os: ubuntu-latest
             env: {}
-          - name: sbf-solana-solana-v2
+          - name: sbpfv1-solana-solana
             tidy: false
             os: ubuntu-latest
             env: {}
-          - name: sbf-solana-solana-v3
+          - name: sbpfv2-solana-solana
+            tidy: false
+            os: ubuntu-latest
+            env: {}
+          - name: sbpfv3-solana-solana
             tidy: false
             os: ubuntu-latest
             env: {}
@@ -211,13 +215,16 @@ jobs:
           - name: sbf-solana-solana
             os: ubuntu-latest
             env: {}
-          - name: sbf-solana-solana-v1
+          - name: sbpf-solana-solana
             os: ubuntu-latest
             env: {}
-          - name: sbf-solana-solana-v2
+          - name: sbpfv1-solana-solana
             os: ubuntu-latest
             env: {}
-          - name: sbf-solana-solana-v3
+          - name: sbpfv2-solana-solana
+            os: ubuntu-latest
+            env: {}
+          - name: sbpfv3-solana-solana
             os: ubuntu-latest
             env: {}
     defaults:
