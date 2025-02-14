@@ -45,6 +45,13 @@ fn collect_rustc_targets() -> RustcTargets {
         }
     }
 
+    rustc_targets.targets.push("sbf-solana-solana".to_string());
+    rustc_targets.targets.push("sbpf-solana-solana".to_string());
+    rustc_targets.targets.push("sbpfv1-solana-solana".to_string());
+    rustc_targets.targets.push("sbpfv2-solana-solana".to_string());
+    rustc_targets.targets.push("sbpfv3-solana-solana".to_string());
+    rustc_targets.targets.push("sbpfv4-solana-solana".to_string());
+
     rustc_targets
 }
 

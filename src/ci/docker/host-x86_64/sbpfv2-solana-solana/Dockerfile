@@ -37,9 +37,8 @@ ENV RUST_CONFIGURE_ARGS \
     --set rust.lld \
     --set llvm.clang
 
-ENV SCRIPT CARGO_TARGET_SBF_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --heap-size 104857600\" \
-    CARGO_TARGET_SBF_SOLANA_SOLANA_RUSTFLAGS=\"-C target_cpu=v2\" \
+ENV SCRIPT CARGO_TARGET_SBPFV2_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --heap-size 104857600\" \
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
     PATH="${HOME}/.cargo/bin:${PATH}" \
-    python3 /checkout/x.py --stage 1 test --host='' --target sbf-solana-solana \
+    python3 /checkout/x.py --stage 1 test --host='' --target sbpfv2-solana-solana \
     library/core

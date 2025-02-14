@@ -1766,6 +1766,11 @@ supported_targets! {
     ("bpfel-unknown-none", bpfel_unknown_none),
     ("bpfel-unknown-unknown", bpfel_unknown_unknown),
     ("sbf-solana-solana", sbf_solana_solana),
+    ("sbpf-solana-solana", sbpf_solana_solana),
+    ("sbpfv1-solana-solana", sbpfv1_solana_solana),
+    ("sbpfv2-solana-solana", sbpfv2_solana_solana),
+    ("sbpfv3-solana-solana", sbpfv3_solana_solana),
+
 
     ("armv6k-nintendo-3ds", armv6k_nintendo_3ds),
 
@@ -2611,9 +2616,6 @@ pub struct TargetOptions {
 
     /// Whether the targets supports -Z small-data-threshold
     small_data_threshold_support: SmallDataThresholdSupport,
-
-    /// SBFv3 linker script
-    pub sbf_v3_link_script: Option<StaticCow<str>>,
 }
 
 /// Add arguments for the given flavor and also for its "twin" flavors
@@ -2849,7 +2851,6 @@ impl Default for TargetOptions {
             supports_xray: false,
             default_address_space: rustc_abi::AddressSpace::ZERO,
             small_data_threshold_support: SmallDataThresholdSupport::DefaultForArch,
-            sbf_v3_link_script: None,
         }
     }
 }
