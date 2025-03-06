@@ -82,9 +82,18 @@ PHDRS
 ";
 
 pub fn opts(version: &'static str) -> TargetOptions {
+    let mut linker_args: Vec<&str> = vec![
+        "--threads=1", "-z", "notext", "--Bdynamic"
+    ];
+
+    if version != "v3" {
+        linker_args.push("-z");
+        linker_args.push("max-page-size=4096");
+    }
+
     let pre_link_args = TargetOptions::link_args(
         LinkerFlavor::Gnu(Cc::No, Lld::No),
-        &["--threads=1", "-z", "notext", "--Bdynamic"],
+        linker_args.as_slice(),
     );
 
     let linker_script = if version == "v3" {
