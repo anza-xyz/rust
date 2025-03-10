@@ -2844,11 +2844,17 @@ unsafe impl<#[may_dangle] T: ?Sized, A: Allocator> Drop for Arc<T, A> {
 
         // Make sure we aren't trying to "drop" the shared static for empty slices
         // used by Default::default.
-        debug_assert!(
-            !ptr::addr_eq(self.ptr.as_ptr(), &STATIC_INNER_SLICE.inner),
-            "Arcs backed by a static should never reach a strong count of 0. \
+        #[cfg(not(target_family = "solana"))]
+        // This debug assert does not work on Solana, since it requires a writable data section,
+        // which the ELF loader will reject.
+        {
+            debug_assert!(
+                !ptr::addr_eq(self.ptr.as_ptr(), &STATIC_INNER_SLICE.inner),
+                "Arcs backed by a static should never reach a strong count of 0. \
             Likely decrement_strong_count or from_raw were called too many times.",
-        );
+            );
+        }
+
 
         unsafe {
             self.drop_slow();
@@ -3481,11 +3487,16 @@ unsafe impl<#[may_dangle] T: ?Sized, A: Allocator> Drop for Weak<T, A> {
 
             // Make sure we aren't trying to "deallocate" the shared static for empty slices
             // used by Default::default.
-            debug_assert!(
-                !ptr::addr_eq(self.ptr.as_ptr(), &STATIC_INNER_SLICE.inner),
-                "Arc/Weaks backed by a static should never be deallocated. \
+            #[cfg(not(target_family = "solana"))]
+            // This debug assert does not work on Solana, since it requires a writable data section,
+            // which the ELF loader will reject.
+            {
+                debug_assert!(
+                    !ptr::addr_eq(self.ptr.as_ptr(), &STATIC_INNER_SLICE.inner),
+                    "Arc/Weaks backed by a static should never be deallocated. \
                 Likely decrement_strong_count or from_raw were called too many times.",
-            );
+                );
+            }
 
             unsafe {
                 self.alloc.deallocate(self.ptr.cast(), Layout::for_value_raw(self.ptr.as_ptr()))

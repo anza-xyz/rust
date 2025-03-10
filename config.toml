@@ -1,4 +1,7 @@
-changelog-seen = 2
+# SPDX-FileCopyrightText: 2025 Anza Technology Inc. <https://www.anza.xyz>
+#
+# SPDX-License-Identifier: MIT
+
 # Sample TOML configuration file for building Rust.
 #
 # To configure rustbuild, copy this file to the directory from which you will be

@@ -1,15 +1,22 @@
 use super::id::ThreadId;
 use super::main_thread;
 use super::thread::Thread;
+#[cfg(not(target_family = "solana"))]
 use crate::mem::ManuallyDrop;
+#[cfg(not(target_family = "solana"))]
 use crate::ptr;
 use crate::sys::thread as imp;
+#[cfg(not(target_family = "solana"))]
 use crate::sys::thread_local::local_pointer;
 
+#[cfg(not(target_family = "solana"))]
 const NONE: *mut () = ptr::null_mut();
+#[cfg(not(target_family = "solana"))]
 const BUSY: *mut () = ptr::without_provenance_mut(1);
+#[cfg(not(target_family = "solana"))]
 const DESTROYED: *mut () = ptr::without_provenance_mut(2);
 
+#[cfg(not(target_family = "solana"))]
 local_pointer! {
     static CURRENT;
 }
@@ -84,6 +91,7 @@ pub(super) mod id {
                 ID32.set(ptr::without_provenance_mut((val >> 32) as usize));
             }
         }
+        target_os = "solana" => { }
         _ => {
             local_pointer! {
                 static ID;
@@ -104,6 +112,7 @@ pub(super) mod id {
     }
 
     #[inline]
+    #[cfg(not(target_family = "solana"))]
     pub(super) fn get_or_init() -> ThreadId {
         get().unwrap_or_else(
             #[cold]
@@ -118,6 +127,7 @@ pub(super) mod id {
 
 /// Tries to set the thread handle for the current thread. Fails if a handle was
 /// already set or if the thread ID of `thread` would change an already-set ID.
+#[cfg(not(target_family = "solana"))]
 pub(super) fn set_current(thread: Thread) -> Result<(), Thread> {
     if CURRENT.get() != NONE {
         return Err(thread);
@@ -158,6 +168,7 @@ pub(super) fn set_current(thread: Thread) -> Result<(), Thread> {
 /// let other_thread_id = other_thread.join().unwrap();
 /// assert_ne!(thread::current_id(), other_thread_id);
 /// ```
+#[cfg(not(target_family = "solana"))]
 #[inline]
 #[must_use]
 #[unstable(feature = "current_thread_id", issue = "147194")]
@@ -238,6 +249,7 @@ where
 /// Gets a handle to the thread that invokes it. If the handle stored in thread-
 /// local storage was already destroyed, this creates a new unnamed temporary
 /// handle to allow thread parking in nearly all situations.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn current_or_unnamed() -> Thread {
     let current = CURRENT.get();
     if current > DESTROYED {
@@ -273,6 +285,7 @@ pub(crate) fn current_or_unnamed() -> Thread {
 /// ```
 #[must_use]
 #[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(not(target_family = "solana"))]
 pub fn current() -> Thread {
     let current = CURRENT.get();
     if current > DESTROYED {
@@ -284,8 +297,16 @@ pub fn current() -> Thread {
         init_current(current)
     }
 }
+/// Solana version of current
+#[must_use]
+#[stable(feature = "rust1", since = "1.0.0")]
+#[cfg(target_family = "solana")]
+pub fn current() -> Thread {
+    Thread::new_unnamed(ThreadId::from_u64(1).unwrap())
+}
 
 #[cold]
+#[cfg(not(target_family = "solana"))]
 fn init_current(current: *mut ()) -> Thread {
     if current == NONE {
         CURRENT.set(BUSY);
@@ -321,6 +342,7 @@ fn init_current(current: *mut ()) -> Thread {
 
 /// This should be run in [`crate::rt::thread_cleanup`] to reset the thread
 /// handle.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn drop_current() {
     let current = CURRENT.get();
     if current > DESTROYED {

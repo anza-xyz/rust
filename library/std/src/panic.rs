@@ -3,9 +3,9 @@
 #![stable(feature = "std_panic", since = "1.9.0")]
 
 use crate::any::Any;
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "sbf")))]
 use crate::sync::atomic::{Atomic, AtomicU8, Ordering};
-#[cfg(not(any(target_arch = "bpf", target_arch = "sbf")))]
+#[cfg(not(any(target_arch = "sbf")))]
 use crate::sync::{Condvar, Mutex, RwLock};
 use crate::thread::Result;
 use crate::{collections, fmt, panicking};
@@ -49,6 +49,7 @@ pub struct PanicHookInfo<'a> {
 }
 
 impl<'a> PanicHookInfo<'a> {
+    #[cfg(not(target_family = "solana"))]
     #[inline]
     pub(crate) fn new(
         location: &'a Location<'a>,

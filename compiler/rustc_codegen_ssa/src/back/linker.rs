@@ -480,17 +480,19 @@ impl<'a> GccLinker<'a> {
                     soname.push(name);
                     self.link_arg(soname);
                 }
-            } else if self.sess.target.arch == "bpf" || self.sess.target.arch == "sbf" {
+            }
+
+            if self.sess.target.arch == "bpf" || self.sess.target.arch == "sbf" {
                 if self.sess.opts.test {
-                    self.linker_arg("--entry=main");
+                    self.link_arg("--entry=main");
                 } else {
-                    self.linker_arg("--entry=entrypoint");
+                    self.link_arg("--entry=entrypoint");
                 }
                 if self.sess.opts.cg.target_cpu.as_ref()
                     .unwrap_or(&self.sess.target.cpu.as_ref().to_string()) == "v3" {
-                    self.linker_arg("-Bsymbolic");
+                    self.link_arg("-Bsymbolic");
                     if self.sess.opts.debuginfo == DebugInfo::None {
-                        self.linker_arg("--strip-all");
+                        self.link_arg("--strip-all");
                     }
                 }
             }

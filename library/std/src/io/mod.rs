@@ -314,6 +314,7 @@ pub use self::error::const_error;
 pub use self::pipe::{PipeReader, PipeWriter, pipe};
 #[stable(feature = "is_terminal", since = "1.70.0")]
 pub use self::stdio::IsTerminal;
+#[cfg(not(target_family = "solana"))]
 pub(crate) use self::stdio::attempt_print_to_stderr;
 #[unstable(feature = "print_internals", issue = "none")]
 #[doc(hidden)]
@@ -327,10 +328,13 @@ pub use self::{
     copy::copy,
     cursor::Cursor,
     error::{Error, ErrorKind, Result},
-    stdio::{Stderr, StderrLock, Stdin, StdinLock, Stdout, StdoutLock, stderr, stdin, stdout},
+    stdio::{Stderr, Stdin, Stdout, stderr, stdin, stdout},
     util::{Empty, Repeat, Sink, empty, repeat, sink},
 };
 use crate::mem::{MaybeUninit, take};
+#[cfg(not(target_family = "solana"))]
+#[stable(feature = "rust1", since = "1.0.0")]
+pub use self::stdio::{StderrLock, StdinLock, StdoutLock};
 use crate::ops::{Deref, DerefMut};
 use crate::{cmp, fmt, slice, str, sys};
 

@@ -1,5 +1,5 @@
 use crate::abi::Endian;
-use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, Target, TargetOptions};
+use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, Target, TargetOptions, SymbolVisibility};
 
 const V0_LINKER_SCRIPT: &str = r"
 PHDRS
@@ -81,7 +81,7 @@ PHDRS
 }
 ";
 
-pub fn opts(version: &'static str) -> TargetOptions {
+pub(crate) fn opts(version: &'static str) -> TargetOptions {
     let mut linker_args: Vec<&str> = vec![
         "--threads=1", "-z", "notext", "--Bdynamic"
     ];
@@ -118,7 +118,7 @@ pub fn opts(version: &'static str) -> TargetOptions {
     TargetOptions {
         allow_asm: true,
         c_int_width: "64".into(),
-        default_hidden_visibility: true,
+        default_visibility: Some(SymbolVisibility::Hidden),
         dll_prefix: "".into(),
         dynamic_linking: true,
         eh_frame_header: false,
@@ -148,7 +148,7 @@ pub fn opts(version: &'static str) -> TargetOptions {
     }
 }
 
-pub fn sbf_target(version: &'static str) -> Target {
+pub(crate) fn sbf_target(version: &'static str) -> Target {
     Target {
         llvm_target: "sbf".into(),
         pointer_width: 64,

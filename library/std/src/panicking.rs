@@ -10,13 +10,15 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 
 use core::panic::Location;
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
+use core::panic::PanicPayload;
+
+#[cfg(not(target_family = "solana"))]
 // make sure to use the stderr output configured
 // by libtest in the real copy of std
 #[cfg(all(test, not(target_family = "solana")))]
 use realstd::io::set_output_capture;
 
-#[cfg(not(target_os = "solana"))]
 use crate::any::Any;
 #[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::io::try_set_output_capture;
@@ -26,11 +28,13 @@ use crate::panic::{BacktraceStyle, PanicHookInfo};
 #[cfg(not(target_os = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicBool, Ordering};
 use crate::sync::nonpoison::RwLock;
+#[cfg(not(target_family = "solana"))]
 use crate::sys::backtrace;
+#[cfg(not(target_family = "solana"))]
 use crate::sys::stdio::panic_output;
-use crate::fmt;
-#[cfg(not(target_os = "solana"))]
-use crate::{intrinsics, process, thread};
+use crate::{intrinsics, fmt};
+#[cfg(not(target_family = "solana"))]
+use crate::{process, thread};
 
 // This forces codegen of the function called by panic!() inside the std crate, rather than in
 // downstream crates. Primarily this is useful for rustc's codegen tests, which rely on noticing
@@ -171,7 +175,7 @@ pub fn set_hook(hook: Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send>) {
 /// Dummy version for satisfying library/test dependencies for SBF target
 #[cfg(target_family = "solana")]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
-pub fn set_hook(_hook: Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send>) {
+pub fn set_hook(_hook: Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send>) {
 }
 
 /// Unregisters the current panic hook and returns it, registering the default hook
@@ -216,7 +220,7 @@ pub fn take_hook() -> Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send> {
 /// Dummy version for satisfying library/test dependencies for BPF target
 #[cfg(target_family = "solana")]
 #[stable(feature = "panic_hooks", since = "1.10.0")]
-pub fn take_hook() -> Box<dyn Fn(&PanicInfo<'_>) + 'static + Sync + Send> {
+pub fn take_hook() -> Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send> {
     Box::new(default_hook)
 }
 
@@ -274,7 +278,7 @@ where
 #[unstable(feature = "panic_update_hook", issue = "92649")]
 pub fn update_hook<F>(_hook_fn: F)
 where
-    F: Fn(&(dyn Fn(&PanicInfo<'_>) + Send + Sync + 'static), &PanicInfo<'_>)
+    F: Fn(&(dyn Fn(&PanicHookInfo<'_>) + Send + Sync + 'static), &PanicHookInfo<'_>)
         + Sync
         + Send
         + 'static,
@@ -368,7 +372,7 @@ fn default_hook(info: &PanicHookInfo<'_>) {
 }
 
 #[cfg(target_family = "solana")]
-fn default_hook(_info: &PanicInfo<'_>) {
+fn default_hook(_info: &PanicHookInfo<'_>) {
 }
 
 #[cfg(not(test))]
@@ -779,6 +783,12 @@ pub fn panic_handler(info: &core::panic::PanicInfo<'_>) -> ! {
     })
 }
 
+#[cfg(all(not(any(test, doctest)), target_family = "solana"))]
+#[panic_handler]
+pub fn begin_panic_handler(info: &core::panic::PanicInfo<'_>) -> ! {
+    crate::sys::panic(info);
+}
+
 /// This is the entry point of panicking for the non-format-string variants of
 /// panic!() and assert!(). In particular, this is the only entry point that supports
 /// arbitrary payloads, not just format strings.
@@ -843,6 +853,7 @@ pub const fn begin_panic<M: Any + Send>(msg: M) -> ! {
     })
 }
 
+#[cfg(not(target_family = "solana"))]
 fn payload_as_str(payload: &dyn Any) -> &str {
     if let Some(&s) = payload.downcast_ref::<&'static str>() {
         s
@@ -989,13 +1000,6 @@ pub fn panicking() -> bool {
     true
 }
 
-/// Entry point of panic from the libcore crate.
-#[cfg(all(not(test), target_family = "solana"))]
-#[panic_handler]
-pub fn rust_begin_panic(info: &PanicInfo<'_>) -> ! {
-    crate::sys::panic(info);
-}
-
 /// Entry point of panicking for panic!() and assert!() SBF version.
 #[cfg(target_family = "solana")]
 #[unstable(feature = "libstd_sys_internals", reason = "used by the panic! macro", issue = "none")]
@@ -1007,8 +1011,11 @@ pub fn rust_begin_panic(info: &PanicInfo<'_>) -> ! {
 #[cold]
 #[track_caller]
 pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
-    let info = PanicInfo::internal_constructor(
-        None,
+    // FIX-ME: Refactor the way we handle panics in Solana Rust
+    // Is This panic working?
+    let arguments = fmt::Arguments::new_const(&[]);
+    let info = core::panic::PanicInfo::new(
+        &arguments,
         Location::caller(),
         false,
         false,
@@ -1026,8 +1033,10 @@ pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
 #[cfg_attr(not(feature = "panic_immediate_abort"), inline(never))]
 #[cfg_attr(feature = "panic_immediate_abort", inline)]
 pub fn begin_panic_fmt(msg: &fmt::Arguments<'_>) -> ! {
-    let info = PanicInfo::internal_constructor(
-        Some(msg),
+    // FIX-ME: Refactor the way we handle panics in Solana Rust
+    // Is This panic working?
+    let info = core::panic::PanicInfo::new(
+        msg,
         Location::caller(),
         false,
         false,

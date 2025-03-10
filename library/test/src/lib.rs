@@ -60,7 +60,9 @@ pub mod test {
 }
 
 use std::collections::VecDeque;
+#[cfg(not(target_family = "solana"))]
 use std::io::prelude::Write;
+#[cfg(not(target_family = "solana"))]
 use std::mem::ManuallyDrop;
 use std::panic::{self, AssertUnwindSafe, PanicHookInfo, catch_unwind};
 use std::process::{self, Command, Termination};

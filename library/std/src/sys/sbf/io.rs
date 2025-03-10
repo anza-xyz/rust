@@ -1,4 +1,5 @@
 use crate::mem;
+use crate::slice;
 
 #[derive(Copy, Clone)]
 #[repr(transparent)]
@@ -16,8 +17,8 @@ impl<'a> IoSlice<'a> {
     }
 
     #[inline]
-    pub fn as_slice(&self) -> &[u8] {
-        self.0
+    pub const fn as_slice(&self) -> &'a [u8] {
+        unsafe { slice::from_raw_parts(self.0.as_ptr(), self.0.len()) }
     }
 }
 
@@ -39,6 +40,11 @@ impl<'a> IoSliceMut<'a> {
     #[inline]
     pub fn as_slice(&self) -> &[u8] {
         self.0
+    }
+
+    #[inline]
+    pub const fn into_slice(self) -> &'a mut [u8] {
+        unsafe { slice::from_raw_parts_mut(self.0.as_mut_ptr(), self.0.len()) }
     }
 
     #[inline]

@@ -49,6 +49,11 @@ const STAGE0_MISSING_TARGETS: &[&str] = &[
     "aarch64v8r-unknown-none",
     "aarch64v8r-unknown-none-softfloat",
     "s390x-unknown-none-softfloat",
+    "sbf-solana-solana",
+    "sbpf-solana-solana",
+    "sbpfv1-solana-solana",
+    "sbpfv2-solana-solana",
+    "sbpfv3-solana-solana",
 ];
 
 /// Minimum version threshold for libstdc++ required when using prebuilt LLVM

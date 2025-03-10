@@ -30,8 +30,11 @@ pub struct PanicMessage<'a> {
 }
 
 impl<'a> PanicInfo<'a> {
+    /// Create a new PanicInfo (for Solana only)
+    /// This is going to be removed in a future refactor.
     #[inline]
-    pub(crate) fn new(
+    #[stable(feature = "panic_hooks", since = "1.10.0")]
+    pub fn new(
         message: &'a fmt::Arguments<'a>,
         location: &'a Location<'a>,
         can_unwind: bool,

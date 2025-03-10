@@ -90,7 +90,9 @@ mod tests;
 
 #[cfg(not(target_family = "solana"))]
 use crate::backtrace_rs::{self, BytesOrWideString};
+#[cfg(not(target_family = "solana"))]
 use crate::ffi::c_void;
+#[cfg(not(target_family = "solana"))]
 use crate::panic::UnwindSafe;
 #[cfg(not(target_family = "solana"))]
 use crate::sync::LazyLock;
@@ -99,7 +101,9 @@ use crate::sync::atomic::Ordering::Relaxed;
 #[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicU8};
 use crate::sys::backtrace::{lock, output_filename, set_image_base};
-use crate::{env, fmt};
+use crate::fmt;
+#[cfg(not(target_family = "solana"))]
+use crate::env;
 
 /// A captured OS thread stack backtrace.
 ///
@@ -522,6 +526,7 @@ mod helper {
         }
     }
 }
+#[cfg(not(target_family = "solana"))]
 use helper::*;
 
 #[cfg(not(target_family = "solana"))]

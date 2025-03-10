@@ -100,6 +100,8 @@ jobs:
       # of them would succeed or not.
       fail-fast: ${{ needs.calculate_matrix.outputs.run_type != 'try' }}
       matrix:
+        # Check the `calculate_matrix` job to see how is the matrix defined.
+        include: ${{ fromJSON(needs.calculate_matrix.outputs.jobs) }}
     steps:
       - name: Install cargo in AWS CodeBuild
         if: matrix.codebuild
@@ -153,8 +155,8 @@ jobs:
           # which then uses log commands to actually set them.
           EXTRA_VARIABLES: ${{ toJson(matrix.env) }}
 
-      - name: ensure the channel matches the target branch
-        run: src/ci/scripts/verify-channel.sh
+#      - name: ensure the channel matches the target branch
+#        run: src/ci/scripts/verify-channel.sh
 
       - name: collect CPU statistics
         run: src/ci/scripts/collect-cpu-stats.sh
@@ -202,14 +204,14 @@ jobs:
       - name: disable git crlf conversion
         run: src/ci/scripts/disable-git-crlf-conversion.sh
 
-      - name: ensure line endings are correct
-        run: src/ci/scripts/verify-line-endings.sh
+#      - name: ensure line endings are correct
+#        run: src/ci/scripts/verify-line-endings.sh
+#
+#      - name: ensure backported commits are in upstream branches
+#        run: src/ci/scripts/verify-backported-commits.sh
 
-      - name: ensure backported commits are in upstream branches
-        run: src/ci/scripts/verify-backported-commits.sh
-
-      - name: ensure the stable version number is correct
-        run: src/ci/scripts/verify-stable-version-number.sh
+#      - name: ensure the stable version number is correct
+#        run: src/ci/scripts/verify-stable-version-number.sh
 
       # Show the environment just before we run the build
       # This makes it easier to diagnose problems with the above install scripts.

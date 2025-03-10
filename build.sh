@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Anza Technology Inc. <https://www.anza.xyz>
+#
+# SPDX-License-Identifier: MIT
+
 #!/usr/bin/env bash
 
 set -ex

@@ -12,3 +12,6 @@ core = { path = "../core", public = true }
 
 [target.'cfg(not(all(windows, target_env = "msvc")))'.dependencies]
 libc = { version = "0.2.150", default-features = false }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_family, values("solana"))'] }

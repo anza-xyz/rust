@@ -11,8 +11,8 @@ const ALLOWED_SOURCES: &[&str] = &[
     r#""registry+https://github.com/rust-lang/crates.io-index""#,
     // This is `rust_team_data` used by `site` in src/tools/rustc-perf,
     r#""git+https://github.com/rust-lang/team#a5260e76d3aa894c64c56e6ddc8545b9a98043ec""#,
-    r#""git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.44#5380e204aab5be48c798679cc52b1f871c8ad4bc""#,
-    r#""git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.44#4f19dfe109fc80efbe62b6de9781125bc7ce7485""#,
+    r#""git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.47#bf501f2f0a7d38d6dca6aab067017a288d2bf2dd""#,
+    r#""git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.47#0d6d7ae18aaecf45f0a6e87bcf83b2293263f5bd""#,
 ];
 
 /// Checks for external package sources. `root` is the path to the directory that contains the

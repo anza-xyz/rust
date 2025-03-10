@@ -1,5 +1,6 @@
 use super::thread::Thread;
 use crate::cell::Cell;
+#[cfg(not(target_family = "solana"))]
 use crate::iter;
 use crate::sync::Arc;
 
@@ -110,6 +111,7 @@ where
 /// Called on the parent thread.
 ///
 /// Returns the functions to be called on the newly spawned thread.
+#[cfg(not(target_family = "solana"))]
 pub(super) fn run_spawn_hooks(thread: &Thread) -> ChildSpawnHooks {
     // Get a snapshot of the spawn hooks.
     // (Increments the refcount to the first node.)
@@ -136,12 +138,14 @@ pub(super) fn run_spawn_hooks(thread: &Thread) -> ChildSpawnHooks {
 ///
 /// This struct is sent to the new thread.
 /// It contains the inherited hooks and the closures to be run.
+#[cfg(not(target_family = "solana"))]
 #[derive(Default)]
 pub(super) struct ChildSpawnHooks {
     hooks: SpawnHooks,
     to_run: Vec<Box<dyn FnOnce() + Send>>,
 }
 
+#[cfg(not(target_family = "solana"))]
 impl ChildSpawnHooks {
     // This is run on the newly spawned thread, directly at the start.
     pub(super) fn run(self) {

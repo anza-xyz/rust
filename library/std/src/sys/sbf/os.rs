@@ -85,11 +85,11 @@ pub fn getenv(_k: &OsStr) -> Option<OsString> {
     None
 }
 
-pub fn setenv(_k: &OsStr, _v: &OsStr) -> io::Result<()> {
+pub unsafe fn setenv(_k: &OsStr, _v: &OsStr) -> io::Result<()> {
     unsupported()
 }
 
-pub fn unsetenv(_k: &OsStr) -> io::Result<()> {
+pub unsafe fn unsetenv(_k: &OsStr) -> io::Result<()> {
     unsupported()
 }
 

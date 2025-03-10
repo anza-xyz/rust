@@ -200,6 +200,26 @@ impl File {
         match self.0 {}
     }
 
+    pub fn lock(&self) -> io::Result<()> {
+        match self.0 {}
+    }
+
+    pub fn lock_shared(&self) -> io::Result<()> {
+        match self.0 {}
+    }
+
+    pub fn try_lock(&self) -> io::Result<bool> {
+        match self.0 {}
+    }
+
+    pub fn try_lock_shared(&self) -> io::Result<bool> {
+        match self.0 {}
+    }
+
+    pub fn unlock(&self) -> io::Result<()> {
+        match self.0 {}
+    }
+
     pub fn truncate(&self, _size: u64) -> io::Result<()> {
         match self.0 {}
     }
@@ -295,7 +315,7 @@ pub fn remove_dir_all(_path: &Path) -> io::Result<()> {
     unsupported()
 }
 
-pub fn try_exists(_path: &Path) -> io::Result<bool> {
+pub fn exists(_path: &Path) -> io::Result<bool> {
     unsupported()
 }
 

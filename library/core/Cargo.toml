@@ -40,5 +40,6 @@ check-cfg = [
     'cfg(target_has_reliable_f128)',
     'cfg(target_has_reliable_f128_math)',
     'cfg(llvm_enzyme)',
-
+    'cfg(target_family, values("solana"))',
+    'cfg(target_arch, values("sbf"))',
 ]

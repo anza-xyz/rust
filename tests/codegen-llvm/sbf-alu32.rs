@@ -1,4 +1,8 @@
 // only-sbf
+//@ revisions: sbf
+
+//@[sbf] compile-flags: --target=sbf-solana-solana
+//@[sbf] needs-llvm-components: sbf
 #![crate_type = "lib"]
 #![feature(sbf_target_feature)]
 #![no_std]

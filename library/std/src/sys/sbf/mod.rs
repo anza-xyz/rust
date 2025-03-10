@@ -34,10 +34,6 @@ pub mod stdio;
 pub mod thread;
 #[path = "../unsupported/thread_local_dtor.rs"]
 pub mod thread_local_dtor;
-#[path = "../unsupported/thread_local_key.rs"]
-pub mod thread_local_key;
-#[path = "../unsupported/thread_parking.rs"]
-pub mod thread_parking;
 pub mod time;
 
 #[path = "../unix/os_str.rs"]
@@ -112,15 +108,6 @@ pub enum Void {}
 
 pub fn abort_internal() -> ! {
     unsafe { abort() }
-}
-
-// We don't have randomness yet, but I totally used a random number generator to
-// generate these numbers.
-//
-// More seriously though this is just for DOS protection in hash maps. It's ok
-// if we don't do that on SBF just yet.
-pub fn hashmap_random_keys() -> (u64, u64) {
-    (1, 2)
 }
 
 #[inline]

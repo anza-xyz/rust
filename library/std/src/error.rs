@@ -6,7 +6,7 @@ pub use core::error::Error;
 #[unstable(feature = "error_generic_member_access", issue = "99301")]
 pub use core::error::{Request, request_ref, request_value};
 
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 use crate::backtrace::Backtrace;
 use crate::fmt::{self, Write};
 

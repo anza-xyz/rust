@@ -21,6 +21,7 @@ pub use crate::panicking::{begin_panic, panic_count};
 pub use core::panicking::{panic_display, panic_fmt};
 
 #[rustfmt::skip]
+#[cfg(not(target_family = "solana"))]
 use crate::any::Any;
 #[cfg(not(target_family = "solana"))]
 use crate::sync::Once;
@@ -28,6 +29,7 @@ use crate::sync::Once;
 use crate::sys;
 #[cfg(not(target_family = "solana"))]
 use crate::thread::{self, Thread};
+#[cfg(not(target_family = "solana"))]
 use crate::{mem, panic};
 
 // This function is needed by the panic runtime.
@@ -83,6 +85,7 @@ macro_rules! rtunwrap {
     };
 }
 
+#[cfg(not(target_family = "solana"))]
 fn handle_rt_panic<T>(e: Box<dyn Any + Send>) -> T {
     mem::forget(e);
     rtabort!("initialization or cleanup bug");
@@ -128,6 +131,7 @@ unsafe fn init(argc: isize, argv: *const *const u8, sigpipe: u8) {
 /// code managed by the Rust runtime, but will not cause UB if that condition is
 /// not fulfilled. Also note that this function is not guaranteed to be run, but
 /// skipping it will cause leaks and therefore is to be avoided.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn thread_cleanup() {
     // This function is run in situations where unwinding leads to an abort
     // (think `extern "C"` functions). Abort here instead so that we can
