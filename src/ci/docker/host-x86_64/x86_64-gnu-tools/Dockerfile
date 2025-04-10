@@ -84,7 +84,8 @@ ENV RUST_CONFIGURE_ARGS \
   --enable-new-symbol-mangling
 
 ENV HOST_TARGET x86_64-unknown-linux-gnu
-ENV FORCE_CI_RUSTC 1
+ENV NO_DOWNLOAD_CI_RUSTC 1
+ENV NO_DOWNLOAD_CI_LLVM 1
 
 COPY host-x86_64/dist-x86_64-linux/shared.sh /scripts/
 COPY host-x86_64/dist-x86_64-linux/build-gccjit.sh /scripts/

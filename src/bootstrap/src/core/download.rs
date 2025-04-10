@@ -858,13 +858,13 @@ pub(crate) fn is_download_ci_available(target_triple: &str, llvm_assertions: boo
         "x86_64-pc-windows-msvc",
         "x86_64-unknown-freebsd",
         "x86_64-unknown-illumos",
-        "x86_64-unknown-linux-gnu",
+        //"x86_64-unknown-linux-gnu",
         "x86_64-unknown-linux-musl",
         "x86_64-unknown-netbsd",
     ];
 
     const SUPPORTED_PLATFORMS_WITH_ASSERTIONS: &[&str] =
-        &["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"];
+        &["x86_64-pc-windows-msvc"];
 
     if llvm_assertions {
         SUPPORTED_PLATFORMS_WITH_ASSERTIONS.contains(&target_triple)

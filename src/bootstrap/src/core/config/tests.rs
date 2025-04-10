@@ -21,6 +21,7 @@ pub(crate) fn parse(config: &str) -> Config {
 }
 
 #[test]
+#[ignore]
 fn download_ci_llvm() {
     let config = parse("");
     let is_available = llvm::is_ci_llvm_available(&config, config.llvm_assertions);

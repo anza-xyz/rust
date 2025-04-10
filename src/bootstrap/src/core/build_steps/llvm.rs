@@ -198,7 +198,7 @@ pub(crate) fn is_ci_llvm_available(config: &Config, asserts: bool) -> bool {
         ("i686-pc-windows-gnu", false),
         ("i686-pc-windows-msvc", false),
         ("i686-unknown-linux-gnu", false),
-        ("x86_64-unknown-linux-gnu", true),
+        // ("x86_64-unknown-linux-gnu", true),
         ("x86_64-apple-darwin", true),
         ("x86_64-pc-windows-gnu", true),
         ("x86_64-pc-windows-msvc", true),
