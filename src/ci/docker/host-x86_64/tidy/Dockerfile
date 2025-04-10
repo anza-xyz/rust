@@ -37,6 +37,9 @@ RUN pip3 install --no-deps --no-cache-dir --require-hashes -r /tmp/reuse-require
 
 COPY host-x86_64/pr-check-1/validate-toolstate.sh /scripts/
 
+ENV NO_DOWNLOAD_CI_RUSTC 1
+ENV NO_DOWNLOAD_CI_LLVM 1
+
 # NOTE: intentionally uses python2 for x.py so we can test it still works.
 # validate-toolstate only runs in our CI, so it's ok for it to only support python3.
 ENV SCRIPT TIDY_PRINT_DIFF=1 python2.7 ../x.py test \

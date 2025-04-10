@@ -82,6 +82,8 @@ ENV RUST_CONFIGURE_ARGS \
   --enable-new-symbol-mangling
 
 ENV HOST_TARGET x86_64-unknown-linux-gnu
+ENV NO_DOWNLOAD_CI_RUSTC 1
+ENV NO_DOWNLOAD_CI_LLVM 1
 
 # FIXME(#133381): currently rustc alt builds do *not* have rustc debug
 # assertions enabled! Therefore, we cannot force download CI rustc.

@@ -229,7 +229,7 @@ pub(crate) fn is_ci_llvm_available_for_target(
         ("aarch64-pc-windows-msvc", false),
         ("i686-pc-windows-msvc", false),
         ("i686-unknown-linux-gnu", false),
-        ("x86_64-unknown-linux-gnu", true),
+        // ("x86_64-unknown-linux-gnu", true),
         ("x86_64-apple-darwin", true),
         ("x86_64-pc-windows-gnu", false),
         ("x86_64-pc-windows-msvc", true),

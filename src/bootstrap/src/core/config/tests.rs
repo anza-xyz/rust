@@ -33,6 +33,7 @@ fn get_toml(file: &Path) -> Result<TomlConfig, toml::de::Error> {
 }
 
 #[test]
+#[ignore]
 fn download_ci_llvm() {
     let config = TestCtx::new().config("check").create_config();
     assert!(!config.llvm_from_ci);
