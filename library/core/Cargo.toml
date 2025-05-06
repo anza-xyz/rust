@@ -51,4 +51,5 @@ check-cfg = [
     'cfg(feature, values(any()))',
     'cfg(target_family, values("solana"))',
     'cfg(target_arch, values("sbf"))',
+    'cfg(target_feature, values("dynamic-frames"))',
 ]
