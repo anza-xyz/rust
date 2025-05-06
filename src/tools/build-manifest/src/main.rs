@@ -147,6 +147,7 @@ static TARGETS: &[&str] = &[
     "s390x-unknown-linux-gnu",
     "sbf-solana-solana",
     "sbpf-solana-solana",
+    "sbpfv0-solana-solana",
     "sbpfv1-solana-solana",
     "sbpfv2-solana-solana",
     "sbpfv3-solana-solana",

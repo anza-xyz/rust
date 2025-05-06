@@ -1909,6 +1909,7 @@ supported_targets! {
     ("bpfel-unknown-none", bpfel_unknown_none),
     ("sbf-solana-solana", sbf_solana_solana),
     ("sbpf-solana-solana", sbpf_solana_solana),
+    ("sbpfv0-solana-solana", sbpfv0_solana_solana),
     ("sbpfv1-solana-solana", sbpfv1_solana_solana),
     ("sbpfv2-solana-solana", sbpfv2_solana_solana),
     ("sbpfv3-solana-solana", sbpfv3_solana_solana),

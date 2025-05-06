@@ -672,6 +672,9 @@
 //@ revisions: sbpf_solana_solana
 //@ [sbpf_solana_solana] compile-flags: --target sbpf-solana-solana
 //@ [sbpf_solana_solana] needs-llvm-components: sbf
+//@ revisions: sbpfv0_solana_solana
+//@ [sbpfv0_solana_solana] compile-flags: --target sbpfv0-solana-solana
+//@ [sbpfv0_solana_solana] needs-llvm-components: sbf
 //@ revisions: sbpfv1_solana_solana
 //@ [sbpfv1_solana_solana] compile-flags: --target sbpfv1-solana-solana
 //@ [sbpfv1_solana_solana] needs-llvm-components: sbf

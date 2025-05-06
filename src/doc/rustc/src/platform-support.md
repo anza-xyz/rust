@@ -370,6 +370,7 @@ target | std | host | notes
 [`s390x-unknown-linux-musl`](platform-support/s390x-unknown-linux-musl.md) |  |  | S390x Linux (kernel 3.2, musl 1.2.3)
 `sbf-solana-solana` | ✓ |  | SBF
 `sbpf-solana-solana` | ✓ |  | SBPF
+`sbpfv0-solana-solana` | ✓ |  | SBPF v0
 `sbpfv1-solana-solana` | ✓ |  | SBPF v1
 `sbpfv2-solana-solana` | ✓ |  | SBPF v2
 `sbpfv3-solana-solana` | ✓ |  | SBPF v3
