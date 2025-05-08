@@ -42,4 +42,5 @@ check-cfg = [
     'cfg(llvm_enzyme)',
     'cfg(target_family, values("solana"))',
     'cfg(target_arch, values("sbf"))',
+    'cfg(target_feature, values("dynamic-frames"))',
 ]
