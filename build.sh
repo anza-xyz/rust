@@ -24,4 +24,4 @@ esac
 if [ "$1" == "--llvm" ]; then
     rm -f build/${HOST_TRIPLE}/llvm/llvm-finished-building;
 fi
-./x.py build --stage 1 --target ${HOST_TRIPLE},sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana
+./x.py build --stage 1 --target ${HOST_TRIPLE},sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana,sbpfv4-solana-solana

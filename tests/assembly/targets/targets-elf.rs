@@ -684,6 +684,9 @@
 //@ revisions: sbpfv3_solana_solana
 //@ [sbpfv3_solana_solana] compile-flags: --target sbpfv3-solana-solana
 //@ [sbpfv3_solana_solana] needs-llvm-components: sbf
+//@ revisions: sbpfv4_solana_solana
+//@ [sbpfv4_solana_solana] compile-flags: --target sbpfv4-solana-solana
+//@ [sbpfv4_solana_solana] needs-llvm-components: sbf
 
 // Sanity-check that each target can produce assembly code.
 

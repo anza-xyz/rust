@@ -1913,6 +1913,7 @@ supported_targets! {
     ("sbpfv1-solana-solana", sbpfv1_solana_solana),
     ("sbpfv2-solana-solana", sbpfv2_solana_solana),
     ("sbpfv3-solana-solana", sbpfv3_solana_solana),
+    ("sbpfv4-solana-solana", sbpfv4_solana_solana),
 
 
     ("armv6k-nintendo-3ds", armv6k_nintendo_3ds),

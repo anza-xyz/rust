@@ -96,7 +96,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         linker_args.as_slice(),
     );
 
-    let linker_script = if version == "v3" {
+    let linker_script = if version == "v3" || version == "v4" {
         V3_LINKER_SCRIPT
     } else {
         V0_LINKER_SCRIPT
@@ -107,12 +107,11 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         version
     };
 
-    let features = if version == "v3" {
-        "+static-syscalls"
-    } else if version == "v0" {
-        "+store-imm,+jmp-ext"
-    } else {
-        ""
+    let features = match version {
+        "v4" => "+static-syscalls,+abi-v2",
+        "v3" => "+static-syscalls",
+        "v0" => "+store-imm,+jmp-ext",
+        _ => ""
     };
 
     TargetOptions {

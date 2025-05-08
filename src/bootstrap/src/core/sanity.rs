@@ -40,6 +40,7 @@ const STAGE0_MISSING_TARGETS: &[&str] = &[
     "sbpfv1-solana-solana",
     "sbpfv2-solana-solana",
     "sbpfv3-solana-solana",
+    "sbpfv4-solana-solana",
 ];
 
 /// Minimum version threshold for libstdc++ required when using prebuilt LLVM
