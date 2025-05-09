@@ -62,7 +62,7 @@ dependencies = [
 [[package]]
 name = "compiler_builtins"
 version = "0.1.138"
-source = "git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.47#bf501f2f0a7d38d6dca6aab067017a288d2bf2dd"
+source = "git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.48#759adff89713678bfd9c7630fe0f60088f635085"
 dependencies = [
  "cc",
  "rustc-std-workspace-core",

@@ -10,7 +10,7 @@ doc = false
 
 [dependencies]
 core = { path = "../core" }
-compiler_builtins = { git = "https://github.com/anza-xyz/compiler-builtins", tag = "solana-tools-v1.47", features = ['rustc-dep-of-std'] }
+compiler_builtins = { git = "https://github.com/anza-xyz/compiler-builtins", tag = "solana-tools-v1.48", features = ['rustc-dep-of-std'] }
 
 [build-dependencies]
 # FIXME: Pinned due to build error when bumped (#132556)
