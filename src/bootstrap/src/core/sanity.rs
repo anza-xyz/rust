@@ -51,6 +51,7 @@ const STAGE0_MISSING_TARGETS: &[&str] = &[
     "s390x-unknown-none-softfloat",
     "sbf-solana-solana",
     "sbpf-solana-solana",
+    "sbpfv0-solana-solana",
     "sbpfv1-solana-solana",
     "sbpfv2-solana-solana",
     "sbpfv3-solana-solana",
