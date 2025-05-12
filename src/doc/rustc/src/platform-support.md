@@ -415,6 +415,7 @@ target | std | host | notes
 `sbpfv1-solana-solana` | ✓ |  | SBPF v1
 `sbpfv2-solana-solana` | ✓ |  | SBPF v2
 `sbpfv3-solana-solana` | ✓ |  | SBPF v3
+`sbpfv4-solana-solana` | ✓ |  | SBPF v4
 `sparc-unknown-linux-gnu` | ✓ |  | 32-bit SPARC Linux
 [`sparc-unknown-none-elf`](./platform-support/sparc-unknown-none-elf.md) | * |  | Bare 32-bit SPARC V7+
 [`sparc64-unknown-helenos`](platform-support/helenos.md) | ✓ |  | sparc64 HelenOS
