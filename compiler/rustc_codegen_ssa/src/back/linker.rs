@@ -451,8 +451,10 @@ impl<'a> GccLinker<'a> {
                 } else {
                     self.link_arg("--entry=entrypoint");
                 }
-                if self.sess.opts.cg.target_cpu.as_ref()
-                    .unwrap_or(&self.sess.target.cpu.as_ref().to_string()) == "v3" {
+
+                let cpu_type = self.sess.opts.cg.target_cpu.as_ref().cloned()
+                    .unwrap_or(self.sess.target.cpu.as_ref().to_string());
+                if cpu_type == "v3" || cpu_type == "v4" {
                     self.link_arg("-Bsymbolic");
                     if self.sess.opts.debuginfo == DebugInfo::None {
                         self.link_arg("--strip-all");
