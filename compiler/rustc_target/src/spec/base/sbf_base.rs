@@ -86,21 +86,19 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         "--threads=1", "-z", "notext", "--Bdynamic"
     ];
 
-    if version != "v3" {
+    let linker_script = if version == "v3" || version == "v4" {
+        V3_LINKER_SCRIPT
+    } else {
         linker_args.push("-z");
         linker_args.push("max-page-size=4096");
-    }
+        V0_LINKER_SCRIPT
+    };
 
     let pre_link_args = TargetOptions::link_args(
         LinkerFlavor::Gnu(Cc::No, Lld::No),
         linker_args.as_slice(),
     );
 
-    let linker_script = if version == "v3" || version == "v4" {
-        V3_LINKER_SCRIPT
-    } else {
-        V0_LINKER_SCRIPT
-    };
     let cpu = if version == "v0" {
         "generic"
     } else {
