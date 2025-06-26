@@ -3118,7 +3118,7 @@ dependencies = [
 [[package]]
 name = "rustc-build-sysroot"
 version = "0.5.3"
-source = "git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.49#9b36c221db90c5039463c572ccbb903972bda8ce"
+source = "git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.50#932133f4069426f6b394a82c011c9fdf08b300ff"
 dependencies = [
  "anyhow",
  "rustc_version",
