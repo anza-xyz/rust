@@ -54,7 +54,6 @@ SECTIONS
         _heap_end = .;
         . = ALIGN(8);
    } :heap
-   .strtab : { *(.strtab) } :other
   /DISCARD/ : {
       *(.comment*)
       *(.eh_frame*)
@@ -73,7 +72,6 @@ PHDRS
   rodata PT_LOAD FLAGS(4);
   stack PT_LOAD FLAGS(6);
   heap PT_LOAD FLAGS(6);
-  other PT_NULL FLAGS(0);
 }
 ";
 
