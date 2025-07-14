@@ -144,9 +144,6 @@ pr:
   - name: x86_64-gnu-gcc
     doc_url: https://rustc-dev-guide.rust-lang.org/tests/codegen-backend-tests/cg_gcc.html
     <<: *job-linux-4c
-  - image: sbf-solana-solana
-    continue_on_error: true
-    <<: *job-linux-4c
   - image: sbpf-solana-solana
     continue_on_error: true
     <<: *job-linux-4c
@@ -156,9 +153,9 @@ pr:
   - image: sbpfv2-solana-solana
     continue_on_error: true
     <<: *job-linux-4c
-#  - image: sbpfv3-solana-solana
-#    continue_on_error: true
-#    <<: *job-linux-4c
+  - image: sbpfv3-solana-solana
+    continue_on_error: true
+    <<: *job-linux-4c
 
 # Jobs that run when you perform a try build (@bors try)
 # These jobs automatically inherit envs.try, to avoid repeating
