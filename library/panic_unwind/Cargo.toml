@@ -15,7 +15,7 @@ doc = false
 alloc = { path = "../alloc" }
 core = { path = "../core" }
 unwind = { path = "../unwind" }
-compiler_builtins = { git = "https://github.com/anza-xyz/compiler-builtins", tag = "solana-tools-v1.50" }
+compiler_builtins = { git = "https://github.com/anza-xyz/compiler-builtins", tag = "solana-tools-v1.51" }
 cfg-if = { version = "1.0", features = ['rustc-dep-of-std'] }
 
 [target.'cfg(not(all(windows, target_env = "msvc")))'.dependencies]
