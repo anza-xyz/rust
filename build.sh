@@ -20,9 +20,6 @@ case "$1" in
     --help)
         echo "--llvm to rebuild llvm, --nix to use nix";
         exit;
-    -h)
-        echo "--llvm to rebuild llvm, --nix to use nix";
-        exit;
 esac
 
 unameOut="$(uname -s)-$(uname -m)"
@@ -39,8 +36,8 @@ if [ -n "${REBUILD_LLVM}" ]; then
     rm -f build/${HOST_TRIPLE}/llvm/llvm-finished-building;
 fi
 
-if [ -n "${USE_NIX}" ]; then
-    nix-shell src/tools/nix-dev-shell/shell.nix --pure --run "x build --stage 1 --target ${HOST_TRIPLE},sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana,sbpfv4-solana-solana"
+if [ -n "${WITH_NIX}" ]; then
+    nix-shell src/tools/nix-dev-shell/shell.nix --pure --run "x build --stage 1 --target sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana,sbpfv4-solana-solana"
 else
-    ./x.py build --stage 1 --target ${HOST_TRIPLE},sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana,sbpfv4-solana-solana
+    ./x.py build --stage 1 --target sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana,sbpfv4-solana-solana
 fi
