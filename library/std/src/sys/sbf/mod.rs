@@ -14,23 +14,13 @@
 //! guaranteed to be a runtime error!
 
 pub mod alloc;
-pub mod args;
 //#[cfg(feature = "backtrace")]
 //pub mod backtrace;
-pub mod cmath;
-pub mod env;
-pub mod fs;
-pub mod futex;
-pub mod io;
-pub mod memchr;
-pub mod net;
+#[path = "../unsupported/os.rs"]
 pub mod os;
 pub mod path;
 #[path = "../unsupported/pipe.rs"]
 pub mod pipe;
-#[path = "../unsupported/process.rs"]
-pub mod process;
-pub mod stdio;
 pub mod thread;
 #[path = "../unsupported/thread_local_dtor.rs"]
 pub mod thread_local_dtor;
@@ -50,20 +40,20 @@ pub mod locks {
 }
 
 #[cfg(not(target_feature = "static-syscalls"))]
-extern "C" {
+unsafe extern "C" {
     fn abort() -> !;
     fn sol_log_(message: *const u8, length: u64);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[allow(improper_ctypes)]
 #[linkage = "weak"]
 extern "C" fn custom_panic(_info: &core::panic::PanicInfo<'_>) {}
 
 #[cfg(target_feature = "static-syscalls")]
 #[inline(never)]
-#[no_mangle]
-#[link_section = ".text.abort"]
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".text.abort")]
 #[linkage = "external"]
 pub unsafe extern "C" fn abort() -> ! {
     let syscall: extern "C" fn() -> ! = core::mem::transmute(3069975057u64); // murmur32 hash of "abort"

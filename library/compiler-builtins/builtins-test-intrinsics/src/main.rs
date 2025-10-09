@@ -17,8 +17,12 @@
 extern crate compiler_builtins;
 extern crate panic_handler;
 
-// SAFETY: no definitions, only used for linking
-#[cfg(all(not(thumb), not(windows), not(target_arch = "wasm32")))]
+#[cfg(all(
+    not(thumb),
+    not(windows),
+    not(target_arch = "wasm32"),
+    not(target_os = "solana")
+))]
 #[link(name = "c")]
 unsafe extern "C" {}
 

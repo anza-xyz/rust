@@ -4,10 +4,10 @@
 //! Per the spec, returns:
 //! - `x` if `x < y`
 //! - `y` if `y < x`
-//! - -0.0 if x and y are zero with opposite signs
-//! - Either `x` or `y` if `x == y` and the signs are the same
 //! - Non-NaN if one operand is NaN
-//! - qNaN if both operands are NaNx
+//! - Logic following +0.0 > -0.0
+//! - Either `x` or `y` if `x == y` and the signs are the same
+//! - qNaN if either operand is a NaN
 //!
 //! Excluded from our implementation is sNaN handling.
 
@@ -15,15 +15,13 @@ use crate::support::Float;
 
 #[inline]
 pub fn fminimum_num<F: Float>(x: F, y: F) -> F {
-    let res = if x > y || x.is_nan() {
-        y
-    } else if y > x || y.is_nan() {
-        x
-    } else if x.is_sign_positive() {
-        y
-    } else {
-        x
-    };
+    let res =
+        if y.is_nan() || x < y || (x.to_bits() == F::NEG_ZERO.to_bits() && y.is_sign_positive()) {
+            x
+        } else {
+            y
+        };
 
-    res.canonicalize()
+    // Canonicalize
+    res * F::ONE
 }

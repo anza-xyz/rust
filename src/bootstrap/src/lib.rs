@@ -1011,10 +1011,10 @@ impl Build {
     fn llvm_bin(&self, target: TargetSelection) -> PathBuf {
         let target_config = self.config.target_config.get(&target);
         if let Some(s) = target_config.and_then(|c| c.llvm_config.as_ref()) {
-            let llvm_bindir = output(Command::new(s).arg("--bindir"));
+            let llvm_bindir = command(s).arg("--bindir").run_capture_stdout(self).stdout();
             PathBuf::from(llvm_bindir.trim())
         } else {
-            self.llvm_out(self.config.build).join("bin")
+            self.llvm_out(self.host_target).join("bin")
         }
     }
 

@@ -162,6 +162,7 @@ fn optgroups() -> getopts::Options {
     opts
 }
 
+#[cfg(not(target_family = "solana"))]
 fn usage(binary: &str, options: &getopts::Options) {
     let message = format!("Usage: {binary} [OPTIONS] [FILTERS...]");
     println!(
@@ -212,6 +213,7 @@ pub fn parse_opts(args: &[String]) -> Option<OptRes> {
     // Flags hidden from `usage`
     opts.optflag("", "nocapture", "Deprecated, use `--no-capture`");
 
+    #[cfg(not(target_family = "solana"))]
     let binary = args.first().map(|c| &**c).unwrap_or("...");
     let args = args.get(1..).unwrap_or(args);
     let matches = match opts.parse(args) {
@@ -220,6 +222,7 @@ pub fn parse_opts(args: &[String]) -> Option<OptRes> {
     };
 
     // Check if help was requested.
+    #[cfg(not(target_family = "solana"))]
     if matches.opt_present("h") {
         // Show help and do nothing more.
         usage(binary, &optgroups());

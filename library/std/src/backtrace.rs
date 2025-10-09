@@ -100,6 +100,7 @@ use crate::sync::LazyLock;
 use crate::sync::atomic::Ordering::Relaxed;
 #[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicU8};
+#[cfg(not(target_family = "solana"))]
 use crate::sys::backtrace::{lock, output_filename, set_image_base};
 use crate::fmt;
 #[cfg(not(target_family = "solana"))]

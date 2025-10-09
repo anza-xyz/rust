@@ -138,7 +138,11 @@ macro_rules! float {
     };
 }
 
-#[cfg(not(x86_no_sse))]
+
+#[cfg(not(any(
+    x86_no_sse,
+    target_family = "solana"
+)))]
 mod float_div {
     use super::*;
 

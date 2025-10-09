@@ -13,6 +13,7 @@ LL |     cfg!(target_feature = "_UNEXPECTED_VALUE");
 `3e7`
 `7e10`
 `a`
+`abi-v2`
 `aclass`
 `addsubiw`
 `adx`
@@ -80,6 +81,7 @@ LL |     cfg!(target_feature = "_UNEXPECTED_VALUE");
 `dsp`
 `dsp1e2`
 `dspe60`
+`dynamic-frames`
 `e`
 `e1`
 `e2`
@@ -334,6 +336,7 @@ LL |     cfg!(target_feature = "_UNEXPECTED_VALUE");
 `ssve-fp8dot2`
 `ssve-fp8dot4`
 `ssve-fp8fma`
+`static-syscalls`
 `supm`
 `sve`
 `sve-b16b16`

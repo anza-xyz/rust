@@ -335,7 +335,6 @@ target | std | host | notes
 [`i686-unknown-hurd-gnu`](platform-support/hurd.md) | ✓ | ✓ | 32-bit GNU/Hurd (Pentium 4) [^x86_32-floats-return-ABI]
 [`i686-unknown-netbsd`](platform-support/netbsd.md) | ✓ | ✓ | NetBSD/i386 (Pentium 4) [^x86_32-floats-return-ABI]
 [`i686-unknown-openbsd`](platform-support/openbsd.md) | ✓ | ✓ | 32-bit OpenBSD (Pentium 4) [^x86_32-floats-return-ABI]
-[`bpfel-unknown-unknown`] | ✓ |  | BPF
 `i686-uwp-windows-gnu` | ✓ |  | [^x86_32-floats-return-ABI]
 [`i686-uwp-windows-msvc`](platform-support/uwp-windows-msvc.md) | ✓ |  | [^x86_32-floats-return-ABI] [^win32-msvc-alignment]
 [`i686-win7-windows-gnu`](platform-support/win7-windows-gnu.md) | ✓ |  | 32-bit Windows 7 support [^x86_32-floats-return-ABI]

@@ -15,6 +15,3 @@ gungraun-home
 *.bk
 *.rs.bk
 .#*
-
-# Manually managed
-crates/musl-math-sys/musl

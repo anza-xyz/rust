@@ -19,8 +19,8 @@ core = { path = "../rustc-std-workspace-core", package = "rustc-std-workspace-co
 [target.'cfg(not(all(windows, target_env = "msvc")))'.dependencies]
 libc = { version = "0.2.140", features = ['rustc-dep-of-std'], default-features = false }
 
-[target.'cfg(target_os = "xous")'.dependencies]
-unwinding = { version = "0.2.7", features = ['rustc-dep-of-std', 'unwinder', 'fde-custom'], default-features = false }
+# [target.'cfg(target_os = "xous")'.dependencies]
+# unwinding = { version = "0.2.7", features = ['rustc-dep-of-std', 'unwinder', 'fde-custom'], default-features = false }
 
 [features]
 

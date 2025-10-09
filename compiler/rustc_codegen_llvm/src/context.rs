@@ -982,7 +982,7 @@ impl<'ll> CodegenCx<'ll, '_> {
         // and we use it to implement intrinsics like `raw_eq` and `compare_bytes`
         if base_name == "memcmp" {
             let fn_ty = self
-                .type_func(&[self.type_ptr(), self.type_ptr(), self.type_isize()], self.type_int());
+                .type_func(&[self.type_ptr(), self.type_ptr(), self.type_isize()], self.type_i32());
             let f = self.declare_cfn("memcmp", llvm::UnnamedAddr::No, fn_ty);
 
             return (fn_ty, f);

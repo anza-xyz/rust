@@ -20,8 +20,11 @@ rustc_apfloat.workspace = true
 gungraun = { workspace = true, optional = true }
 
 [dev-dependencies]
-criterion.workspace = true
 paste.workspace = true
+
+[target.'cfg(not(target_arch = "sbf"))'.dev-dependencies]
+criterion.workspace = true
+
 
 [target.'cfg(all(target_arch = "arm", not(any(target_env = "gnu", target_env = "musl")), target_os = "linux"))'.dev-dependencies]
 test = { git = "https://github.com/japaric/utest" }
@@ -47,7 +50,7 @@ no-sys-f16 = ["no-sys-f16-f64-convert"]
 icount = ["dep:gungraun"]
 
 # Enable report generation without bringing in more dependencies by default
-benchmarking-reports = ["criterion/plotters", "criterion/html_reports"]
+# benchmarking-reports = ["criterion/plotters", "criterion/html_reports"]
 
 # NOTE: benchmarks must be run with `--no-default-features` or with
 # `-p builtins-test`, otherwise the default `compiler-builtins` feature
@@ -94,3 +97,11 @@ harness = false
 name = "mem_icount"
 harness = false
 required-features = ["icount"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(target_family, values("solana"))',
+    'cfg(target_feature, values("static-syscalls"))',
+    'cfg(target_os, values("solana"))'
+] }
+

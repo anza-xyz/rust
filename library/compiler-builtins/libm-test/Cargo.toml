@@ -31,7 +31,7 @@ criterion.workspace = true
 libtest-mimic.workspace = true
 
 [features]
-default = ["build-mpfr", "unstable-float"]
+default = ["build-mpfr", "build-musl", "unstable-float"]
 
 # Propagated from libm because this affects which functions we test.
 unstable-float = ["libm/unstable-float", "rug?/nightly-float"]

@@ -3302,8 +3302,9 @@ dependencies = [
 
 [[package]]
 name = "rustc-build-sysroot"
-version = "0.5.3"
-source = "git+https://github.com/anza-xyz/rustc-build-sysroot?tag=solana-tools-v1.51#34e8960e38904f424f410d4673a0b669af75ef4e"
+version = "0.5.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b881c015c729b43105bbd3702a9bdecee28fafaa21126d1d62e454ec011a4b7"
 dependencies = [
  "anyhow",
  "rustc_version",
@@ -6818,8 +6819,3 @@ dependencies = [
  "quote",
  "syn 2.0.110",
 ]
-
-[[patch.unused]]
-name = "compiler_builtins"
-version = "0.1.76"
-source = "git+https://github.com/solana-labs/compiler-builtins#2044d7e16a99d951853ce362e384027dec4c5b92"

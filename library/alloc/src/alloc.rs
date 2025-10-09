@@ -31,7 +31,6 @@ unsafe extern "Rust" {
     #[rustc_nounwind]
     #[rustc_std_internal_symbol]
     fn __rust_alloc_zeroed(size: usize, align: Alignment) -> *mut u8;
-
     #[rustc_nounwind]
     #[rustc_std_internal_symbol]
     fn __rust_no_alloc_shim_is_unstable_v2();

@@ -265,17 +265,23 @@ pub fn panic_any<M: 'static + Any + Send>(msg: M) -> ! {
 }
 
 #[stable(feature = "catch_unwind", since = "1.9.0")]
+#[cfg(not(target_family = "solana"))]
 impl<T: ?Sized> UnwindSafe for Mutex<T> {}
 #[stable(feature = "catch_unwind", since = "1.9.0")]
+#[cfg(not(target_family = "solana"))]
 impl<T: ?Sized> UnwindSafe for RwLock<T> {}
 #[stable(feature = "catch_unwind", since = "1.9.0")]
+#[cfg(not(target_family = "solana"))]
 impl UnwindSafe for Condvar {}
 
 #[stable(feature = "unwind_safe_lock_refs", since = "1.12.0")]
+#[cfg(not(target_family = "solana"))]
 impl<T: ?Sized> RefUnwindSafe for Mutex<T> {}
 #[stable(feature = "unwind_safe_lock_refs", since = "1.12.0")]
+#[cfg(not(target_family = "solana"))]
 impl<T: ?Sized> RefUnwindSafe for RwLock<T> {}
 #[stable(feature = "unwind_safe_lock_refs", since = "1.12.0")]
+#[cfg(not(target_family = "solana"))]
 impl RefUnwindSafe for Condvar {}
 
 // https://github.com/rust-lang/rust/issues/62301

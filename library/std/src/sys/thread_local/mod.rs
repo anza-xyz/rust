@@ -34,6 +34,7 @@ cfg_select! {
     ) => {
         mod no_threads;
         pub use no_threads::{EagerStorage, LazyStorage, thread_local_inner};
+        #[cfg(not(target_family = "solana"))]
         pub(crate) use no_threads::{LocalPointer, local_pointer};
     }
     target_thread_local => {

@@ -182,7 +182,7 @@ paste = { name = 'paste', version = '1.0.15' }
 anstyle-parse = { name = 'anstyle-parse', version = '0.2.4' }
 toml_datetime = { name = 'toml_datetime', version = '0.6.6' }
 anstyle-query = { name = 'anstyle-query', version = '1.1.0' }
-addr2line = { name = 'addr2line', version = '0.24.0' }
+addr2line = { name = 'addr2line', version = '0.25.0' }
 glob = { name = 'glob', version = '0.3.1' }
 num-bigint = { name = 'num-bigint', version = '0.4.6' }
 backtrace = { name = 'backtrace', version = '0.3.73' }

@@ -312,9 +312,12 @@ where
     let mut inner = || -> TestResult {
         let mut allowed_ulp = ctx.ulp;
 
+        // Forbid overrides if the items came from an explicit list, as long as we are checking
+        // against either MPFR or the result itself.
+        let require_biteq = ctx.gen_kind == GeneratorKind::List && ctx.basis != CheckBasis::Musl;
+
         match SpecialCase::check_float(input, actual, expected, ctx) {
-            // Forbid overrides if the items came from an explicit list
-            _ if ctx.gen_kind == GeneratorKind::List => (),
+            _ if require_biteq => (),
             CheckAction::AssertSuccess => (),
             CheckAction::AssertFailure(msg) => assert_failure_msg = Some(msg),
             CheckAction::Custom(res) => return res,
@@ -324,20 +327,12 @@ where
 
         // Check when both are NaNs
         if actual.is_nan() && expected.is_nan() {
-            // Don't assert NaN bitwise equality if:
-            //
-            // * Testing against MPFR (there is a single NaN representation)
-            // * Testing against Musl except for explicit tests (Musl does some NaN quieting)
-            //
-            // In these cases, just the check that actual and expected are both NaNs is
-            // sufficient.
-            let skip_nan_biteq = ctx.basis == CheckBasis::Mpfr
-                || (ctx.basis == CheckBasis::Musl && ctx.gen_kind != GeneratorKind::List);
-
-            if !skip_nan_biteq {
-                ensure!(actual.biteq(expected), "mismatched NaN bitpatterns");
+            if require_biteq && ctx.basis == CheckBasis::None {
+                ensure!(
+                    actual.to_bits() == expected.to_bits(),
+                    "mismatched NaN bitpatterns"
+                );
             }
-
             // By default, NaNs have nothing special to check.
             return Ok(());
         } else if actual.is_nan() || expected.is_nan() {

@@ -158,6 +158,16 @@
           {
             "license": {
               "copyright": [
+                "2025 Anza Technology Inc. <https://www.anza.xyz>"
+              ],
+              "spdx": "MIT"
+            },
+            "name": "build.sh",
+            "type": "file"
+          },
+          {
+            "license": {
+              "copyright": [
                 "2003-2019 University of Illinois at Urbana-Champaign",
                 "The Rust Project Developers (see https://thanks.rust-lang.org)"
               ],

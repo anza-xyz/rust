@@ -1,5 +1,5 @@
 // see https://github.com/llvm/llvm-project/blob/main/llvm/lib/Target/BPF/BPFCallingConv.td
-use crate::abi::call::{ArgAbi, FnAbi, Reg, Uniform};
+use crate::callconv::{ArgAbi, FnAbi, Reg, Uniform};
 
 fn classify_ret<Ty>(ret: &mut ArgAbi<'_, Ty>) {
     let size = ret.layout.size;

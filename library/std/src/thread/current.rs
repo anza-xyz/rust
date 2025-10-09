@@ -26,6 +26,7 @@ local_pointer! {
 /// We store the thread ID so that it never gets destroyed during the lifetime
 /// of a thread, either using `#[thread_local]` or multiple `local_pointer!`s.
 pub(super) mod id {
+    #[cfg(not(target_family = "solana"))]
     use super::*;
 
     cfg_select! {
@@ -128,7 +129,7 @@ pub(super) mod id {
 /// Tries to set the thread handle for the current thread. Fails if a handle was
 /// already set or if the thread ID of `thread` would change an already-set ID.
 #[cfg(not(target_family = "solana"))]
-pub(super) fn set_current(thread: Thread) -> Result<(), Thread> {
+pub fn set_current(thread: Thread) -> Result<(), Thread> {
     if CURRENT.get() != NONE {
         return Err(thread);
     }
@@ -198,6 +199,7 @@ pub(crate) fn current_os_id() -> u64 {
 
 /// Gets a reference to the handle of the thread that invokes it, if the handle
 /// has been initialized.
+#[cfg(not(target_family = "solana"))]
 fn try_with_current<F, R>(f: F) -> R
 where
     F: FnOnce(Option<&Thread>) -> R,
@@ -264,6 +266,11 @@ pub(crate) fn current_or_unnamed() -> Thread {
     }
 }
 
+#[cfg(target_family = "solana")]
+pub(crate) fn current_or_unnamed() -> Thread {
+   current()
+}
+
 /// Gets a handle to the thread that invokes it.
 ///
 /// # Examples
@@ -302,7 +309,7 @@ pub fn current() -> Thread {
 #[stable(feature = "rust1", since = "1.0.0")]
 #[cfg(target_family = "solana")]
 pub fn current() -> Thread {
-    Thread::new_unnamed(ThreadId::from_u64(1).unwrap())
+    Thread::new(ThreadId::from_u64(1).unwrap(), None)
 }
 
 #[cold]

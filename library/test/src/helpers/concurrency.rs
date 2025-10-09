@@ -4,7 +4,7 @@
 use std::{env, num::NonZero, thread};
 
 #[cfg(not(target_family = "solana"))]
-pub fn get_concurrency() -> usize {
+pub(crate) fn get_concurrency() -> usize {
     if let Ok(value) = env::var("RUST_TEST_THREADS") {
         match value.parse::<NonZero<usize>>().ok() {
             Some(n) => n.get(),
@@ -16,6 +16,6 @@ pub fn get_concurrency() -> usize {
 }
 
 #[cfg(target_family = "solana")]
-pub fn get_concurrency() -> usize {
+pub(crate) fn get_concurrency() -> usize {
     1
 }

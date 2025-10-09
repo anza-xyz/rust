@@ -10,15 +10,21 @@ use crate::fmt;
 #[cfg(not(target_family = "solana"))]
 use crate::fs::File;
 use crate::io::prelude::*;
+#[cfg(not(target_family = "solana"))]
+use crate::io::{BufReader, SpecReadByte, LineWriter, Lines};
+use crate::io::{
+    self, BorrowedCursor, IoSlice, IoSliceMut,
+};
 use crate::panic::{RefUnwindSafe, UnwindSafe};
+#[cfg(not(target_os = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicBool, Ordering};
 #[cfg(not(target_os = "solana"))]
-use crate::sync::Arc;
-use crate::sync::{Mutex, MutexGuard, OnceLock, ReentrantMutex, ReentrantMutexGuard};
+use crate::sync::{MutexGuard, OnceLock, ReentrantLock, ReentrantLockGuard};
+use crate::sync::{Arc, Mutex};
+#[cfg(not(target_os = "solana"))]
 use crate::sys::stdio;
 use crate::thread::AccessError;
-#[cfg(target_family = "solana")]
-use crate::sync::{Arc, Mutex};
+
 
 type LocalStream = Arc<Mutex<Vec<u8>>>;
 
@@ -1062,12 +1068,6 @@ pub struct StderrLock<'a> {
     inner: ReentrantLockGuard<'a, RefCell<StderrRaw>>,
 }
 
-/// SBF dummy
-#[stable(feature = "rust1", since = "1.0.0")]
-#[cfg(target_family = "solana")]
-pub struct StderrLock {
-}
-
 /// Constructs a new handle to the standard error of the current process.
 ///
 /// This handle is not buffered.
@@ -1264,6 +1264,7 @@ impl Write for &Stderr {
 impl UnwindSafe for StderrLock<'_> {}
 
 #[stable(feature = "catch_unwind", since = "1.9.0")]
+#[cfg(not(target_family = "solana"))]
 impl RefUnwindSafe for StderrLock<'_> {}
 
 #[stable(feature = "rust1", since = "1.0.0")]
@@ -1295,14 +1296,6 @@ impl Write for StderrLock<'_> {
 impl fmt::Debug for StderrLock<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("StderrLock").finish_non_exhaustive()
-    }
-}
-
-#[stable(feature = "std_debug", since = "1.16.0")]
-#[cfg(target_family = "solana")]
-impl fmt::Debug for StderrLock {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.pad("StderrLock { .. }")
     }
 }
 

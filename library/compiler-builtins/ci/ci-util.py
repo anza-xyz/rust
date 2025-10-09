@@ -40,10 +40,14 @@ USAGE = cleandoc(
 
             Note that `--extract` will overwrite files in `gungraun-home`.
 
-        handle-bench-regressions PR_NUMBER
-            Exit with success if the pull request contains a line starting with
-            `ci: allow-regressions`, indicating that regressions in benchmarks should
-            be accepted. Otherwise, exit 1.
+        check-regressions [--home iai-home] [--allow-pr-override pr_number]
+            Check `iai-home` (or `iai-home` if unspecified) for `summary.json`
+            files and see if there are any regressions. This is used as a workaround
+            for `iai-callgrind` not exiting with error status; see
+            <https://github.com/iai-callgrind/iai-callgrind/issues/337>.
+
+            If `--allow-pr-override` is specified, the regression check will not exit
+            with failure if any line in the PR starts with `allow-regressions`.
     """
 )
 
@@ -424,22 +428,27 @@ def locate_baseline(flags: list[str]) -> None:
     eprint("baseline extracted successfully")
 
 
-def handle_bench_regressions(args: list[str]):
-    """Exit with error unless the PR message contains an ignore directive."""
+def check_iai_regressions(args: list[str]):
+    """Find regressions in iai summary.json files, exit with failure if any are
+    found.
+    """
 
-    match args:
-        case [pr_number]:
-            pr_number = pr_number
-        case _:
-            eprint(USAGE)
-            exit(1)
+    iai_home_str = "iai-home"
+    pr_number = None
 
     pr = PrInfo.from_pr(pr_number)
     if pr.cfg.allow_regressions:
         eprint("PR allows regressions")
         return
 
-    eprint("Regressions were found; benchmark failed")
+    eprint("Found regressions:", json.dumps(regressions, indent=4))
+
+    if pr_number is not None:
+        pr = PrInfo.load(pr_number)
+        if pr.contains_directive(REGRESSION_DIRECTIVE):
+            eprint("PR allows regressions, returning")
+            return
+
     exit(1)
 
 
@@ -450,8 +459,8 @@ def main():
             ctx.emit_workflow_output()
         case ["locate-baseline", *flags]:
             locate_baseline(flags)
-        case ["handle-bench-regressions", *args]:
-            handle_bench_regressions(args)
+        case ["check-regressions", *args]:
+            check_iai_regressions(args)
         case ["--help" | "-h"]:
             print(USAGE)
             exit()

@@ -330,6 +330,7 @@ pub struct Config {
     /// on each code change might be too much for some computers.
     pub skip_std_check_if_no_download_rustc: bool,
 
+    pub exec_ctx: ExecutionContext,
 }
 
 impl Config {

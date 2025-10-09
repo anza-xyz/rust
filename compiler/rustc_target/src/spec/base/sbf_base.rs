@@ -1,4 +1,4 @@
-use crate::abi::Endian;
+use rustc_abi::Endian;
 use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, Target, TargetOptions, SymbolVisibility};
 
 const V0_LINKER_SCRIPT: &str = r"
@@ -108,7 +108,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
 
     TargetOptions {
         allow_asm: true,
-        c_int_width: "64".into(),
+        c_int_width: 64,
         default_visibility: Some(SymbolVisibility::Hidden),
         dll_prefix: "".into(),
         dynamic_linking: true,

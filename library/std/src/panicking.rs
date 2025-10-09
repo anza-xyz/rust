@@ -22,19 +22,22 @@ use realstd::io::set_output_capture;
 use crate::any::Any;
 #[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
 use crate::io::try_set_output_capture;
-#[cfg(not(target_os = "solana"))]
+#[cfg(not(target_family = "solana"))]
 use crate::mem::{self, ManuallyDrop};
+#[cfg(not(target_family = "solana"))]
 use crate::panic::{BacktraceStyle, PanicHookInfo};
-#[cfg(not(target_os = "solana"))]
+#[cfg(target_family = "solana")]
+use crate::panic::PanicHookInfo;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicBool, Ordering};
 use crate::sync::nonpoison::RwLock;
 #[cfg(not(target_family = "solana"))]
 use crate::sys::backtrace;
 #[cfg(not(target_family = "solana"))]
 use crate::sys::stdio::panic_output;
-use crate::{intrinsics, fmt};
+use crate::fmt;
 #[cfg(not(target_family = "solana"))]
-use crate::{process, thread};
+use crate::{intrinsics, process, thread};
 
 // This forces codegen of the function called by panic!() inside the std crate, rather than in
 // downstream crates. Primarily this is useful for rustc's codegen tests, which rely on noticing
@@ -94,10 +97,8 @@ extern "C" fn __rust_foreign_exception() -> ! {
     rtabort!("Rust cannot catch foreign exceptions");
 }
 
-#[cfg(not(target_os = "solana"))]
-#[derive(Default)]
+#[cfg(not(target_family = "solana"))]
 enum Hook {
-    #[default]
     Default,
     Custom(Box<dyn Fn(&PanicHookInfo<'_>) + 'static + Sync + Send>),
 }
@@ -554,7 +555,12 @@ pub use realstd::rt::panic_count;
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
 #[cfg(panic = "immediate-abort")]
-#[cfg(not(target_arch = "sbf"))]
+pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
+    Ok(f())
+}
+
+#[cfg(not(panic = "immediate-abort"))]
+#[cfg(target_arch = "sbf")]
 pub unsafe fn catch_unwind<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
     Ok(f())
 }

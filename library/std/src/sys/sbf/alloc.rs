@@ -34,7 +34,7 @@ unsafe impl GlobalAlloc for System {
 }
 
 #[cfg(not(target_feature = "static-syscalls"))]
-extern "C" {
+unsafe extern "C" {
     fn sol_alloc_free_(size: u64, ptr: u64) -> *mut u8;
 }
 

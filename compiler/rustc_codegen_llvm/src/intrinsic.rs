@@ -522,7 +522,7 @@ impl<'ll, 'tcx> IntrinsicCallBuilderMethods<'tcx> for Builder<'_, 'll, 'tcx> {
                 } else {
                     let n = self.const_usize(layout.size().bytes());
                     let cmp = self.call_intrinsic("memcmp", &[], &[a, b, n]);
-                    self.icmp(IntPredicate::IntEQ, cmp, self.const_int(self.type_int(), 0))
+                    self.icmp(IntPredicate::IntEQ, cmp, self.const_int(self.type_i32(), 0))
                 }
             }
 

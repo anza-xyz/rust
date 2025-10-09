@@ -28,7 +28,7 @@ use crate::sync::Once;
 #[cfg(not(target_family = "solana"))]
 use crate::sys;
 #[cfg(not(target_family = "solana"))]
-use crate::thread::{self, Thread};
+use crate::thread::{self, main_thread};
 #[cfg(not(target_family = "solana"))]
 use crate::{mem, panic};
 

@@ -41,6 +41,7 @@ mod is_terminal {
             mod motor;
             pub use motor::*;
         }
+        target_os = "solana" => { }
         _ => {
             mod unsupported;
             pub use unsupported::*;
@@ -64,6 +65,7 @@ pub use error::errno_location;
 pub use error::set_errno;
 pub use error::{RawOsError, decode_error_kind, errno, error_string, is_interrupted};
 pub use io_slice::{IoSlice, IoSliceMut};
+#[cfg(not(target_family = "solana"))]
 pub use is_terminal::is_terminal;
 pub use kernel_copy::{CopyState, kernel_copy};
 

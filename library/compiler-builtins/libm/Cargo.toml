@@ -9,9 +9,14 @@ authors = [
 ]
 description = "libm in pure Rust"
 categories = ["no-std"]
+description = "libm in pure Rust"
+documentation = "https://docs.rs/libm"
 keywords = ["libm", "math"]
-repository = "https://github.com/rust-lang/compiler-builtins"
 license = "MIT"
+name = "libm"
+readme = "README.md"
+repository = "https://github.com/rust-lang/compiler-builtins"
+version = "0.2.15"
 edition = "2021"
 rust-version = "1.67"
 

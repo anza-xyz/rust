@@ -537,7 +537,7 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
         let (arg_argc, arg_argv) = get_argc_argv(&mut bx);
 
         let EntryFnType::Main { sigpipe } = entry_type;
-        let (start_fn, start_ty, args, instance) = if !is_bpf {
+        let (start_fn, start_ty, args, instance) = {
             let start_def_id = cx.tcx().require_lang_item(LangItem::Start, DUMMY_SP);
             let start_instance = ty::Instance::expect_resolve(
                 cx.tcx(),
@@ -558,18 +558,6 @@ pub fn maybe_create_entry_wrapper<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>>(
                 vec![rust_main, arg_argc, arg_argv, arg_sigpipe],
                 Some(start_instance),
             )
-        } else {
-            debug!("using user-defined start fn");
-            let start_ty = cx.type_func(&[], cx.type_void());
-            (rust_main, start_ty, Vec::new(), None)
-        };
-        
-        let result = if is_bpf {
-            let args = Vec::new();
-            bx.call(start_ty, None, None, start_fn, &args, None, instance);
-            bx.const_i32(0)
-        } else {
-            bx.call(start_ty, None, None, start_fn, &args, None, instance)
         };
 
         if cx.sess().target.os == Os::Uefi {

@@ -121,7 +121,7 @@ pub fn check_incompatible_options_for_ci_llvm(
         download_ci_llvm: _,
         build_config,
         enzyme,
-        enable_projects: _,
+        ..
     } = ci_llvm_config;
 
     err!(current_llvm_config.optimize, optimize);

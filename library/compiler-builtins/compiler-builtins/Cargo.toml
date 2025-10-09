@@ -1,9 +1,3 @@
-# NOTE: Must be kept in sync with `../builtins-shim/Cargo.toml`.
-#
-# This manifest is actually used in-tree by rust-lang/rust,
-# `../builtins-shim/Cargo.toml` is used by out-of-tree testing. See the other
-# manifest for further details.
-
 [package]
 name = "compiler_builtins"
 version = "0.1.160"
@@ -16,16 +10,16 @@ authors = [
 description = "Compiler intrinsics used by the Rust compiler."
 repository = "https://github.com/rust-lang/compiler-builtins"
 license = "MIT AND Apache-2.0 WITH LLVM-exception AND (MIT OR Apache-2.0)"
+readme = "README.md"
+homepage = "https://github.com/rust-lang/compiler-builtins"
+documentation = "https://docs.rs/compiler_builtins"
 edition = "2024"
-publish = false
 links = "compiler-rt"
 
 [lib]
 bench = false
 doctest = false
 test = false
-# make sure this crate isn't included in public standard library docs
-doc = false
 
 [dependencies]
 core = { path = "../../core", optional = true }
@@ -61,3 +55,14 @@ rustc-dep-of-std = ["compiler-builtins", "dep:core"]
 # This makes certain traits and function specializations public that
 # are not normally public but are required by the `builtins-test`
 unstable-public-internals = []
+
+[lints.rust]
+# The cygwin config can be dropped after our benchmark toolchain is bumped
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(bootstrap)',
+    'cfg(target_os, values("cygwin"))',
+    'cfg(target_family, values("solana"))',
+    'cfg(target_feature, values("static-syscalls"))',
+    'cfg(target_os, values("solana"))'
+] }
+

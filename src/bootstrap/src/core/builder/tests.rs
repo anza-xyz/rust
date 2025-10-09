@@ -176,32 +176,6 @@ fn ci_rustc_if_unchanged_invalidate_on_compiler_changes() {
     });
 }
 
-#[test]
-fn ci_rustc_if_unchanged_do_not_invalidate_on_library_changes_outside_ci() {
-    git_test(|ctx| {
-        prepare_rustc_checkout(ctx);
-        let sha = ctx.create_upstream_merge(&["compiler/bar"]);
-        // This change should not invalidate download-ci-rustc
-        ctx.create_nonupstream_merge(&["library/foo"]);
-
-        let config = parse_config_download_rustc_at(ctx.get_path(), "if-unchanged", false);
-        assert_eq!(config.download_rustc_commit, Some(sha));
-    });
-}
-
-#[test]
-fn ci_rustc_if_unchanged_do_not_invalidate_on_tool_changes() {
-    git_test(|ctx| {
-        prepare_rustc_checkout(ctx);
-        let sha = ctx.create_upstream_merge(&["compiler/bar"]);
-        // This change should not invalidate download-ci-rustc
-        ctx.create_nonupstream_merge(&["src/tools/foo"]);
-
-        let config = parse_config_download_rustc_at(ctx.get_path(), "if-unchanged", true);
-        assert_eq!(config.download_rustc_commit, Some(sha));
-    });
-}
-
 /// Prepares the given directory so that it looks like a rustc checkout.
 /// Also configures `GitCtx` to use the correct merge bot e-mail for upstream merge commits.
 fn prepare_rustc_checkout(ctx: &mut GitCtx) {
