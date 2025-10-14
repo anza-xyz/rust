@@ -273,7 +273,7 @@ prefix = "opt/sbf-rust"
 # Note: the slowness of the non optimized compiler compiling itself usually
 #       outweighs the time gains in not doing optimizations, therefore a
 #       full bootstrap takes much more time with `optimize` set to false.
-optimize = "s"
+optimize = 3
 
 # Indicates that the build should be configured for debugging Rust. A
 # `debug`-enabled compiler and standard library will be somewhat
