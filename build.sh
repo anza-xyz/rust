@@ -8,19 +8,21 @@ set -ex
 
 WITH_NIX=
 REBUILD_LLVM=
-case "$1" in
-    --nix)
-        WITH_NIX=1
-        shift
-        ;;
-    --llvm)
-        REBUILD_LLVM=1
-        shift
-        ;;
-    --help)
-        echo "--llvm to rebuild llvm, --nix to use nix";
-        exit;
-esac
+while [ -n "$1" ]; do
+    case "$1" in
+        --nix)
+            WITH_NIX=1
+            shift
+            ;;
+        --llvm)
+            REBUILD_LLVM=1
+            shift
+            ;;
+        --help)
+            echo "--llvm to rebuild llvm, --nix to use nix";
+            exit;
+    esac
+done
 
 unameOut="$(uname -s)-$(uname -m)"
 case "${unameOut}" in
