@@ -760,7 +760,7 @@ const BPF_FEATURES: &[(&str, Stability, ImpliedFeatures)] =
     &[("alu32", Unstable(sym::bpf_target_feature), &[])];
 
 const SBF_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
-    ("alu32", Unstable(sym::sbf_target_feature), &[]),
+    ("alu32", Stable, &[]),
     ("static-syscalls", Stable, &[]),
     ("dynamic-frames", Stable, &[]),
     ("abi-v2", Stable, &[]),

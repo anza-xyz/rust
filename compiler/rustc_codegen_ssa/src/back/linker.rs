@@ -493,9 +493,6 @@ impl<'a> GccLinker<'a> {
                     .unwrap_or(self.sess.target.cpu.as_ref().to_string());
                 if cpu_type == "v3" || cpu_type == "v4" {
                     self.link_arg("-Bsymbolic");
-                    if self.sess.opts.debuginfo == DebugInfo::None {
-                        self.link_arg("--strip-all");
-                    }
                 }
             }
         }

@@ -23,7 +23,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 RUN PATH="${HOME}/.cargo/bin:${PATH}" \
     cargo install --git https://github.com/anza-xyz/cargo-run-solana-tests.git \
-    --rev ccfb0a3f5f967f3cf52fef0c95e283c7cab1836e \
+    --rev db104fd1ce22986a0935f10f07e7e1f889db7e80 \
     --bin cargo-run-solana-tests --root /usr/local
 
 COPY scripts/sccache.sh /scripts/
@@ -38,8 +38,8 @@ ENV RUST_CONFIGURE_ARGS \
     --set llvm.clang
 
 ENV SCRIPT CARGO_TARGET_SBPF_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --heap-size 204857600\" \
-    CARGO_TARGET_SBPFV0_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --heap-size 204857600\" \
+    CARGO_TARGET_SBF_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --heap-size 204857600\" \
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
     PATH="${HOME}/.cargo/bin:${PATH}" \
-    python3 /checkout/x.py --stage 1 test --host='' --target sbpf-solana-solana,sbpfv0-solana-solana \
+    python3 /checkout/x.py --stage 1 test --host='' --target sbpf-solana-solana,sbf-solana-solana \
     library/core
