@@ -39,7 +39,7 @@ if [ -n "${REBUILD_LLVM}" ]; then
 fi
 
 if [ -n "${WITH_NIX}" ]; then
-    nix-shell src/tools/nix-dev-shell/shell.nix --pure --run "x build --stage 1 --target ${HOST_TRIPLE},sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana"
+    nix-shell src/tools/nix-dev-shell/shell.nix --pure --run "x build --stage 1 --target ${HOST_TRIPLE},sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana"
 else
-    ./x.py build --stage 1 --target "${HOST_TRIPLE}",sbf-solana-solana,sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana
+    ./x.py build --stage 1 --target "${HOST_TRIPLE}",sbpf-solana-solana,sbpfv1-solana-solana,sbpfv2-solana-solana,sbpfv3-solana-solana
 fi

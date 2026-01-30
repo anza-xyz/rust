@@ -3501,7 +3501,10 @@ impl Target {
             "loongarch64" => (Architecture::LoongArch64, None),
             "csky" => (Architecture::Csky, None),
             "arm64ec" => (Architecture::Aarch64, Some(object::SubArchitecture::Arm64EC)),
-            "sbf" => (Architecture::Sbf, None),
+            "sbf" if self.options.cpu.as_ref() != "v3"
+                && self.options.cpu.as_ref() != "v4"  => (Architecture::Sbf, None),
+            "sbf" if self.options.cpu.as_ref() == "v3"
+                || self.options.cpu.as_ref() == "v4"  => (Architecture::Bpf, None),
             // Unsupported architecture.
             _ => return None,
         })
