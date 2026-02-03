@@ -35,9 +35,11 @@ stdenv.mkDerivation (self: {
     rustc
     makeBinaryWrapper
   ]
-  # Provides the mig command
-  ++ lib.optional stdenv.hostPlatform.isDarwin darwin.bootstrap_cmds;
-
+  # Provides the codesign and mig commands
+  ++ lib.optional stdenv.hostPlatform.isDarwin [
+    darwin.bootstrap_cmds
+    darwin.sigtool
+  ];
 
   env.PYTHON = python3.interpreter;
   buildPhase = ''
