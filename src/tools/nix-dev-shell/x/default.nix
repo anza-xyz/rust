@@ -13,6 +13,7 @@
   patchelf,
   cacert,
   zlib,
+  darwin,
   # LLVM Deps
   ninja,
   cmake,
@@ -33,7 +34,10 @@ stdenv.mkDerivation (self: {
   nativeBuildInputs = [
     rustc
     makeBinaryWrapper
-  ];
+  ]
+  # Provides the mig command
+  ++ lib.optional stdenv.hostPlatform.isDarwin darwin.bootstrap_cmds;
+
 
   env.PYTHON = python3.interpreter;
   buildPhase = ''
