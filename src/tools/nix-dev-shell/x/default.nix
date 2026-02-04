@@ -18,6 +18,7 @@
   ninja,
   cmake,
   glibc,
+  swig,
 }:
 stdenv.mkDerivation (self: {
   strictDeps = true;
@@ -69,6 +70,7 @@ stdenv.mkDerivation (self: {
         pkg-config
         cmake
         ninja
+        swig
         stdenv.cc
       ];
       ldLib = [
