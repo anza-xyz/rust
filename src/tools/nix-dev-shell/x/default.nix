@@ -13,10 +13,12 @@
   patchelf,
   cacert,
   zlib,
+  darwin,
   # LLVM Deps
   ninja,
   cmake,
   glibc,
+  swig,
 }:
 stdenv.mkDerivation (self: {
   strictDeps = true;
@@ -33,6 +35,11 @@ stdenv.mkDerivation (self: {
   nativeBuildInputs = [
     rustc
     makeBinaryWrapper
+  ]
+  # Provides the codesign and mig commands
+  ++ lib.optional stdenv.hostPlatform.isDarwin [
+    darwin.bootstrap_cmds
+    darwin.sigtool
   ];
 
   env.PYTHON = python3.interpreter;
@@ -63,6 +70,7 @@ stdenv.mkDerivation (self: {
         pkg-config
         cmake
         ninja
+        swig
         stdenv.cc
       ];
       ldLib = [
