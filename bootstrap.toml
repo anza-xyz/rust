@@ -397,6 +397,9 @@ debug-assertions = false
 # rustc to execute.
 lld = true
 
+# Include the git hash in the version
+omit-git-hash = false
+
 # Indicates whether some LLVM tools, like llvm-objdump, will be made available in the
 # sysroot.
 #llvm-tools = false
