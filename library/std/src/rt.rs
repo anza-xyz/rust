@@ -27,7 +27,6 @@ use crate::any::Any;
 use crate::sync::Once;
 #[cfg(not(target_family = "solana"))]
 use crate::sys;
-#[cfg(not(target_family = "solana"))]
 use crate::thread::{self, main_thread};
 #[cfg(not(target_family = "solana"))]
 use crate::{mem, panic};
@@ -232,5 +231,7 @@ fn lang_start<T: crate::process::Termination + 'static>(
     _argv: *const *const u8,
     _sigpipe: u8,
 ) -> isize {
+    let _ = thread::current_os_id;
+    let _ = main_thread::set;
     main().report().to_i32() as isize
 }

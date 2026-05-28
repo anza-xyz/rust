@@ -108,4 +108,7 @@ cfg_select! {
     target_os = "zkvm" => {
         mod zkvm;
     }
+    target_family = "solana" => {
+        // intentionally empty
+    }
 }

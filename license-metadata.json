@@ -156,14 +156,18 @@
             "type": "directory"
           },
           {
+            "directories": [],
+            "files": [
+              "bootstrap.toml",
+              "build.sh"
+            ],
             "license": {
               "copyright": [
                 "2025 Anza Technology Inc. <https://www.anza.xyz>"
               ],
               "spdx": "MIT"
             },
-            "name": "build.sh",
-            "type": "file"
+            "type": "group"
           },
           {
             "license": {

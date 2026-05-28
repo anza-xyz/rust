@@ -152,6 +152,7 @@ impl Target {
         forward!(is_like_wasm);
         forward!(is_like_android);
         forward!(is_like_vexos);
+        forward!(is_like_solana);
         forward!(binary_format);
         forward!(default_dwarf_version);
         forward!(allows_weak_linkage);
@@ -350,6 +351,7 @@ impl ToJson for Target {
         target_option_val!(is_like_wasm);
         target_option_val!(is_like_android);
         target_option_val!(is_like_vexos);
+        target_option_val!(is_like_solana);
         target_option_val!(binary_format);
         target_option_val!(default_dwarf_version);
         target_option_val!(allows_weak_linkage);
@@ -572,6 +574,7 @@ struct TargetSpecJson {
     is_like_wasm: Option<bool>,
     is_like_android: Option<bool>,
     is_like_vexos: Option<bool>,
+    is_like_solana: Option<bool>,
     binary_format: Option<BinaryFormat>,
     default_dwarf_version: Option<u32>,
     allows_weak_linkage: Option<bool>,

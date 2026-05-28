@@ -14,30 +14,12 @@
 //! guaranteed to be a runtime error!
 
 pub mod alloc;
-//#[cfg(feature = "backtrace")]
-//pub mod backtrace;
 #[path = "../unsupported/os.rs"]
 pub mod os;
-pub mod path;
-#[path = "../unsupported/pipe.rs"]
-pub mod pipe;
-pub mod thread;
+pub mod path {}
+pub mod thread {}
 #[path = "../unsupported/thread_local_dtor.rs"]
 pub mod thread_local_dtor;
-pub mod time;
-
-#[path = "../unix/os_str.rs"]
-pub mod os_str;
-
-#[path = "../unix/locks"]
-pub mod locks {
-    mod futex_condvar;
-    mod futex_mutex;
-    mod futex_rwlock;
-    pub(crate) use futex_condvar::Condvar;
-    pub(crate) use futex_mutex::Mutex;
-    pub(crate) use futex_rwlock::RwLock;
-}
 
 #[cfg(not(target_feature = "static-syscalls"))]
 unsafe extern "C" {
@@ -87,20 +69,6 @@ pub fn unsupported_err() -> crate::io::Error {
     crate::io::Error::new(crate::io::ErrorKind::Other, "operation not supported on SBF yet")
 }
 
-pub fn decode_error_kind(_code: i32) -> crate::io::ErrorKind {
-    crate::io::ErrorKind::Other
-}
-
-// This enum is used as the storage for a bunch of types which can't actually
-// exist.
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
-pub enum Void {}
-
 pub fn abort_internal() -> ! {
     unsafe { abort() }
-}
-
-#[inline]
-pub fn is_interrupted(_errno: i32) -> bool {
-    false
 }

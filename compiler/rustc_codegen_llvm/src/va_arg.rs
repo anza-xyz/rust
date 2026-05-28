@@ -1176,6 +1176,7 @@ pub(super) fn emit_va_arg<'ll, 'tcx>(
         ),
 
         Arch::Bpf => bug!("bpf does not support c-variadic functions"),
+        Arch::Sbf => bug!("sbf does not support c-variadic functions"),
         Arch::SpirV => bug!("spirv does not support c-variadic functions"),
 
         Arch::Mips | Arch::Mips32r6 | Arch::Mips64 | Arch::Mips64r6 => {

@@ -482,14 +482,20 @@ impl<'a> GccLinker<'a> {
                 }
             }
 
-            if self.sess.target.arch == "bpf" || self.sess.target.arch == "sbf" {
+            if let Arch::Bpf | Arch::Sbf = self.sess.target.arch {
                 if self.sess.opts.test {
                     self.link_arg("--entry=main");
                 } else {
                     self.link_arg("--entry=entrypoint");
                 }
 
-                let cpu_type = self.sess.opts.cg.target_cpu.as_ref().cloned()
+                let cpu_type = self
+                    .sess
+                    .opts
+                    .cg
+                    .target_cpu
+                    .as_ref()
+                    .cloned()
                     .unwrap_or(self.sess.target.cpu.as_ref().to_string());
                 if cpu_type == "v3" || cpu_type == "v4" {
                     self.link_arg("-Bsymbolic");

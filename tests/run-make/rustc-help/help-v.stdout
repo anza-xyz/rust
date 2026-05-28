@@ -87,6 +87,8 @@ Options:
         --remap-path-scope <macro,diagnostics,debuginfo,coverage,object,all>
                         Defines which scopes of paths should be remapped by
                         `--remap-path-prefix`
+        --env-set <VAR>=<VALUE>
+                        Inject an environment variable
     @path               Read newline separated options from `path`
 
 Additional help:

@@ -1,3 +1,8 @@
+use crate::attributes::llfn_attrs_from_instance;
+use crate::builder::SBuilder;
+use crate::declare::declare_simple_fn;
+use crate::llvm::{self, FromGeneric, TRUE, Type};
+use crate::{SimpleCx, attributes, debuginfo};
 use libc::c_uint;
 use rustc_ast::expand::allocator::{
     AllocatorMethod, AllocatorTy, NO_ALLOC_SHIM_IS_UNSTABLE, SpecialAllocatorMethod,
@@ -9,12 +14,6 @@ use rustc_middle::middle::codegen_fn_attrs::{CodegenFnAttrFlags, CodegenFnAttrs}
 use rustc_middle::ty::TyCtxt;
 use rustc_session::config::DebugInfo;
 use rustc_symbol_mangling::mangle_internal_symbol;
-use rustc_target::spec::Arch;
-use crate::attributes::llfn_attrs_from_instance;
-use crate::builder::SBuilder;
-use crate::declare::declare_simple_fn;
-use crate::llvm::{self, FromGeneric, TRUE, Type};
-use crate::{SimpleCx, attributes, debuginfo};
 
 pub(crate) unsafe fn codegen(
     tcx: TyCtxt<'_>,
@@ -86,19 +85,16 @@ pub(crate) unsafe fn codegen(
         );
     }
 
-    if tcx.sess.target.arch != Arch::Sbf {
-        // __rust_no_alloc_shim_is_unstable_v2
-        create_wrapper_function(
-            tcx,
-            &cx,
-            &mangle_internal_symbol(tcx, NO_ALLOC_SHIM_IS_UNSTABLE),
-            None,
-            &[],
-            None,
-            false,
-            &CodegenFnAttrs::new(),
-        );
-    }
+    create_wrapper_function(
+        tcx,
+        &cx,
+        &mangle_internal_symbol(tcx, NO_ALLOC_SHIM_IS_UNSTABLE),
+        None,
+        &[],
+        None,
+        false,
+        &CodegenFnAttrs::new(),
+    );
 
     if tcx.sess.opts.debuginfo != DebugInfo::None {
         let dbg_cx = debuginfo::CodegenUnitDebugContext::new(cx.llmod);

@@ -65,7 +65,7 @@
 
 use core::ptr::NonNull;
 #[cfg(not(target_family = "solana"))]
-use core::sync::atomic::{Atomic, AtomicPtr, Ordering};
+use core::sync::atomic::{AtomicBool, AtomicPtr, Ordering};
 #[cfg(not(target_family = "solana"))]
 use core::mem;
 use core::{hint, ptr};
@@ -440,6 +440,7 @@ pub fn rust_oom(layout: Layout) -> ! {
     }
     #[cfg(target_family = "solana")]
     {
+        let _ = layout;
         crate::sys::sol_log(b"Error: memory allocation failed, out of memory");
         crate::process::abort()
     }

@@ -13,14 +13,15 @@ use core::panic::Location;
 #[cfg(not(target_family = "solana"))]
 use core::panic::PanicPayload;
 
-#[cfg(not(target_family = "solana"))]
 // make sure to use the stderr output configured
 // by libtest in the real copy of std
-#[cfg(all(test, not(target_family = "solana")))]
-use realstd::io::set_output_capture;
+#[cfg(not(target_family = "solana"))]
+#[cfg(test)]
+use realstd::io::try_set_output_capture;
 
 use crate::any::Any;
-#[cfg(all(not(test), not(target_arch = "bpf"), not(target_arch = "sbf")))]
+#[cfg(not(target_family = "solana"))]
+#[cfg(not(test))]
 use crate::io::try_set_output_capture;
 #[cfg(not(target_family = "solana"))]
 use crate::mem::{self, ManuallyDrop};
@@ -30,14 +31,15 @@ use crate::panic::{BacktraceStyle, PanicHookInfo};
 use crate::panic::PanicHookInfo;
 #[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicBool, Ordering};
+#[cfg(not(target_family = "solana"))]
 use crate::sync::nonpoison::RwLock;
 #[cfg(not(target_family = "solana"))]
 use crate::sys::backtrace;
 #[cfg(not(target_family = "solana"))]
 use crate::sys::stdio::panic_output;
-use crate::fmt;
+use crate::{fmt, thread};
 #[cfg(not(target_family = "solana"))]
-use crate::{intrinsics, process, thread};
+use crate::{intrinsics, process};
 
 // This forces codegen of the function called by panic!() inside the std crate, rather than in
 // downstream crates. Primarily this is useful for rustc's codegen tests, which rely on noticing
@@ -374,6 +376,7 @@ fn default_hook(info: &PanicHookInfo<'_>) {
 
 #[cfg(target_family = "solana")]
 fn default_hook(_info: &PanicHookInfo<'_>) {
+    let _ = thread::current_os_id();
 }
 
 #[cfg(not(test))]
@@ -1019,7 +1022,7 @@ pub fn panicking() -> bool {
 pub fn begin_panic<M: Any + Send>(_msg: M) -> ! {
     // FIX-ME: Refactor the way we handle panics in Solana Rust
     // Is This panic working?
-    let arguments = fmt::Arguments::new_const(&[]);
+    let arguments = unsafe { fmt::Arguments::new(&[], &[]) };
     let info = core::panic::PanicInfo::new(
         &arguments,
         Location::caller(),

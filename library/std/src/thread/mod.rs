@@ -179,9 +179,12 @@ mod tests;
 pub use builder::Builder;
 #[stable(feature = "rust1", since = "1.0.0")]
 pub use current::current;
+#[cfg(not(target_family = "solana"))]
 #[unstable(feature = "current_thread_id", issue = "147194")]
 pub use current::current_id;
-pub(crate) use current::{current_or_unnamed, current_os_id, drop_current, with_current_name};
+pub(crate) use current::{current_or_unnamed, current_os_id};
+#[cfg(not(target_family = "solana"))]
+pub(crate) use current::{drop_current, with_current_name};
 #[stable(feature = "available_parallelism", since = "1.59.0")]
 pub use functions::available_parallelism;
 #[stable(feature = "park_timeout", since = "1.4.0")]

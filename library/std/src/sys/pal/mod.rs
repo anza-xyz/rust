@@ -60,6 +60,10 @@ cfg_select! {
         mod zkvm;
         pub use self::zkvm::*;
     }
+    target_os = "solana" => {
+        mod sbf;
+        pub use self::sbf::*;
+    }
     _ => {
         mod unsupported;
         pub use self::unsupported::*;

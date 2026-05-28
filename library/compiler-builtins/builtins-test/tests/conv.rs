@@ -80,9 +80,9 @@ mod i_to_f {
                         // https://github.com/rust-lang/compiler-builtins/pull/384#issuecomment-740413334
                         if !Float::eq_repr(f0, f1) && !cfg!(any(
                             target_arch = "x86",
-                            all(target_arch = "powerpc64", target_endian = "little")
+                            all(target_arch = "powerpc64", target_endian = "little"),
                             // In SBF, the rounding bug exists when ALU32 is disbaled.
-                            not(target_feature = "static-syscalls"),
+                            not(target_family = "sbf"),
                         )) {
                             panic!(
                                 "{}({}): std: {:?}, builtins: {:?}",

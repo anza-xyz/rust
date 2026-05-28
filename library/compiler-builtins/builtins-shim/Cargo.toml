@@ -29,7 +29,10 @@ documentation = "https://docs.rs/compiler_builtins"
 edition = "2024"
 links = "compiler-rt"
 
+build = "../compiler-builtins/build.rs"
+
 [lib]
+path = "../compiler-builtins/src/lib.rs"
 bench = false
 doctest = false
 test = false

@@ -1,4 +1,5 @@
 use super::id::ThreadId;
+#[cfg(not(target_family = "solana"))]
 use super::main_thread;
 use super::thread::Thread;
 #[cfg(not(target_family = "solana"))]
@@ -193,8 +194,14 @@ pub fn current_id() -> ThreadId {
 /// pointer, and Apple uses `uint64_t`. This is a "best effort" approach for diagnostics and is
 /// allowed to fall back to a non-OS ID (such as the Rust thread ID) or a non-unique ID (such as a
 /// PID) if the thread ID cannot be retrieved.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn current_os_id() -> u64 {
     imp::current_os_id().unwrap_or_else(|| current_id().as_u64().get())
+}
+
+#[cfg(target_family = "solana")]
+pub(crate) fn current_os_id() -> u64 {
+    imp::current_os_id().unwrap_or(0)
 }
 
 /// Gets a reference to the handle of the thread that invokes it, if the handle
@@ -222,6 +229,7 @@ where
 ///
 /// Modulo thread local accesses, this function is safe to call from signal
 /// handlers and in similar circumstances where allocations are not possible.
+#[cfg(not(target_family = "solana"))]
 pub(crate) fn with_current_name<F, R>(f: F) -> R
 where
     F: FnOnce(Option<&str>) -> R,

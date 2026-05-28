@@ -6,6 +6,7 @@ use rustc_middle::query::Providers;
 use rustc_middle::ty::TyCtxt;
 use rustc_session::config::{CrateType, EntryFnType, sigpipe};
 use rustc_span::{RemapPathScopeComponents, Span};
+use rustc_target::spec::Arch;
 
 use crate::errors::{ExternMain, MultipleRustcMain, NoMainErr};
 
@@ -22,7 +23,7 @@ struct EntryContext<'tcx> {
 
 fn entry_fn(tcx: TyCtxt<'_>, (): ()) -> Option<(DefId, EntryFnType)> {
     let any_exe = tcx.crate_types().contains(&CrateType::Executable);
-    let exe_only = (tcx.sess.target.arch != "bpf" && tcx.sess.target.arch != "sbf") || !tcx.sess.opts.test;
+    let exe_only = !matches!(tcx.sess.target.arch, Arch::Bpf | Arch::Sbf) || !tcx.sess.opts.test;
     if !any_exe && exe_only {
         // No need to find a main function.
         return None;

@@ -119,7 +119,6 @@ ENV TARGETS=$TARGETS,armv8r-none-eabihf
 ENV TARGETS=$TARGETS,thumbv7neon-unknown-linux-gnueabihf
 ENV TARGETS=$TARGETS,armv7a-none-eabi
 ENV TARGETS=$TARGETS,armv7a-none-eabihf
-ENV TARGETS=$TARGETS,bpfel-unknown-unknown
 
 ENV CFLAGS_armv5te_unknown_linux_musleabi="-march=armv5te -marm -mfloat-abi=soft" \
     CFLAGS_arm_unknown_linux_musleabi="-march=armv6 -marm" \

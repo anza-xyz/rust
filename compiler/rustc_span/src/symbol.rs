@@ -1808,6 +1808,7 @@ symbols! {
         sanitizer_runtime,
         saturating_add,
         saturating_sub,
+        sbf,
         sbf_target_feature,
         sdylib,
         search_unbox,

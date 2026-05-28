@@ -1,8 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
+    "builtins-shim",
     "builtins-test",
-    "compiler-builtins",
     "crates/libm-macros",
     "crates/musl-math-sys",
     "crates/panic-handler",
@@ -14,7 +14,7 @@ members = [
 
 default-members = [
     "builtins-test",
-    "compiler-builtins",
+    "builtins-shim",
     "crates/libm-macros",
     "libm",
     "libm-test",
@@ -25,6 +25,7 @@ exclude = [
     # and `mangled-names` disabled, which is the opposite of what is needed for
     # other tests, so it makes sense to keep it out of the workspace.
     "builtins-test-intrinsics",
+    "compiler-builtins",
 ]
 
 [workspace.dependencies]

@@ -927,6 +927,7 @@ pub fn all_rust_features() -> impl Iterator<Item = (&'static str, Stability)> {
         .chain(RISCV_FEATURES.iter())
         .chain(WASM_FEATURES.iter())
         .chain(BPF_FEATURES.iter())
+        .chain(SBF_FEATURES.iter())
         .chain(CSKY_FEATURES)
         .chain(LOONGARCH_FEATURES)
         .chain(IBMZ_FEATURES)
@@ -1008,6 +1009,7 @@ impl Target {
             Arch::RiscV32 | Arch::RiscV64 => RISCV_FEATURES,
             Arch::Wasm32 | Arch::Wasm64 => WASM_FEATURES,
             Arch::Bpf => BPF_FEATURES,
+            Arch::Sbf => SBF_FEATURES,
             Arch::CSky => CSKY_FEATURES,
             Arch::LoongArch32 | Arch::LoongArch64 => LOONGARCH_FEATURES,
             Arch::S390x => IBMZ_FEATURES,
@@ -1036,7 +1038,7 @@ impl Target {
                 MIPS_FEATURES_FOR_CORRECT_FIXED_LENGTH_VECTOR_ABI
             }
             Arch::AmdGpu => AMDGPU_FEATURES_FOR_CORRECT_FIXED_LENGTH_VECTOR_ABI,
-            Arch::Nvptx64 | Arch::Bpf | Arch::M68k | Arch::Avr => &[], // no vector ABI
+            Arch::Nvptx64 | Arch::Bpf | Arch::Sbf | Arch::M68k | Arch::Avr => &[], // no vector ABI
             Arch::CSky => CSKY_FEATURES_FOR_CORRECT_FIXED_LENGTH_VECTOR_ABI,
             // FIXME: for some tier3 targets, we are overly cautious and always give warnings
             // when passing args in vector registers.

@@ -383,6 +383,7 @@ name = "unwind"
 version = "0.0.0"
 dependencies = [
  "libc",
+ "rustc-std-workspace-core",
 ]
 
 [[package]]

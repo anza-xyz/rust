@@ -3,9 +3,7 @@
 
 use crate::mem::MaybeUninit;
 use crate::cell::UnsafeCell;
-#[cfg(not(target_family = "solana"))]
 use crate::cell::Cell;
-#[cfg(not(target_family = "solana"))]
 use crate::ptr;
 
 #[doc(hidden)]

@@ -27,6 +27,11 @@ impl Instant {
 }
 
 impl SystemTime {
+    pub const MAX: SystemTime = SystemTime(Duration::MAX);
+
+    pub const MIN: SystemTime = SystemTime(Duration::ZERO);
+
+
     pub fn now() -> SystemTime {
         panic!();
     }

@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use core::sync::atomic::Ordering::SeqCst;
 use core::sync::atomic::*;
 
@@ -318,7 +320,7 @@ fn atomic_alignment() {
 fn atomic_compare_exchange() {
     use Ordering::*;
 
-    let atomic: AtomicIsize = AtomicIsize::new(0);
+    let ATOMIC: AtomicIsize = AtomicIsize::new(0);
 
     ATOMIC.compare_exchange(0, 1, Relaxed, Relaxed).ok();
     ATOMIC.compare_exchange(0, 1, Relaxed, Acquire).ok();
@@ -357,7 +359,7 @@ fn atomic_compare_exchange() {
 fn atomic_compare_exchange_illegal_acq_rel() {
     use Ordering::*;
 
-    static ATOMIC: AtomicIsize = AtomicIsize::new(0);
+    let ATOMIC: AtomicIsize = AtomicIsize::new(0);
 
     let failure = AcqRel;
 
@@ -369,7 +371,7 @@ fn atomic_compare_exchange_illegal_acq_rel() {
 fn atomic_compare_exchange_illegal_release() {
     use Ordering::*;
 
-    static ATOMIC: AtomicIsize = AtomicIsize::new(0);
+    let ATOMIC: AtomicIsize = AtomicIsize::new(0);
 
     let failure = Release;
 
@@ -381,7 +383,7 @@ fn atomic_compare_exchange_illegal_release() {
 fn atomic_compare_exchange_weak_illegal_acq_rel() {
     use Ordering::*;
 
-    static ATOMIC: AtomicIsize = AtomicIsize::new(0);
+    let ATOMIC: AtomicIsize = AtomicIsize::new(0);
 
     let failure = AcqRel;
 
@@ -393,7 +395,7 @@ fn atomic_compare_exchange_weak_illegal_acq_rel() {
 fn atomic_compare_exchange_weak_illegal_release() {
     use Ordering::*;
 
-    static ATOMIC: AtomicIsize = AtomicIsize::new(0);
+    let ATOMIC: AtomicIsize = AtomicIsize::new(0);
 
     let failure = Release;
 
@@ -404,7 +406,7 @@ fn atomic_compare_exchange_weak_illegal_release() {
 fn atomic_swap() {
     use Ordering::*;
 
-    static ATOMIC: AtomicBool = AtomicBool::new(false);
+    let ATOMIC: AtomicBool = AtomicBool::new(false);
 
     assert_eq!(ATOMIC.swap(true, Relaxed), false);
     assert_eq!(ATOMIC.swap(false, Acquire), true);
@@ -417,7 +419,7 @@ fn atomic_swap() {
 fn atomic_add() {
     use Ordering::*;
 
-    static ATOMIC: AtomicU8 = AtomicU8::new(0);
+    let ATOMIC: AtomicU8 = AtomicU8::new(0);
 
     assert_eq!(ATOMIC.fetch_add(1, Relaxed), 0);
     assert_eq!(ATOMIC.fetch_add(1, Acquire), 1);
@@ -431,7 +433,7 @@ fn atomic_add() {
 fn atomic_sub() {
     use Ordering::*;
 
-    static ATOMIC: AtomicU8 = AtomicU8::new(5);
+    let ATOMIC: AtomicU8 = AtomicU8::new(5);
 
     assert_eq!(ATOMIC.fetch_sub(1, Relaxed), 5);
     assert_eq!(ATOMIC.fetch_sub(1, Acquire), 4);
@@ -445,7 +447,7 @@ fn atomic_sub() {
 fn atomic_and_or() {
     use Ordering::*;
 
-    static ATOMIC: AtomicBool = AtomicBool::new(false);
+    let ATOMIC: AtomicBool = AtomicBool::new(false);
 
     assert_eq!(ATOMIC.fetch_or(true, Relaxed), false);
     assert_eq!(ATOMIC.fetch_and(false, Relaxed), true);
@@ -464,7 +466,7 @@ fn atomic_and_or() {
 fn atomic_nand() {
     use Ordering::*;
 
-    static ATOMIC: AtomicU8 = AtomicU8::new(0x13);
+    let ATOMIC: AtomicU8 = AtomicU8::new(0x13);
 
     assert_eq!(ATOMIC.fetch_nand(0x13, Relaxed), 0x13);
     assert_eq!(ATOMIC.fetch_nand(0xec, Acquire), 0xec);
@@ -478,7 +480,7 @@ fn atomic_nand() {
 fn atomic_xor() {
     use Ordering::*;
 
-    static ATOMIC: AtomicBool = AtomicBool::new(false);
+    let ATOMIC: AtomicBool = AtomicBool::new(false);
 
     assert_eq!(ATOMIC.fetch_xor(true, Relaxed), false);
     assert_eq!(ATOMIC.fetch_xor(true, Acquire), true);
@@ -492,7 +494,7 @@ fn atomic_xor() {
 fn atomic_max() {
     use Ordering::*;
 
-    static ATOMIC: AtomicI8 = AtomicI8::new(0);
+    let ATOMIC: AtomicI8 = AtomicI8::new(0);
 
     assert_eq!(ATOMIC.fetch_max(1, Relaxed), 0);
     assert_eq!(ATOMIC.fetch_max(2, Acquire), 1);
@@ -506,7 +508,7 @@ fn atomic_max() {
 fn atomic_umax() {
     use Ordering::*;
 
-    static ATOMIC: AtomicU8 = AtomicU8::new(0);
+    let ATOMIC: AtomicU8 = AtomicU8::new(0);
 
     assert_eq!(ATOMIC.fetch_max(1, Relaxed), 0);
     assert_eq!(ATOMIC.fetch_max(2, Acquire), 1);
@@ -520,7 +522,7 @@ fn atomic_umax() {
 fn atomic_min() {
     use Ordering::*;
 
-    static ATOMIC: AtomicI8 = AtomicI8::new(5);
+    let ATOMIC: AtomicI8 = AtomicI8::new(5);
 
     assert_eq!(ATOMIC.fetch_min(4, Relaxed), 5);
     assert_eq!(ATOMIC.fetch_min(3, Acquire), 4);
@@ -534,7 +536,7 @@ fn atomic_min() {
 fn atomic_umin() {
     use Ordering::*;
 
-    static ATOMIC: AtomicU8 = AtomicU8::new(5);
+    let ATOMIC: AtomicU8 = AtomicU8::new(5);
 
     assert_eq!(ATOMIC.fetch_min(4, Relaxed), 5);
     assert_eq!(ATOMIC.fetch_min(3, Acquire), 4);

@@ -46,6 +46,7 @@ pub trait EvalContextExt<'tcx>: crate::MiriInterpCxExt<'tcx> {
             | Arch::S390x
             | Arch::Sparc64
             | Arch::RiscV64
+            | Arch::Sbf
             | Arch::Wasm64 => 16,
             arch @ (Arch::AmdGpu
             | Arch::Avr

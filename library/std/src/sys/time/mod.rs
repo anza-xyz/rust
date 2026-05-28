@@ -44,6 +44,10 @@ cfg_select! {
         mod xous;
         use xous as imp;
     }
+    target_os = "solana" => {
+        mod solana;
+        use solana as imp;
+    }
     _ => {
         mod unsupported;
         use unsupported as imp;

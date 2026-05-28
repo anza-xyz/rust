@@ -14,5 +14,10 @@
 #![feature(no_core)]
 #![no_core]
 
-//[unstable_target_negative]~? ERROR `-C link-self-contained=-linker` is unstable on the `x86_64-unknown-linux-musl` target
-//[unstable_target_positive,unstable_positive]~? ERROR only `-C link-self-contained` values `y`/`yes`/`on`/`n`/`no`/`off`/`-linker` are stable
+// On solana rust only the nightly flags are always enabled
+//@ [unstable_target_negative] check-pass
+//@ [unstable_target_positive] check-pass
+//@ [unstable_positive] check-pass
+//
+//- [unstable_target_negative]~? ERROR `-C link-self-contained=-linker` is unstable on the `x86_64-unknown-linux-musl` target
+//- [unstable_target_positive,unstable_positive]~? ERROR only `-C link-self-contained` values `y`/`yes`/`on`/`n`/`no`/`off`/`-linker` are stable

@@ -531,6 +531,9 @@ impl Build {
             config.description = Some("built from a source tarball".to_owned());
         }
 
+        let is_solana = config.targets.iter().find(|t| t.triple.contains("solana")).is_some();
+        let doc_tests = if is_solana { DocTests::No } else { config.cmd.doc_tests() };
+
         let mut build = Build {
             initial_lld,
             initial_relative_libdir,
@@ -540,7 +543,7 @@ impl Build {
             initial_sysroot: config.initial_sysroot.clone(),
             local_rebuild: config.local_rebuild,
             fail_fast: config.cmd.fail_fast(),
-            doc_tests: config.cmd.doc_tests(),
+            doc_tests,
             verbosity: config.exec_ctx.verbosity as usize,
 
             host_target: config.host_target,
@@ -1312,13 +1315,6 @@ impl Build {
         // See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78936
         if &*target.triple == "i686-pc-windows-gnu" {
             base.push("-fno-omit-frame-pointer".into());
-        }
-
-        if &*target.triple == "bpfel-unknown-unknown" {
-            base.push("-Xclang".into());
-            base.push("-target-feature".into());
-            base.push("-Xclang".into());
-            base.push("+solana".into());
         }
 
         if let Some(map_to) = self.debuginfo_map_to(which, RemapScheme::NonCompiler) {

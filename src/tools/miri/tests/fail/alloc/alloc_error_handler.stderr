@@ -4,8 +4,8 @@ note: in Miri, you may have to set `MIRIFLAGS=-Zmiri-env-forward=RUST_BACKTRACE`
 error: abnormal termination: the program aborted execution
   --> RUSTLIB/std/src/alloc.rs:LL:CC
    |
-LL |         crate::process::abort()
-   |         ^^^^^^^^^^^^^^^^^^^^^^^ abnormal termination occurred here
+LL |             crate::process::abort()
+   |             ^^^^^^^^^^^^^^^^^^^^^^^ abnormal termination occurred here
    |
    = note: stack backtrace:
            0: std::alloc::rust_oom::{closure#0}

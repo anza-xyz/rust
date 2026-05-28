@@ -44,7 +44,7 @@ use rustc_span::{
 };
 use rustc_trait_selection::{solve, traits};
 use tracing::{info, instrument};
-
+use rustc_target::spec::Arch;
 use crate::interface::Compiler;
 use crate::{errors, limits, proc_macro_decls, util};
 
@@ -1328,6 +1328,10 @@ pub fn collect_crate_types(
     // If we're generating a test executable, then ignore all other output
     // styles at all other locations
     if session.opts.test {
+        if session.target.arch == Arch::Sbf || session.target.arch == Arch::Bpf {
+            return vec![CrateType::Cdylib];
+        }
+
         if !session.target.executables {
             session.dcx().emit_warn(errors::UnsupportedCrateTypeForTarget {
                 crate_type: CrateType::Executable,

@@ -8,6 +8,10 @@
 //@ [sanitizers] compile-flags: -Clink-self-contained=-sanitizers
 //@ [mingw] compile-flags: -Clink-self-contained=+mingw
 
+
 fn main() {}
 
-//~? ERROR only `-C link-self-contained` values `y`/`yes`/`on`/`n`/`no`/`off`/`-linker` are stable
+// On solana rust only the nightly flags are always enabled
+//@ check-pass
+//
+//- ~? ERROR only `-C link-self-contained` values `y`/`yes`/`on`/`n`/`no`/`off`/`-linker` are stable

@@ -58,7 +58,7 @@ fn main() {
         || target_os == "cygwin"
         || target_os == "vexos"
         || target_os == "bpf"
-        || target_os == "sbf"
+        || target_os == "solana"
 
         // See src/bootstrap/src/core/build_steps/synthetic_targets.rs
         || env::var("RUSTC_BOOTSTRAP_SYNTHETIC_TARGET").is_ok()

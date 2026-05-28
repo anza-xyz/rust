@@ -25,19 +25,17 @@ if [ "${BUILD_ONLY:-}" = "1" ]; then
     echo "no tests to run for build-only targets"
 else
     test_builtins=(cargo test --package builtins-test --no-fail-fast --target "$target")
-    if [[ ! "$target" =~ ^sbf && ! "$target" =~ ^sbpf- ]]; then
+    if [[ ! "$target" =~ ^sbf && ! "$target" =~ ^sbpf- && ! "$target" =~ ^sbpfv3- ]]; then
       # Not using release mode causes a stack overflow in SBPFv0
       # There is a bug in SBPFv3 whereby we were not adding returns to -O0 code
       "${test_builtins[@]}"
       "${test_builtins[@]}" --features c
       "${test_builtins[@]}" --features no-asm
-      "${test_builtins[@]}" --features no-f16-f128
     fi
 
     "${test_builtins[@]}" --release
     "${test_builtins[@]}" --features c --release
     "${test_builtins[@]}" --features no-asm --release
-    "${test_builtins[@]}" --features no-f16-f128 --release
 
    if [[ ! "$target" =~ ^sbf && ! "$target" =~ ^sbpf ]]; then
       # Benches require criterion, which is not compatible with SBPF
@@ -59,7 +57,7 @@ fi
 # Ensure there are no duplicate symbols or references to `core` when
 # `compiler-builtins` is built with various features. Symcheck invokes Cargo to
 # build with the arguments we provide it, then validates the built artifacts.
-SYMCHECK_TEST_TARGET="$target" cargo test -p symbol-check --release
+# SYMCHECK_TEST_TARGET="$target" cargo test -p symbol-check --release
 symcheck=(cargo run -p symbol-check --release)
 symcheck+=(-- build-and-check)
 

@@ -1764,7 +1764,6 @@ supported_targets! {
 
     ("bpfeb-unknown-none", bpfeb_unknown_none),
     ("bpfel-unknown-none", bpfel_unknown_none),
-    ("bpfel-unknown-unknown", bpfel_unknown_unknown),
     ("sbf-solana-solana", sbf_solana_solana),
     ("sbpf-solana-solana", sbpf_solana_solana),
     ("sbpfv0-solana-solana", sbpfv0_solana_solana),
@@ -1883,7 +1882,6 @@ crate::target_spec_enum! {
         Arm64EC = "arm64ec",
         Avr = "avr",
         Bpf = "bpf",
-        Sbf = "sbf",
         CSky = "csky",
         Hexagon = "hexagon",
         LoongArch32 = "loongarch32",
@@ -1900,6 +1898,7 @@ crate::target_spec_enum! {
         RiscV32 = "riscv32",
         RiscV64 = "riscv64",
         S390x = "s390x",
+        Sbf = "sbf",
         Sparc = "sparc",
         Sparc64 = "sparc64",
         SpirV = "spirv",
@@ -1921,7 +1920,6 @@ impl Arch {
             Self::Arm64EC => sym::arm64ec,
             Self::Avr => sym::avr,
             Self::Bpf => sym::bpf,
-            Self::Sbf => sym::sbf,
             Self::CSky => sym::csky,
             Self::Hexagon => sym::hexagon,
             Self::LoongArch32 => sym::loongarch32,
@@ -1938,6 +1936,7 @@ impl Arch {
             Self::RiscV32 => sym::riscv32,
             Self::RiscV64 => sym::riscv64,
             Self::S390x => sym::s390x,
+            Self::Sbf => sym::sbf,
             Self::Sparc => sym::sparc,
             Self::Sparc64 => sym::sparc64,
             Self::SpirV => sym::spirv,
@@ -2004,6 +2003,7 @@ crate::target_spec_enum! {
         Qurt = "qurt",
         Redox = "redox",
         Rtems = "rtems",
+        Solana = "solana",
         Solaris = "solaris",
         SolidAsp3 = "solid_asp3",
         TeeOs = "teeos",
@@ -2378,6 +2378,8 @@ pub struct TargetOptions {
     pub is_like_android: bool,
     /// Whether a target toolchain is like VEXos, the operating system used by the VEX Robotics V5 Brain.
     pub is_like_vexos: bool,
+    /// Is the target a solana target?
+    pub is_like_solana: bool,
     /// Target's binary file format. Defaults to BinaryFormat::Elf
     pub binary_format: BinaryFormat,
     /// Default supported version of DWARF on this platform.
@@ -2774,6 +2776,7 @@ impl Default for TargetOptions {
             is_like_wasm: false,
             is_like_android: false,
             is_like_vexos: false,
+            is_like_solana: false,
             binary_format: BinaryFormat::Elf,
             default_dwarf_version: 4,
             allows_weak_linkage: true,
@@ -3486,10 +3489,10 @@ impl Target {
             Arch::Hexagon => (Architecture::Hexagon, None),
             Arch::Xtensa => (Architecture::Xtensa, None),
             Arch::Bpf => (Architecture::Bpf, None),
-            Arch::Sbf if self.options.cpu.as_ref() != "v3"
-                && self.options.cpu.as_ref() != "v4"  => (Architecture::Sbf, None),
-            Arch::Sbf if self.options.cpu.as_ref() == "v3"
-                || self.options.cpu.as_ref() == "v4"  => (Architecture::Bpf, None),
+            Arch::Sbf if self.options.cpu.as_ref() == "v3" || self.options.cpu.as_ref() == "v4" => {
+                (Architecture::Bpf, None)
+            }
+            Arch::Sbf => (Architecture::Sbf, None),
             Arch::LoongArch32 => (Architecture::LoongArch32, None),
             Arch::LoongArch64 => (Architecture::LoongArch64, None),
             Arch::CSky => (Architecture::Csky, None),

@@ -167,7 +167,9 @@ use crate::io::{self, BorrowedCursor, IoSlice, IoSliceMut};
 use crate::num::NonZero;
 use crate::path::Path;
 use crate::sys::{AsInner, AsInnerMut, FromInner, IntoInner, process as imp};
-use crate::{fmt, format_args_nl, fs, str};
+use crate::{fmt, fs, str};
+#[cfg(not(target_family = "solana"))]
+use crate::format_args_nl;
 
 /// Representation of a running or exited child process.
 ///

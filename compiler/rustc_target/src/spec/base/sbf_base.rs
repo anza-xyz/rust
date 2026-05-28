@@ -1,5 +1,8 @@
+use crate::spec::{
+    Arch, Cc, Env, LinkerFlavor, Lld, Os, PanicStrategy, SymbolVisibility, Target, TargetOptions,
+    cvs,
+};
 use rustc_abi::Endian;
-use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, Target, TargetOptions, SymbolVisibility};
 
 const V0_LINKER_SCRIPT: &str = r"
 PHDRS
@@ -63,9 +66,7 @@ PHDRS
 ";
 
 pub(crate) fn opts(version: &'static str) -> TargetOptions {
-    let mut linker_args: Vec<&str> = vec![
-        "--threads=1", "-z", "notext", "--Bdynamic"
-    ];
+    let mut linker_args: Vec<&str> = vec!["--threads=1", "-z", "notext", "--Bdynamic"];
 
     let linker_script = if version == "v3" || version == "v4" {
         V3_LINKER_SCRIPT
@@ -75,24 +76,19 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         V0_LINKER_SCRIPT
     };
 
-    let pre_link_args = TargetOptions::link_args(
-        LinkerFlavor::Gnu(Cc::No, Lld::No),
-        linker_args.as_slice(),
-    );
+    let pre_link_args =
+        TargetOptions::link_args(LinkerFlavor::Gnu(Cc::No, Lld::No), linker_args.as_slice());
 
-    let cpu = if version == "v0" {
-        "generic"
-    } else {
-        version
-    };
+    let cpu = if version == "v0" { "generic" } else { version };
 
     let features = match version {
         "v4" => "+static-syscalls,+abi-v2",
         "v3" => "+static-syscalls",
-        _ => ""
+        _ => "",
     };
 
     TargetOptions {
+        is_like_solana: true,
         allow_asm: true,
         c_int_width: 64,
         default_visibility: Some(SymbolVisibility::Hidden),
@@ -101,7 +97,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         eh_frame_header: false,
         emit_debug_gdb_scripts: false,
         endian: Endian::Little,
-        env: "".into(),
+        env: Env::Unspecified,
         executables: true,
         families: cvs!["solana"],
         link_script: Some(linker_script.into()),
@@ -111,7 +107,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         max_atomic_width: Some(64),
         no_default_libraries: true,
         only_cdylib: true,
-        os: "solana".into(),
+        os: Os::Solana,
         panic_strategy: PanicStrategy::Abort,
         position_independent_executables: true,
         pre_link_args,
@@ -121,7 +117,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         c_enum_min_bits: Some(32),
         cpu: cpu.into(),
         features: features.into(),
-        .. Default::default()
+        ..Default::default()
     }
 }
 
@@ -129,12 +125,12 @@ pub(crate) fn sbf_target(version: &'static str) -> Target {
     Target {
         llvm_target: "sbf".into(),
         pointer_width: 64,
-        arch: "sbf".into(),
+        arch: Arch::Sbf,
         data_layout: "e-m:e-p:64:64-i64:64-n32:64-S128".into(),
         options: opts(version),
         metadata: crate::spec::TargetMetadata {
-            description: None,
-            tier: None,
+            description: Some("Solana BPF target".into()),
+            tier: Some(2),
             host_tools: None,
             std: None,
         },

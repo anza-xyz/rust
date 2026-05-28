@@ -1,19 +1,27 @@
 //! The inner logic for thread spawning and joining.
 
+#[cfg(not(target_family = "solana"))]
 use super::current::set_current;
 use super::id::ThreadId;
 use super::scoped::ScopeData;
 use super::thread::Thread;
-use super::{Result, spawnhook};
+use super::Result;
+#[cfg(not(target_family = "solana"))]
+use super::spawnhook;
 use crate::cell::UnsafeCell;
 use crate::marker::PhantomData;
+#[cfg(not(target_family = "solana"))]
 use crate::mem::{ManuallyDrop, MaybeUninit};
 use crate::sync::Arc;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, AtomicUsize, Ordering};
 use crate::sys::{AsInner, IntoInner, thread as imp};
-use crate::{env, io, panic};
+use crate::{io, panic};
+#[cfg(not(target_family = "solana"))]
+use crate::env;
 
 #[cfg_attr(miri, track_caller)] // even without panics, this helps for Miri backtraces
+#[cfg(not(target_family = "solana"))]
 pub(super) unsafe fn spawn_unchecked<'scope, F, T>(
     name: Option<String>,
     stack_size: Option<usize>,
@@ -140,6 +148,72 @@ where
     })
 }
 
+/// SBF version of spawn_unchecked
+#[cfg(target_family = "solana")]
+pub(crate) unsafe fn spawn_unchecked<'a, 'scope, F, T>(
+    name: Option<String>,
+    stack_size: Option<usize>,
+    _no_hooks: bool,
+    scope_data: Option<Arc<ScopeData>>,
+    _f: F,
+) -> io::Result<JoinInner<'scope, T>>
+where
+    F: FnOnce() -> T,
+    F: Send + 'a,
+    T: Send + 'a,
+    'scope: 'a,
+{
+    let _ = imp::DEFAULT_MIN_STACK_SIZE;
+    let stack_size = stack_size.unwrap_or_default();
+    let my_thread = Thread::new(
+        ThreadId::new(),
+        name,
+    );
+
+    let their_thread = my_thread.clone();
+    let my_packet: Arc<Packet<'scope, T>> = Arc::new(Packet {
+        scope: scope_data,
+        result: UnsafeCell::new(None),
+        _marker: PhantomData,
+    });
+    let main = move || {
+        if let Some(name) = their_thread.cname() {
+            imp::set_name(name);
+        }
+    };
+
+    if let Some(scope_data) = &my_packet.scope {
+        scope_data.increment_num_running_threads();
+    }
+
+    let init = unsafe { Box::new(ThreadInit {
+        handle: my_thread.clone(),
+        rust_start: core::mem::transmute::<
+            Box<dyn FnOnce() + Send + 'a>,
+            Box<dyn FnOnce() + Send + 'static>
+        >(Box::new(main)),
+    }) };
+
+    Ok(JoinInner {
+        // SAFETY:
+        //
+        // `imp::Thread::new` takes a closure with a `'static` lifetime, since it's passed
+        // through FFI or otherwise used with low-level threading primitives that have no
+        // notion of or way to enforce lifetimes.
+        //
+        // As mentioned in the `Safety` section of this function's documentation, the caller of
+        // this function needs to guarantee that the passed-in lifetime is sufficiently long
+        // for the lifetime of the thread.
+        //
+        // Similarly, the `sys` implementation must guarantee that no references to the closure
+        // exist after the thread has terminated, which is signaled by `Thread::join`
+        // returning.
+        native: unsafe { imp::Thread::new(stack_size, init)? },
+        thread: my_thread,
+        packet: my_packet,
+    })
+}
+
 /// The data passed to the spawned thread for thread initialization. Any thread
 /// implementation should start a new thread by calling .init() on this before
 /// doing anything else to ensure the current thread is properly initialized and
@@ -157,6 +231,7 @@ impl ThreadInit {
         // so that it may call std::thread::current() in its implementation. This is also
         // why we take Box<Self>, to ensure the Box is not destroyed until after this point.
         // Cloning the handle does not invoke the global allocator, it is an Arc.
+        #[cfg(not(target_family = "solana"))]
         if let Err(_thread) = set_current(self.handle.clone()) {
             // The current thread should not have set yet. Use an abort to save binary size (see #123356).
             rtabort!("current thread handle already set during thread spawn");

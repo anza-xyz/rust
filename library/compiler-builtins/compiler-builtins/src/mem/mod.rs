@@ -130,7 +130,7 @@ pub unsafe extern "C" fn memmove(dest: *mut u8, src: *const u8, n: usize) -> *mu
     all(feature = "mem-unaligned", not(feature = "mangled-names")),
     unsafe(no_mangle)
 )]
-pub unsafe extern "C" fn memset(s: *mut u8, c: c_int, n: usize) -> *mut u8 {
+pub unsafe extern "C" fn memset(s: *mut u8, c: core::ffi::c_int, n: usize) -> *mut u8 {
     sol_memset_(s, c as u8, n as u64);
     s
 }
