@@ -1237,10 +1237,10 @@ impl Config {
 
         let gcc_ci_mode = match gcc_download_ci_gcc {
             Some(value) => match value {
-                true => GccCiMode::DownloadFromCi,
+                true => GccCiMode::BuildLocally,
                 false => GccCiMode::BuildLocally,
             },
-            None => GccCiMode::default(),
+            None => GccCiMode::BuildLocally,
         };
 
         let targets = flags_target
