@@ -115,7 +115,6 @@ enable-projects = "lld;lldb"
 
 download-ci-llvm = false
 
-gcc.download-ci-gcc = false
 
 # =============================================================================
 # General build configuration options
