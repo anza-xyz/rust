@@ -249,6 +249,9 @@ pub(crate) fn create_object_file(sess: &Session) -> Option<write::Object<'static
         "loongarch64" => (Architecture::LoongArch64, None),
         "csky" => (Architecture::Csky, None),
         "arm64ec" => (Architecture::Aarch64, Some(SubArchitecture::Arm64EC)),
+        "sbf" if sess.target.options.cpu.as_ref() == "v3" || sess.target.options.cpu.as_ref() == "v4" => {
+                (Architecture::Bpf, None)
+        },
         "sbf" => (Architecture::Sbf, None),
         // Unsupported architecture.
         _ => return None,
