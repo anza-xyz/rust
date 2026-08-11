@@ -325,7 +325,7 @@ const WASM_ALLOWED_FEATURES: &[(&str, Stability)] = &[
     // tidy-alphabetical-end
 ];
 
-const BPF_ALLOWED_FEATURES: &[(&str, Stability)] = &[("alu32", Unstable(sym::bpf_target_feature))];
+const BPF_ALLOWED_FEATURES: &[(&str, Stability)] = &[("alu32", Stable)];
 
 const SBF_ALLOWED_FEATURES: &[(&str, Stability)] =
     &[("alu32", Unstable(sym::sbf_target_feature)), ("static-syscalls", Stable)];
