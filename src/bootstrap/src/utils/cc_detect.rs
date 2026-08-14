@@ -220,7 +220,7 @@ fn default_compiler(
             }
         }
 
-        "bpfel-unknown-unknown" | "sbf-solana-solana" => {
+        "bpfel-unknown-unknown" | "sbf-solana-solana" | "sbpfv3-solana-solana" => {
             Some(PathBuf::from(build.llvm_bin(target).join(compiler.clang())))
         }
 

@@ -303,7 +303,7 @@ const WASM_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[
     // tidy-alphabetical-end
 ];
 
-const BPF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[("alu32", Some(sym::bpf_target_feature))];
+const BPF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[("alu32", None)];
 
 const SBF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] =
     &[("alu32", Some(sym::sbf_target_feature)), ("static-syscalls", Some(sym::sbf_target_feature))];
