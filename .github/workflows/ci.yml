@@ -95,9 +95,6 @@ jobs:
             tidy: false
             os: ubuntu-latest
             env: {}
-          - name: x86_64-gnu-tools
-            os: ubuntu-latest
-            env: {}
     defaults:
       run:
         shell: "${{ contains(matrix.os, 'windows') && 'msys2 {0}' || 'bash' }}"
