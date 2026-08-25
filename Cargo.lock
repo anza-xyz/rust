@@ -725,7 +725,6 @@ name = "compiler_builtins"
 version = "0.1.103"
 source = "git+https://github.com/anza-xyz/compiler-builtins?tag=solana-tools-v1.42.1#b9d3bd3463c95deac85d25c8fa19e754f6e92b9e"
 dependencies = [
- "cc",
  "rustc-std-workspace-core",
 ]
 
