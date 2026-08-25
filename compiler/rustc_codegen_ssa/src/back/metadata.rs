@@ -211,7 +211,6 @@ pub(crate) fn create_object_file(sess: &Session) -> Option<write::Object<'static
         "loongarch64" => Architecture::LoongArch64,
         "csky" => Architecture::Csky,
         "bpf" => Architecture::Bpf,
-        "sbf" if sess.target.options.cpu.as_ref() == "v3" => Architecture::Bpf,
         "sbf" => Architecture::Bpf,
         // Unsupported architecture.
         _ => return None,
