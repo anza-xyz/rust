@@ -7,6 +7,6 @@ pub fn target() -> Target {
         pointer_width: 64,
         arch: "bpf".into(),
         data_layout: "e-m:e-p:64:64-i64:64-n32:64-S128".into(),
-        options: sbf_base::opts(),
+        options: sbf_base::opts("v0"),
     }
 }

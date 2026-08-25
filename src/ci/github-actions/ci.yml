@@ -253,7 +253,7 @@ x--expand-yaml-anchors--remove:
         <<: *step
 
       - name: upload artifacts to github
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           # name is set in previous step
           name: ${{ env.DOC_ARTIFACT_NAME }}
@@ -350,17 +350,9 @@ jobs:
           - name: mingw-check-tidy
             <<: *job-linux-4c
 
-          - name: x86_64-gnu-llvm-15
-            env:
-              ENABLE_GCC_CODEGEN: "1"
-            <<: *job-linux-16c
-
-          - name: sbf-solana-solana
+          - name: sbpfv3-solana-solana
             <<: *job-linux-16c
             tidy: false
-
-          - name: x86_64-gnu-tools
-            <<: *job-linux-16c
 
   push:
     <<: *base-ci-job
@@ -377,7 +369,7 @@ jobs:
           - name: x86_64-gnu-llvm-12
             <<: *job-linux-16c
 
-          - name: sbf-solana-solana
+          - name: sbpfv3-solana-solana
             <<: *job-linux-16c
 
   auto:
@@ -515,16 +507,6 @@ jobs:
             <<: *job-linux-8c
 
           - name: x86_64-gnu-llvm-17
-            env:
-              RUST_BACKTRACE: 1
-            <<: *job-linux-8c
-
-          - name: x86_64-gnu-llvm-16
-            env:
-              RUST_BACKTRACE: 1
-            <<: *job-linux-8c
-
-          - name: x86_64-gnu-llvm-15
             env:
               RUST_BACKTRACE: 1
             <<: *job-linux-8c

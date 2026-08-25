@@ -1,8 +1,7 @@
 use crate::abi::Endian;
-use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, TargetOptions};
+use crate::spec::{Cc, cvs, LinkerFlavor, Lld, PanicStrategy, Target, TargetOptions};
 
-pub fn opts() -> TargetOptions {
-    let linker_script = r"
+const V0_LINKER_SCRIPT: &str = r"
 PHDRS
 {
   text PT_LOAD ;
@@ -28,10 +27,73 @@ SECTIONS
     }
 }
 ";
+
+const V3_LINKER_SCRIPT: &str = r"
+SECTIONS
+{
+  .rodata 0x000000000 : SUBALIGN(8) {
+    BYTE(0);
+    *(.rodata*)
+    *(.data.rel.ro*)
+    . = ALIGN(8);
+  } :rodata
+  .text 0x100000000 : {
+     *(.text*)
+  } :text
+  /DISCARD/ : {
+      *(.comment*)
+      *(.eh_frame*)
+      *(*hash*)
+      *(.bss*)
+      *(.data*)
+      *(.rel.dyn*)
+      *(.dynamic)
+      *(.dynsym)
+      *(.dynstr)
+    }
+}
+
+PHDRS
+{
+  rodata PT_LOAD FLAGS(4);
+  text PT_LOAD FLAGS(1);
+  other PT_NULL FLAGS(0);
+}
+";
+
+pub fn opts(version: &'static str) -> TargetOptions {
+    let mut linker_args: Vec<&str> = vec![
+        "--threads=1", "-z", "notext"
+    ];
+
+    if version != "v3" {
+        linker_args.push("-z");
+        linker_args.push("max-page-size=4096");
+    }
+
     let pre_link_args = TargetOptions::link_args(
         LinkerFlavor::Gnu(Cc::No, Lld::No),
-        &["--threads=1", "-z", "notext"],
+        linker_args.as_slice(),
     );
+
+    let linker_script = if version == "v3" {
+        V3_LINKER_SCRIPT
+    } else {
+        V0_LINKER_SCRIPT
+    };
+    let cpu = if version == "v0" {
+        "generic"
+    } else {
+        version
+    };
+
+    let features = if version == "v3" {
+        "+static-syscalls"
+    } else if version == "v0" {
+        "+store-imm,+jmp-ext"
+    } else {
+        ""
+    };
 
     TargetOptions {
         allow_asm: true,
@@ -44,7 +106,6 @@ SECTIONS
         endian: Endian::Little,
         env: "".into(),
         executables: true,
-        features: "+solana".into(),
         families: cvs!["solana"],
         link_script: Some(linker_script.into()),
         linker: Some("rust-lld".into()),
@@ -61,6 +122,18 @@ SECTIONS
         singlethread: true,
         vendor: "solana".into(),
         c_enum_min_bits: Some(32),
+        cpu: cpu.into(),
+        features: features.into(),
         .. Default::default()
+    }
+}
+
+pub fn sbf_target(version: &'static str) -> Target {
+    Target {
+        llvm_target: "sbf".into(),
+        pointer_width: 64,
+        arch: "sbf".into(),
+        data_layout: "e-m:e-p:64:64-i64:64-n32:64-S128".into(),
+        options: opts(version),
     }
 }
