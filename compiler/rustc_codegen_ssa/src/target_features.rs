@@ -306,7 +306,7 @@ const WASM_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[
 const BPF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[("alu32", None)];
 
 const SBF_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] =
-    &[("alu32", Some(sym::sbf_target_feature)), ("static-syscalls", Some(sym::sbf_target_feature))];
+    &[("alu32", Some(sym::sbf_target_feature)), ("static-syscalls", None)];
 
 
 const CSKY_ALLOWED_FEATURES: &[(&str, Option<Symbol>)] = &[
