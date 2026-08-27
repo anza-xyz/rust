@@ -488,18 +488,6 @@ impl<'a> GccLinker<'a> {
                 } else {
                     self.link_arg("--entry=entrypoint");
                 }
-
-                let cpu_type = self
-                    .sess
-                    .opts
-                    .cg
-                    .target_cpu
-                    .as_ref()
-                    .cloned()
-                    .unwrap_or(self.sess.target.cpu.as_ref().to_string());
-                if cpu_type == "v3" || cpu_type == "v4" {
-                    self.link_arg("-Bsymbolic");
-                }
             }
         }
     }
