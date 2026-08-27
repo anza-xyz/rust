@@ -487,7 +487,7 @@ const SBF_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
     ("alu32", Unstable(sym::sbf_target_feature), &[]),
     ("static-syscalls", Stable, &[]),
     ("dynamic-frames", Stable, &[]),
-    ("abi-v2", Stable, &[]),
+    ("abi-v2", Unstable(sym::sbf_target_feature), &[]),
 ];
 
 const CSKY_FEATURES: &[(&str, Stability, ImpliedFeatures)] = &[
