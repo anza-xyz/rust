@@ -65,7 +65,7 @@ gimli-symbolize = []
 
 panic-unwind = ["panic_unwind"]
 profiler = ["profiler_builtins"]
-compiler-builtins-c = ["alloc/compiler-builtins-c"]
+# compiler-builtins-c = ["alloc/compiler-builtins-c"]
 compiler-builtins-mem = ["alloc/compiler-builtins-mem"]
 compiler-builtins-no-asm = ["alloc/compiler-builtins-no-asm"]
 compiler-builtins-mangled-names = ["alloc/compiler-builtins-mangled-names"]
