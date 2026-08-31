@@ -69,6 +69,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
     let mut linker_args: Vec<&str> = vec!["--threads=1", "-z", "notext", "--Bdynamic"];
 
     let linker_script = if version == "v3" || version == "v4" {
+        linker_args.push("-Bsymbolic");
         V3_LINKER_SCRIPT
     } else {
         linker_args.push("-z");
