@@ -147,10 +147,10 @@ pr:
     <<: *job-linux-4c
   - name: x86_64-gnu-miri
     <<: *job-linux-4c
-  - name: sbf-solana-solana
+  - name: sbpf32-solana-solana
     continue_on_error: true
     env:
-      IMAGE: sbf-solana-solana
+      IMAGE: sbpf32-solana-solana
     <<: *job-linux-4c
   - name: sbpf-solana-solana
     continue_on_error: true
