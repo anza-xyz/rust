@@ -102,6 +102,8 @@ jobs:
         - target: x86_64-pc-windows-gnu
           os: windows-2025
           channel: nightly-2025-04-29-x86_64-gnu
+        - target: sbpf32-solana-solana
+          os: ubuntu-24.04
         - target: sbpf-solana-solana
           os: ubuntu-24.04
         - target: sbpfv1-solana-solana
