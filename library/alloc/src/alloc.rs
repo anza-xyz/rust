@@ -556,9 +556,10 @@ pub mod __alloc_error_handler {
         )
     }
 
+
     #[rustc_std_internal_symbol]
     #[cfg(target_family = "solana")]
-    pub unsafe fn __rdl_oom(size: usize, _align: usize) -> ! {
+    pub unsafe fn __rdl_alloc_error_handler(size: usize, _align: usize) -> ! {
         core::panicking::panic_nounwind_fmt(format_args!(
             "memory allocation of {size} bytes failed"
         ), /* force_no_backtrace */ false)
