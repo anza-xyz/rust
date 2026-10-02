@@ -1564,6 +1564,7 @@ fn extract_if_consumed_panic() {
         .map(|index| Check { index, drop_counts: Rc::clone(&drop_counts) })
         .collect();
 
+    #[cfg(not(target_family = "solana"))]
     let _ = std::panic::catch_unwind(move || {
         let filter = |c: &mut Check| {
             if c.index == 2 {
@@ -1615,6 +1616,7 @@ fn extract_if_unconsumed_panic() {
         .map(|index| Check { index, drop_counts: Rc::clone(&drop_counts) })
         .collect();
 
+    #[cfg(not(target_family = "solana"))]
     let _ = std::panic::catch_unwind(move || {
         let filter = |c: &mut Check| {
             if c.index == 2 {
