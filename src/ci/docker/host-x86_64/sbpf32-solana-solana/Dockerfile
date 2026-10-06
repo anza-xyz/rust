@@ -42,4 +42,4 @@ ENV SCRIPT CARGO_TARGET_SBPFV3_SOLANA_SOLANA_RUNNER=\"cargo-run-solana-tests --h
     LLVM_HOME=/checkout/obj/build/x86_64-unknown-linux-gnu/llvm \
     PATH="${HOME}/.cargo/bin:${PATH}" \
     python3 /checkout/x.py --stage 1 test --host='' --target sbpfv3-solana-solana \
-    library/core
+    library/core library/alloc
