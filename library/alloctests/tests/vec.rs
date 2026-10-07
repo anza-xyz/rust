@@ -16,6 +16,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::vec::{Drain, IntoIter, PeekMut};
 use std::{assert_matches, hint};
 
+#[cfg(not(target_family = "solana"))]
 use crate::testing::macros::struct_with_counted_drop;
 
 struct DropCounter<'a> {
@@ -544,6 +545,7 @@ fn test_cmp() {
     assert_eq!(&x[1..4], cmp);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_vec_truncate_drop() {
     struct_with_counted_drop!(Elem(i32), DROPS);
@@ -815,6 +817,7 @@ fn test_drain_end_overflow() {
     v.drain((Included(0), Included(usize::MAX)));
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn test_drain_leak() {
@@ -1045,6 +1048,7 @@ fn test_into_iter_clone() {
     assert_eq!(it.next(), None);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn test_into_iter_leak() {
@@ -1249,6 +1253,7 @@ fn test_from_iter_specialization_panic_during_iteration_drops() {
     );
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn test_from_iter_specialization_panic_during_drop_doesnt_leak() {
@@ -1349,6 +1354,7 @@ fn from_into_inner() {
 }
 
 #[test]
+#[cfg_attr(target_family = "solana", ignore = "sol_alloc_free_ does not honor over-aligned requests")]
 fn overaligned_allocations() {
     #[repr(align(256))]
     struct Foo(usize);
@@ -1540,6 +1546,7 @@ fn extract_if_complex() {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn extract_if_consumed_panic() {
@@ -1591,6 +1598,7 @@ fn extract_if_consumed_panic() {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn extract_if_unconsumed_panic() {

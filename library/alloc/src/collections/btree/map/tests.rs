@@ -1,7 +1,9 @@
 use core::assert_matches;
 use std::ops::Bound::{Excluded, Included, Unbounded};
 use std::panic::{AssertUnwindSafe, catch_unwind};
+#[cfg(not(target_family = "solana"))]
 use std::sync::atomic::AtomicUsize;
+#[cfg(not(target_family = "solana"))]
 use std::sync::atomic::Ordering::SeqCst;
 use std::{cmp, iter};
 
@@ -773,6 +775,7 @@ fn test_range_finding_ill_order_in_map() {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_range_finding_ill_order_in_range_ord() {
     // Has proper order the first time asked, then flips around.
