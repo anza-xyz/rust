@@ -85,6 +85,7 @@ fn hash<T: Hash>(t: &T) -> u64 {
     s.finish()
 }
 
+#[cfg(not(target_family = "solana"))]
 /// Copied from `std::test_helpers::test_rng`, since these tests rely on the
 /// seed not being the same for every RNG invocation too.
 fn test_rng() -> rand_xorshift::XorShiftRng {

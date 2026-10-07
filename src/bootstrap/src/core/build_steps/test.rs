@@ -2962,7 +2962,12 @@ fn prepare_cargo_test(
             cargo.arg("--doc");
         }
         DocTests::No => {
-            cargo.args(["--bins", "--examples", "--tests", "--benches"]);
+            cargo.args(["--bins", "--examples", "--tests"]);
+            // Benches can't run on SBF: `harness = false` benches are plain binaries
+            // without an `entrypoint`, and the VM has no clock.
+            if !target.contains("solana") {
+                cargo.arg("--benches");
+            }
         }
         DocTests::Yes => {}
     }

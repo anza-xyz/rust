@@ -1,4 +1,5 @@
 use crate::num::NonZero;
+#[cfg(not(target_family = "solana"))]
 use crate::sync::atomic::{Atomic, Ordering};
 
 /// A unique identifier for a running thread.
@@ -39,6 +40,13 @@ impl ThreadId {
         }
 
         cfg_select! {
+            target_family = "solana" => {
+                // SBF is single threaded and has no writable static storage, so
+                // no counter can be kept. Id 1 is reserved for the main thread
+                // and every spawned thread gets id 2.
+                let _ = exhausted;
+                ThreadId(NonZero::new(2).unwrap())
+            }
             target_has_atomic = "64" => {
                 use crate::sync::atomic::AtomicU64;
 

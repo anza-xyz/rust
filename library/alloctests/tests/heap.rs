@@ -2,11 +2,13 @@ use std::alloc::{Allocator, Global, Layout, System};
 
 /// Issue #45955 and #62251.
 #[test]
+#[cfg_attr(target_family = "solana", ignore = "sol_alloc_free_ does not honor over-aligned requests")]
 fn alloc_system_overaligned_request() {
     check_overalign_requests(System)
 }
 
 #[test]
+#[cfg_attr(target_family = "solana", ignore = "sol_alloc_free_ does not honor over-aligned requests")]
 fn std_heap_overaligned_request() {
     check_overalign_requests(Global)
 }

@@ -12,6 +12,19 @@
 //! will be incorrect, but that's just something we have to live with.
 
 cfg_select! {
+    target_family = "solana" => {
+        use super::id::ThreadId;
+
+        // SBF is single threaded and has no writable static storage. The main
+        // thread always has id 1 (see `thread::current`).
+        pub(super) fn get() -> Option<ThreadId> {
+            ThreadId::from_u64(1)
+        }
+
+        /// # Safety
+        /// May only be called once.
+        pub(crate) unsafe fn set(_id: ThreadId) {}
+    }
     target_has_atomic = "64" => {
         use super::id::ThreadId;
         use crate::sync::atomic::{Atomic, AtomicU64};
