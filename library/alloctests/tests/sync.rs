@@ -57,7 +57,7 @@ impl Drop for AllocCanary<'_> {
 }
 
 #[test]
-#[cfg_attr(target_os = "emscripten", ignore)]
+#[cfg_attr(any(target_os = "emscripten", target_family = "solana"), ignore)]
 fn manually_share_arc() {
     let v = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let arc_v = Arc::new(v);
@@ -128,7 +128,7 @@ fn try_unwrap() {
 }
 
 #[test]
-#[cfg_attr(any(target_os = "emscripten", target_os = "wasi"), ignore)] // no threads
+#[cfg_attr(any(target_os = "emscripten", target_os = "wasi", target_family = "solana"), ignore)] // no threads
 fn into_inner() {
     for _ in 0..100
     // ^ Increase chances of hitting potential race conditions
@@ -453,7 +453,7 @@ fn test_ptr_eq() {
 }
 
 #[test]
-#[cfg_attr(target_os = "emscripten", ignore)]
+#[cfg_attr(any(target_os = "emscripten", target_family = "solana"), ignore)]
 fn test_weak_count_locked() {
     let mut a = Arc::new(atomic::AtomicBool::new(false));
     let a2 = a.clone();

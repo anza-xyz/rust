@@ -100,6 +100,7 @@ pub(crate) fn opts(version: &'static str) -> TargetOptions {
         endian: Endian::Little,
         env: Env::Unspecified,
         executables: true,
+        exe_suffix: ".so".into(),
         families: cvs!["solana"],
         link_script: Some(linker_script.into()),
         linker: Some("rust-lld".into()),

@@ -2330,16 +2330,17 @@ fn utf8_chars() {
 #[test]
 fn utf8_char_counts() {
     let strs = [("e", 1), ("é", 1), ("€", 1), ("\u{10000}", 1), ("eé€\u{10000}", 4)];
-    let spread = if cfg!(miri) { 4 } else { 8 };
+    // The SBF heap never frees memory, so keep the total allocation small.
+    let spread = if cfg!(any(miri, target_family = "solana")) { 4 } else { 8 };
     let mut reps = [8, 64, 256, 512]
         .iter()
         .copied()
         .flat_map(|n| n - spread..=n + spread)
         .collect::<Vec<usize>>();
-    if cfg!(not(miri)) {
+    if cfg!(not(any(miri, target_family = "solana"))) {
         reps.extend([1024, 1 << 16].iter().copied().flat_map(|n| n - spread..=n + spread));
     }
-    let counts = if cfg!(miri) { 0..1 } else { 0..8 };
+    let counts = if cfg!(any(miri, target_family = "solana")) { 0..1 } else { 0..8 };
     let padding = counts.map(|len| " ".repeat(len)).collect::<Vec<String>>();
 
     for repeat in reps {
