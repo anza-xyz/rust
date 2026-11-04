@@ -3,6 +3,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use super::*;
 use crate::testing::crash_test::{CrashTestDummy, Panic};
+#[cfg(not(target_family = "solana"))]
 use crate::testing::macros::struct_with_counted_drop;
 
 #[bench]
@@ -1084,6 +1085,7 @@ fn test_clone_from() {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_vec_deque_truncate_drop() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -1409,6 +1411,7 @@ fn extract_if_drop_panic_leak() {
     assert_eq!(d7.dropped(), 1);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn extract_if_pred_panic_leak() {

@@ -283,6 +283,7 @@ fn test_format_args() {
     t!(s, "args were: hello world");
 }
 
+#[cfg(not(target_family = "solana"))]
 macro_rules! counter_fn {
     ($name:ident) => {
         fn $name() -> u32 {
@@ -294,6 +295,7 @@ macro_rules! counter_fn {
     };
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_order() {
     // Make sure format!() arguments are always evaluated in a left-to-right ordering
@@ -313,6 +315,7 @@ fn test_order() {
     );
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_once() {
     // Make sure each argument are evaluated only once even though it may be

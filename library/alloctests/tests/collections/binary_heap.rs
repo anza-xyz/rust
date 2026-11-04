@@ -514,6 +514,7 @@ fn test_retain_catch_unwind() {
 // even if the order might not be correct.
 //
 // Destructors must be called exactly once per element.
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn panic_safe() {
