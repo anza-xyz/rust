@@ -551,7 +551,11 @@ fn bench_in_place_collect_droppable(b: &mut Bencher) {
 #[cfg(target_os = "emscripten")]
 const LEN: usize = 4096;
 
-#[cfg(not(target_os = "emscripten"))]
+// These arrays live on the stack, and SBF stack frames are limited to 4 KiB.
+#[cfg(target_family = "solana")]
+const LEN: usize = 128;
+
+#[cfg(not(any(target_os = "emscripten", target_family = "solana")))]
 const LEN: usize = 16384;
 
 #[bench]

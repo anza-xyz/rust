@@ -1,3 +1,4 @@
+#![cfg(not(target_family = "solana"))]
 #![feature(alloc_error_hook, allocator_api)]
 
 use std::alloc::{AllocError, Allocator, Layout, System, set_alloc_error_hook};

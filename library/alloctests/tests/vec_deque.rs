@@ -12,6 +12,7 @@ use Taggy::*;
 use Taggypar::*;
 
 use crate::hash;
+#[cfg(not(target_family = "solana"))]
 use crate::testing::macros::struct_with_counted_drop;
 
 #[test]
@@ -716,6 +717,7 @@ fn test_show() {
     assert_eq!(format!("{ringbuf:?}"), "[\"just\", \"one\", \"test\", \"more\"]");
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_drop() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -730,6 +732,7 @@ fn test_drop() {
     assert_eq!(DROPS.get(), 4);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_drop_with_pop() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -748,6 +751,7 @@ fn test_drop_with_pop() {
     assert_eq!(DROPS.get(), 4);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_drop_clear() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -764,6 +768,7 @@ fn test_drop_clear() {
     assert_eq!(DROPS.get(), 4);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn test_drop_panic() {
@@ -1613,6 +1618,7 @@ fn test_try_rfold_moves_iter() {
     assert_eq!(iter.next_back(), Some(&70));
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn truncate_leak() {
@@ -1633,6 +1639,7 @@ fn truncate_leak() {
     assert_eq!(DROPS.get(), 7);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn truncate_front_leak() {
@@ -1653,6 +1660,7 @@ fn truncate_front_leak() {
     assert_eq!(DROPS.get(), 7);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn test_drain_leak() {

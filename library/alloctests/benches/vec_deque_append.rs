@@ -1,9 +1,20 @@
 use std::collections::VecDeque;
 use std::time::Instant;
 
+#[cfg(not(target_family = "solana"))]
 const VECDEQUE_LEN: i32 = 100000;
+#[cfg(not(target_family = "solana"))]
 const WARMUP_N: usize = 100;
+#[cfg(not(target_family = "solana"))]
 const BENCH_N: usize = 1000;
+
+// The SBF heap is a bump allocator that never frees, so keep allocations small.
+#[cfg(target_family = "solana")]
+const VECDEQUE_LEN: i32 = 1000;
+#[cfg(target_family = "solana")]
+const WARMUP_N: usize = 10;
+#[cfg(target_family = "solana")]
+const BENCH_N: usize = 100;
 
 fn main() {
     if cfg!(miri) {

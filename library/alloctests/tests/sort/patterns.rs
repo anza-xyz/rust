@@ -1,5 +1,8 @@
+#[cfg(not(target_family = "solana"))]
 use std::env;
+#[cfg(not(target_family = "solana"))]
 use std::str::FromStr;
+#[cfg(not(target_family = "solana"))]
 use std::sync::OnceLock;
 
 use rand::distr::Uniform;
@@ -165,6 +168,7 @@ pub fn pipe_organ(len: usize) -> Vec<i32> {
     vals
 }
 
+#[cfg(not(target_family = "solana"))]
 pub fn get_or_init_rand_seed() -> u64 {
     *SEED_VALUE.get_or_init(|| {
         env::var("OVERRIDE_SEED")
@@ -174,11 +178,19 @@ pub fn get_or_init_rand_seed() -> u64 {
     })
 }
 
+// SBF has neither writable static storage to cache the seed, nor environment
+// variables or a clock to derive it from, so use a fixed seed.
+#[cfg(target_family = "solana")]
+pub fn get_or_init_rand_seed() -> u64 {
+    0x5eed
+}
+
 // --- Private ---
 
+#[cfg(not(target_family = "solana"))]
 static SEED_VALUE: OnceLock<u64> = OnceLock::new();
 
-#[cfg(not(miri))]
+#[cfg(not(any(miri, target_family = "solana")))]
 fn rand_root_seed() -> u64 {
     // Other test code hashes `panic::Location::caller()` and constructs a seed from that, in these
     // tests we want to have a fuzzer like exploration of the test space, if we used the same caller

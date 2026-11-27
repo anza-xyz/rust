@@ -197,7 +197,11 @@ fn bench_into_iter_next_chunk(b: &mut Bencher) {
 
 #[bench]
 fn bench_from_array_1000(b: &mut Bencher) {
+    #[cfg(not(target_family = "solana"))]
     const N: usize = 1000;
+    // The array lives on the stack, and SBF stack frames are limited to 4 KiB.
+    #[cfg(target_family = "solana")]
+    const N: usize = 128;
     let mut array: [usize; N] = [0; N];
 
     for i in 0..N {

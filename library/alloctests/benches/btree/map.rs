@@ -355,12 +355,16 @@ pub fn iter_10k(b: &mut Bencher) {
 }
 
 #[bench]
-#[cfg_attr(target_os = "emscripten", ignore)] // hits an OOM
+#[cfg_attr(any(target_os = "emscripten", target_family = "solana"), ignore)] // hits an OOM
 pub fn iter_1m(b: &mut Bencher) {
     bench_iter(b, 1_000, 1_000_000);
 }
 
+#[cfg(not(target_family = "solana"))]
 const FAT: usize = 256;
+// Values are moved on the stack, and SBF stack frames are limited to 4 KiB.
+#[cfg(target_family = "solana")]
+const FAT: usize = 16;
 
 // The returned map has small keys and values.
 // Benchmarks on it have a counterpart in set.rs with the same keys and no values at all.

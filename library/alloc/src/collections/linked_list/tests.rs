@@ -5,6 +5,7 @@ use rand::RngCore;
 
 use super::*;
 use crate::testing::crash_test::{CrashTestDummy, Panic};
+#[cfg(not(target_family = "solana"))]
 use crate::testing::macros::struct_with_counted_drop;
 use crate::vec::Vec;
 
@@ -303,7 +304,7 @@ fn test_clone_from() {
 }
 
 #[test]
-#[cfg_attr(target_os = "emscripten", ignore)]
+#[cfg_attr(any(target_os = "emscripten", target_family = "solana"), ignore)]
 fn test_send() {
     let n = list_from(&[1, 2, 3]);
     thread::spawn(move || {
@@ -1064,6 +1065,7 @@ fn extract_if_drop_panic_leak() {
     assert_eq!(d7.dropped(), 1);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn extract_if_pred_panic_leak() {
@@ -1087,6 +1089,7 @@ fn extract_if_pred_panic_leak() {
     assert_eq!(q.len(), 6);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_drop() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -1101,6 +1104,7 @@ fn test_drop() {
     assert_eq!(DROPS.get(), 4);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_drop_with_pop() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -1119,6 +1123,7 @@ fn test_drop_with_pop() {
     assert_eq!(DROPS.get(), 4);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 fn test_drop_clear() {
     struct_with_counted_drop!(Elem, DROPS);
@@ -1135,6 +1140,7 @@ fn test_drop_clear() {
     assert_eq!(DROPS.get(), 4);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
 fn test_drop_panic() {

@@ -1,3 +1,4 @@
+#[cfg(not(target_family = "solana"))]
 use core::fmt::Debug;
 use std::boxed::ThinBox;
 
@@ -32,6 +33,7 @@ fn assert_covariance() {
     }
 }
 
+#[cfg(not(target_family = "solana"))]
 #[track_caller]
 fn verify_aligned<T>(ptr: *const T) {
     // Use `black_box` to attempt to obscure the fact that we're calling this
@@ -55,6 +57,7 @@ fn verify_aligned<T>(ptr: *const T) {
     );
 }
 
+#[cfg(not(target_family = "solana"))]
 #[track_caller]
 fn check_thin_sized<T: Debug + PartialEq + Clone>(make: impl FnOnce() -> T) {
     let value = make();
@@ -64,6 +67,7 @@ fn check_thin_sized<T: Debug + PartialEq + Clone>(make: impl FnOnce() -> T) {
     assert_eq!(val, &value);
 }
 
+#[cfg(not(target_family = "solana"))]
 #[track_caller]
 fn check_thin_dyn<T: Debug + PartialEq + Clone>(make: impl FnOnce() -> T) {
     let value = make();
@@ -85,6 +89,8 @@ macro_rules! define_test {
 
         $($test_stmts:tt)*
     ) => {
+        // Counting live objects requires a writable static, which SBF lacks.
+        #[cfg(not(target_family = "solana"))]
         #[test]
         fn $testname() {
             use core::sync::atomic::{AtomicIsize, Ordering};
